@@ -15,13 +15,11 @@ class Drivetrain(Subsystem):
         k = -2
         maxSpeed = 0.85
         
-        if(abs(left)<dbLimit):
-            left = 0
-        if(abs(right)<dbLimit):
-            right = 0
+        if(abs(left)<dbLimit):left = 0
+        else: left = abs(left)/left*(math.e**(k*abs(left))-1) / (math.e**k-1)
         
-        left = (math.e**(k*left)-1) / (math.e**k-1)
-        right = (math.e**(k*right)-1) / (math.e**k-1)
+        if(abs(right)<dbLimit): right = 0
+        else: right = abs(right)/right*(math.e**(k*abs(right))-1) / (math.e**k-1)
         
         left *= maxSpeed
         right *= maxSpeed
