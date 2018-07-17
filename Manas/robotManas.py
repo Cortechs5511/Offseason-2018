@@ -1,25 +1,27 @@
 import wpilib
 import wpilib.drive
+import ctre
 #Manas Takalpati
 
 class Robot5511(wpilib.IterativeRobot):
 
     def robotInit(self):
         #drive portion
-        self.left_motor1 = wpilib.PWMTalonSRX(7)
-        self.left_motor2 = wpilib.PWMVictorSPX(8)
-        self.left_motor3 = wpilib.PWMVictorSPX(9)
+        self.left_motor1 = ctre.WPI_TalonSRX(7)
+        self.left_motor2 = ctre.WPI_VictorSPX(8)
+        self.left_motor3 = ctre.WPI_VictorSPX(9)
         self.left_side = wpilib.SpeedControllerGroup(self.left_motor1, self.left_motor2, self.left_motor3)
 
-        self.right_motor1 = wpilib.PWMTalonSRX(17)
-        self.right_motor2 = wpilib.PWMVictorSPX(18)
-        self.right_motor3 = wpilib.PWMVictorSPX(19)
+        self.right_motor1 = ctre.WPI_TalonSRX(17)
+        self.right_motor2 = ctre.WPI_VictorSPX(18)
+        self.right_motor3 = ctre.WPI_VictorSPX(19)
         self.right_side = wpilib.SpeedControllerGroup(self.right_motor1, self.right_motor2, self.right_motor3)
 
         self.drive = wpilib.drive.DifferentialDrive(self.left_side, self.right_side)
         self.drive.setExpiration(0.1)
         self.stick_left = wpilib.Joystick(0)
         self.stick_right = wpilib.Joystick(1)
+
 
         #encoders
 
@@ -28,9 +30,9 @@ class Robot5511(wpilib.IterativeRobot):
         self.timer = wpilib.Timer()
 
         #operator, arbitrary motor controllers and ports for now
-        self.lift_motor = wpilib.PWMVictorSPX(3)
-        self.intake_motor_left = wpilib.PWMVictorSPX(4)
-        self.intake_motor_right = wpilib.PWMVictorSPX(5)
+        self.lift_motor = ctre.WPI_VictorSPX(3)
+        self.intake_motor_left = ctre.WPI_VictorSPX(4)
+        self.intake_motor_right = ctre.WPI_VictorSPX(5)
         self.intake = wpilib.SpeedControllerGroup(self.intake_motor_left, self.intake_motor_right)
         self.xbx = wpilib.XboxController(2)
 
