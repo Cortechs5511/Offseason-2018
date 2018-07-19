@@ -17,9 +17,9 @@ class MyRobot(wpilib.IterativeRobot):
 
         # object that handles basic drive operations
         self.DriveLeft1 = ctre.WPI_TalonSRX(10)
-        self.DriveLeft2 = ctre.WPI_TalonSRX(20)
-        self.DriveLeft3 = ctre.WPI_VictorSPX(11)
-        self.DriveRight1 = ctre.WPI_VictorSPX(12)
+        self.DriveRight1 = ctre.WPI_TalonSRX(20)
+        self.DriveLeft2 = ctre.WPI_VictorSPX(11)
+        self.DriveLeft3 = ctre.WPI_VictorSPX(12)
         self.DriveRight2 = ctre.WPI_VictorSPX(21)
         self.DriveRight3 = ctre.WPI_VictorSPX(22)
         self.LeftEncoder = wpilib.Encoder(0,1)
