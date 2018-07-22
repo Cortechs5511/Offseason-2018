@@ -7,17 +7,19 @@ class Robot5511(wpilib.IterativeRobot):
 
     def robotInit(self):
         #drive portion
-        self.left_motor1 = ctre.WPI_TalonSRX(7)
-        self.left_motor2 = ctre.WPI_VictorSPX(8)
-        self.left_motor3 = ctre.WPI_VictorSPX(9)
-        self.left_side = wpilib.SpeedControllerGroup(self.left_motor1, self.left_motor2, self.left_motor3)
+        self.Tleft = ctre.WPI_TalonSRX(10)
+        self.Vleft1 = ctre.WPI_VictorSPX(11)
+        self.Vleft2 = ctre.WPI_VictorSPX(12)
+        self.Vleft1.set(ctre.WPI_VictorSPX.ControlMode.Follower, 10)
+        self.Vleft2.set(ctre.WPI_VictorSPX.ControlMode.Follower, 10)
 
-        self.right_motor1 = ctre.WPI_TalonSRX(17)
-        self.right_motor2 = ctre.WPI_VictorSPX(18)
-        self.right_motor3 = ctre.WPI_VictorSPX(19)
-        self.right_side = wpilib.SpeedControllerGroup(self.right_motor1, self.right_motor2, self.right_motor3)
+        self.Tright = ctre.WPI_TalonSRX(20)
+        self.Vright1 = ctre.WPI_VictorSPX(21)
+        self.Vright2 = ctre.WPI_VictorSPX(22)
+        self.Vright1.set(ctre.WPI_VictorSPX.ControlMode.Follower, 20)
+        self.Vright2.set(ctre.WPI_VictorSPX.ControlMode.Follower, 20)
 
-        self.drive = wpilib.drive.DifferentialDrive(self.left_side, self.right_side)
+        self.drive = wpilib.drive.DifferentialDrive(self.Tleft, self.Tright)
         self.drive.setExpiration(0.1)
         self.stick_left = wpilib.Joystick(0)
         self.stick_right = wpilib.Joystick(1)
@@ -29,11 +31,17 @@ class Robot5511(wpilib.IterativeRobot):
         #timer
         self.timer = wpilib.Timer()
 
-        #operator, arbitrary motor controllers and ports for now
-        self.lift_motor = ctre.WPI_VictorSPX(3)
-        self.intake_motor_left = ctre.WPI_VictorSPX(4)
-        self.intake_motor_right = ctre.WPI_VictorSPX(5)
-        self.intake = wpilib.SpeedControllerGroup(self.intake_motor_left, self.intake_motor_right)
+        #operator
+        self.liftMain = ctre.WPI_TalonSRX(30)
+        self.lift2 = ctre.WPI_TalonSRX(31)
+        self.lift2.set(ctre.WPI_TalonSRX.ControlMode.Follower, 30)
+
+        self.wrist = ctre.WPI_TalonSRX(40)
+
+        self.intakeLeft = ctre.WPI_TalonSRX(50)
+        self.intakeRight = ctre.WPI_TalonSRX(51)
+        self.intakeRight.set(ctre.WPI_TalonSRX.ControlMode.Follower, 50)
+
         self.xbx = wpilib.XboxController(2)
 
     def autonomousInit(self):
@@ -57,13 +65,21 @@ class Robot5511(wpilib.IterativeRobot):
         if (self.xbx.getTriggerAxis(1) > 0):
             self.lift_motor.set(.6)
         elif (self.xbx.getTriggerAxis(1) < 0):
-            self.lift_motor.set(.6)
+            self.lift_motor.set(-.6)
         else:
             pass
 
         #if A button pressed, set intake speed to 80%
         if (self.xbx.getAButton() ==  True):
-            self.intake.set(.8)
+            self.intakeLeft.set(.8)
+        else:
+            pass
+
+        #if left hand analog stick moved up then wrist forward, else if moved down, wrist backward
+        if (self.xbx.getTriggerAxis(0) > 0):
+            self.lift_motor.set(.6)
+        elif (self.xbx.getTriggerAxis(0) < 0):
+            self.lift_motor.set(-.6)
         else:
             pass
 
