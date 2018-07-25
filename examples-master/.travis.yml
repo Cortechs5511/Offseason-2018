@@ -1,0 +1,18 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+# command to install dependencies
+install:
+  - pip install -U pip pytest
+  - pip install --no-deps -r travis-requirements.txt
+# command to run tests
+script:
+  - ./run_tests.sh all
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/2fb1c026e64fdd70d27b
+    on_success: change
+    on_failure: always
+    on_start: never

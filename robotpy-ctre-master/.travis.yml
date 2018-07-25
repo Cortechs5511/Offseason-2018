@@ -1,0 +1,59 @@
+
+jobs:
+  include:
+    
+  # Normal tests
+  - stage: test
+    sudo: false
+    language: python
+    python: "3.5"
+    install:
+    - pip install pytest coverage header2whatever pytest-cov
+    - python setup.py sdist
+    - "pip install dist/robotpy-ctre-*.tar.gz"
+    script:
+    - RUNCOVERAGE=1 tests/run_tests.sh
+  
+  - stage: test
+    sudo: false
+    language: python
+    python: "3.6"
+    install:
+    - pip install pytest coverage header2whatever pytest-cov
+    - python setup.py sdist
+    - "pip install dist/robotpy-ctre-*.tar.gz"
+    script:
+    - RUNCOVERAGE=1 tests/run_tests.sh
+  
+  # Check to see if the compilation succeeds
+  - stage: test
+    sudo: false
+    language: python
+    python: "3.6"
+    install:
+    - FORCE_HAL_INSTALL=1 pip install pybind11 header2whatever robotpy-hal-roborio
+    script:
+    - TRAVIS_BUILD=1 python setup.py sdist build
+  
+  - stage: deploy-pypi
+    sudo: false
+    language: python
+    python: "3.6"
+    if: tag IS present
+    install:
+    - pip install header2whatever
+    script: true
+    deploy:
+    - provider: pypi
+      user: $PYPI_USERNAME
+      password: $PYPI_PASSWORD
+      on:
+        tags: true
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/2fb1c026e64fdd70d27b
+    on_success: change
+    on_failure: always
+    on_start: never
