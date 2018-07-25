@@ -1,0 +1,17 @@
+*.pyc
+*.so
+__pycache__
+
+.project
+.pydevproject
+
+*.egg-info
+build
+dist
+
+ctre/version.py
+ctre/_impl/autogen
+
+
+docs/_build
+docs/_sidebar.rst.inc
