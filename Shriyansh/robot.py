@@ -19,8 +19,11 @@ class Robot5511(wpilib.IterativeRobot):
 
         self.drive = wpilib.drive.DifferentialDrive(self.Tleft, self.Tright)
         self.drive.setExpiration(0.1)
+
         self.stick_left = wpilib.Joystick(0)
         self.stick_right = wpilib.Joystick(1)
+        self.xbx = wpilib.XboxController(2)
+
         #timer
         self.timer = wpilib.Timer()
 
@@ -28,6 +31,9 @@ class Robot5511(wpilib.IterativeRobot):
         self.liftMain = ctre.WPI_TalonSRX(30)
         self.lift2 = ctre.WPI_TalonSRX(31)
         self.lift2.set(ctre.WPI_TalonSRX.ControlMode.Follower, 30)
+
+        self.wrist = ctre.WPI_TalonSRX(40)
+
         self.intakeLeft = ctre.WPI_TalonSRX(50)
         self.intakeRight = ctre.WPI_TalonSRX(51)
         self.intakeRight.set(ctre.WPI_TalonSRX.ControlMode.Follower, 50)
@@ -49,24 +55,26 @@ class Robot5511(wpilib.IterativeRobot):
         self.drive.tankDrive(self.stick_left.getY(), self.stick_right.getY() * -1)
 
         #if right hand stick is moved ,lift based on X value
-        if (self.xbx.getTriggerAxis(1 > 0):
-            self.lift_motor.set(.4)
+        if (self.xbx.getTriggerAxis(1) > 0):
+            self.liftMain.set(.4)
         elif (self.xbx.getTriggerAxis(1) < 0):
-            self.lift_motor.set(-.6)
+            self.liftMain.set(-.6)
         else:
-            pass
+            self.liftMain.set(0)
 
 
         if (self.xbx.getXButton() ==  True):
             self.intakeLeft.set(.75)
         else:
-            pass
+            self.intakeLeft.set(0)
 
         #if left hand analog stick moved up then wrist forward, if moved down wrist backward
-        if (self.xbx.getTriggerAxis(1) > 0):
-            self.lift_motor.set(.6)
+        if (self.xbx.getTriggerAxis(0) > 0):
+            self.wrist.set(.6)
         elif (self.xbx.getTriggerAxis(0) < 0):
-            self.lift_motor.set(-.6)
+            self.wrist.set(-.6)
         else:
-            pass
+            self.wrist.set(0)
 
+if __name__ == '__main__':
+    wpilib.run(Robot5511)
