@@ -5,17 +5,19 @@ import math
 import numpy as np
 
 from wpilib.command.subsystem import Subsystem
+from wpilib.drive import DifferentialDrive
 import helper.helper as helper
 
 class Drivetrain(Subsystem):
 
-    self.dbLimit = 0.1
-    self.k = -2
-    self.maxSpeed = 0.85
+    dbLimit = 0.1
+    k = -2
+    maxSpeed = 0.85
 
     def __init__(self, left, right, leftEncoder, rightEncoder):
         self.left = left
         self.right = right
+        self.simpleDrive = DifferentialDrive(self.left,self.right)
         self.leftEncoder = leftEncoder
         self.rightEncoder = rightEncoder
 
@@ -55,6 +57,12 @@ class Drivetrain(Subsystem):
 
         self.left.set(L1)
         self.right.set(R1)
+
+    def simpleTank(self,left,right):
+        self.simpleDrive.tankDrive(left,right)
+
+    def simpleArcade(self,left,right):
+        self.simpleDrive.arcadeDrive(left,right)
 
     def clearEncoders(self):
         self.left_encoder.reset()

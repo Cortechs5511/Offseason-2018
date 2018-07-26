@@ -49,7 +49,10 @@ class MyRobot(wpilib.IterativeRobot):
 
     def teleopPeriodic(self):
         #self.drivetrain.tank(self.leftStick.getY(),self.rightStick.getY())
-        self.drivetrain.arcade(self.leftStick.getY(),self.leftStick.getX())
+        #self.drivetrain.simpleTank(self.leftStick.getY(),self.rightStick.getY())
+        #self.drivetrain.arcade(self.leftStick.getY(),self.leftStick.getX())
+        self.drivetrain.simpleArcade(self.leftStick.getX(),self.leftStick.getY())
+
 
     def testInit(self):
         pass
