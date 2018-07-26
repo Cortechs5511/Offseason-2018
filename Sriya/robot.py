@@ -71,21 +71,21 @@ class MyRobot(wpilib.IterativeRobot):
         elif self.cntrlr.getAButton == True:
             self.Lift1.set(0.7)
         else:
-            pass
+            self.Lift1.set(0)
 
         if self.cntrlr.getXButton == True:
             self.wrist.set(-0.3)
         elif self.cntrlr.getBButton == True:
             self.wrist.set(0.3)
         else:
-            pass
+            self.wrist.set(0)
 
         if (self.cntrlr.getTriggerAxis(0) > 0.05):
             self.Lintake.set(0.7)
         elif (self.cntrlr.getTriggerAxis(1) > 0.05):
             self.Lintake.set(-0.7)
         else:
-            pass
+            self.Lintake.set(0)
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)
