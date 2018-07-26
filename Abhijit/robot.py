@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
 import wpilib
+import math
+import numpy as np
+
 import mechanisms.drivetrain as DT
+
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 import wpilib.buttons
@@ -29,7 +33,7 @@ class MyRobot(wpilib.IterativeRobot):
         leftEncoder = wpilib.Encoder(0,1)
         rightEncoder = wpilib.Encoder(2,3)
 
-        self.drivetrain = DT.Drivetrain(DTLeftMCs,DTRightMCs,leftEncoder,rightEncoder)
+        self.drivetrain = DT.Drivetrain(DTLeftMCs[0],DTRightMCs[0],leftEncoder,rightEncoder)
 
     def robotPeriodic(self):
         pass
@@ -44,7 +48,8 @@ class MyRobot(wpilib.IterativeRobot):
         pass
 
     def teleopPeriodic(self):
-        self.drivetrain.tank(self.leftStick.getY(),self.rightStick.getY())
+        #self.drivetrain.tank(self.leftStick.getY(),self.rightStick.getY())
+        self.drivetrain.arcade(self.leftStick.getY(),self.leftStick.getX())
 
     def testInit(self):
         pass
