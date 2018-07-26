@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
 import wpilib
+import math
+import numpy as np
+
 import mechanisms.drivetrain as DT
+
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 import wpilib.buttons

@@ -1,8 +1,17 @@
+#!/usr/bin/env python3
+
 import wpilib
 import math
+import numpy as np
+
 from wpilib.command.subsystem import Subsystem
+import helper.helper as helper
 
 class Drivetrain(Subsystem):
+
+    self.dbLimit = 0.1
+    self.k = -2
+    self.maxSpeed = 0.85
 
     def __init__(self, left, right, leftEncoder, rightEncoder):
         self.left = left
@@ -10,11 +19,12 @@ class Drivetrain(Subsystem):
         self.leftEncoder = leftEncoder
         self.rightEncoder = rightEncoder
 
-    def tank(self,left,right):
-        dbLimit = 0.1
-        k = -2
-        maxSpeed = 0.85
+    def setParams(dbLimit,k,maxSpeed):
+        self.dbLimit = dbLimit
+        self.k = k
+        self.maxSpeed = maxSpeed
 
+    def tank(self,left,right):
         if(abs(left)<dbLimit):left = 0
         else: left = abs(left)/left*(math.e**(k*abs(left))-1) / (math.e**k-1)
 
@@ -28,22 +38,14 @@ class Drivetrain(Subsystem):
         self.right.set(right)
 
     def arcade(self,throttle,turn):
-        dbLimit = 0.1
-        k = -2
-        maxSpeed = 0.85
-
         left = 0
         right = 0
 
-        if(throttle>dbLimit):
-            throttle = sign(throttle)*(math.exp(k*abs(throttle))-1)/(math.exp(k)-1)
-        else:
-            throttle = 0
+        if(abs(throttle)>dbLimit): throttle = np.sign(throttle)*(math.exp(k*abs(throttle))-1)/(math.exp(k)-1)
+        else: throttle = 0
 
-        if(turn>dbLimit):
-            turn = sign(turn)*(math.exp(k*abs(turn))-1)/(math.exp(k)-1)
-        else:
-            turn = 0
+        if(abs(turn)>dbLimit): turn = np.sign(turn)*(math.exp(k*abs(turn))-1)/(math.exp(k)-1)
+        else: turn = 0
 
         L0 = throttle + turn
         R0 = throttle - turn
@@ -59,5 +61,5 @@ class Drivetrain(Subsystem):
         self.right_encoder.reset()
 
     def stop(self):
-        self.DTLeftMCs[0].set(0)
-        self.DTRightMCs[0].set(0)
+        self.left.set(0)
+        self.right.set(0)
