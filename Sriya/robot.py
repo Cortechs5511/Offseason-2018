@@ -5,8 +5,6 @@ import ctre
 
 class MyRobot(wpilib.IterativeRobot):
 
-
-
     def __init__(self):
         super().__init__()
         #self.turn_power = 0
@@ -68,25 +66,25 @@ class MyRobot(wpilib.IterativeRobot):
         self.myRobot.tankDrive((self.LeftJoystick.getY()) * -1 * self.Max_Speed , (self.RightJoystick.getY()) * -1 * self.Max_Speed )
 
 
-        if self.cntrlr.getYButton == true:
+        if self.cntrlr.getYButton == True:
             self.Lift1.set(-0.7)
-        elif self.cntrlr.getAButton == true:
+        elif self.cntrlr.getAButton == True:
             self.Lift1.set(0.7)
-        else
+        else:
             pass
 
-        if self.cntrlr.getXButton == true:
+        if self.cntrlr.getXButton == True:
             self.wrist.set(-0.3)
-        elif self.cntrlr.getBButton == true:
+        elif self.cntrlr.getBButton == True:
             self.wrist.set(0.3)
-        else
+        else:
             pass
 
-        if (self.cntrlr.getTriggerAxis(0) > 0.05)
+        if (self.cntrlr.getTriggerAxis(0) > 0.05):
             self.Lintake.set(0.7)
-        elif (self.cntrlr.getTriggerAxis(1) > 0.05)
+        elif (self.cntrlr.getTriggerAxis(1) > 0.05):
             self.Lintake.set(-0.7)
-        else
+        else:
             pass
 
 if __name__ == '__main__':
