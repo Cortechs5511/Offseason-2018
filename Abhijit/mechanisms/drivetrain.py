@@ -7,6 +7,7 @@ import numpy as np
 from wpilib.command.subsystem import Subsystem
 from wpilib.drive import DifferentialDrive
 import helper.helper as helper
+import sim.simComms as simComms
 
 class Drivetrain(Subsystem):
 
@@ -14,12 +15,14 @@ class Drivetrain(Subsystem):
     k = -2
     maxSpeed = 0.85
 
-    def __init__(self, left, right, leftEncoder, rightEncoder):
-        self.left = left
-        self.right = right
+    def __init__(self, motors, encoders):
+        self.left = motors[0]
+        self.right = motors[1]
+        self.leftEncoder = encoders[0]
+        self.rightEncoder = encoders[1]
+
+    def simpleInit(self):
         self.simpleDrive = DifferentialDrive(self.left,self.right)
-        self.leftEncoder = leftEncoder
-        self.rightEncoder = rightEncoder
 
     def setParams(dbLimit,k,maxSpeed):
         self.dbLimit = dbLimit
@@ -27,14 +30,14 @@ class Drivetrain(Subsystem):
         self.maxSpeed = maxSpeed
 
     def tank(self,left,right):
-        if(abs(left)<dbLimit):left = 0
-        else: left = abs(left)/left*(math.e**(k*abs(left))-1) / (math.e**k-1)
+        if(abs(left)<self.dbLimit):left = 0
+        else: left = abs(left)/left*(math.e**(self.k*abs(left))-1) / (math.exp(self.k)-1)
 
-        if(abs(right)<dbLimit): right = 0
-        else: right = abs(right)/right*(math.e**(k*abs(right))-1) / (math.e**k-1)
+        if(abs(right)<self.dbLimit): right = 0
+        else: right = abs(right)/right*(math.e**(self.k*abs(right))-1) / (math.exp(self.k)-1)
 
-        left *= maxSpeed
-        right *= maxSpeed
+        left *= self.maxSpeed
+        right *= self.maxSpeed
 
         self.left.set(left)
         self.right.set(right)
@@ -43,17 +46,17 @@ class Drivetrain(Subsystem):
         left = 0
         right = 0
 
-        if(abs(throttle)>dbLimit): throttle = np.sign(throttle)*(math.exp(k*abs(throttle))-1)/(math.exp(k)-1)
+        if(abs(throttle)>self.dbLimit): throttle = np.sign(throttle)*(math.exp(self.k*abs(throttle))-1)/(math.exp(self.k)-1)
         else: throttle = 0
 
-        if(abs(turn)>dbLimit): turn = np.sign(turn)*(math.exp(k*abs(turn))-1)/(math.exp(k)-1)
+        if(abs(turn)>self.dbLimit): turn = np.sign(turn)*(math.exp(k*abs(turn))-1)/(math.exp(self.k)-1)
         else: turn = 0
 
         L0 = throttle + turn
         R0 = throttle - turn
 
-        L1 = maxSpeed * L0/(max(abs(L0),abs(R0),1))
-        R1 = maxSpeed * R0/(max(abs(L0),abs(R0),1))
+        L1 = self.maxSpeed * L0/(max(abs(L0),abs(R0),1))
+        R1 = self.maxSpeed * R0/(max(abs(L0),abs(R0),1))
 
         self.left.set(L1)
         self.right.set(R1)
@@ -65,8 +68,14 @@ class Drivetrain(Subsystem):
         self.simpleDrive.arcadeDrive(left,right)
 
     def clearEncoders(self):
-        self.left_encoder.reset()
-        self.right_encoder.reset()
+        #print("Reset1")
+        self.leftEncoder.reset()
+        self.rightEncoder.reset()
+        simComms.resetEncoders()
+        #print("Reset2")
+
+    def printEncoders(self):
+        print("Encoder Positions: " + str(self.leftEncoder.get()) + "\t" + str(self.rightEncoder.get()))
 
     def stop(self):
         self.left.set(0)
