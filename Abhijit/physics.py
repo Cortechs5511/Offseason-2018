@@ -26,7 +26,7 @@ class PhysicsEngine(object):
 
         # Precompute the encoder constant
         # -> encoder counts per revolution / wheel circumference
-        self.kEncoder = 360 / (0.5 * math.pi)
+        self.kEncoder = 127 / (0.33 * math.pi)
 
         self.l_distance = 0
         self.r_distance = 0
