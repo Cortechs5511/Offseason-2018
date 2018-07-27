@@ -4,6 +4,7 @@ from pyfrc.physics import motor_cfgs, tankmodel
 from pyfrc.physics.units import units
 
 import sim.simComms as simComms
+import helper.helper as helper
 
 class PhysicsEngine(object):
     def __init__(self, physics_controller):
@@ -26,10 +27,12 @@ class PhysicsEngine(object):
 
         # Precompute the encoder constant
         # -> encoder counts per revolution / wheel circumference
-        self.kEncoder = 127 / (0.33 * math.pi)
+        self.kEncoder = 1/helper.getDistPerPulse()
 
         self.l_distance = 0
         self.r_distance = 0
+
+        self.physics_controller.add_device_gyro_channel('navxmxp_spi_4_angle')
 
     def update_sim(self, hal_data, now, tm_diff):
         # Simulate the drivetrain

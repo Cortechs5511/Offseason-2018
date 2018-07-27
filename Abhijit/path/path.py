@@ -13,7 +13,7 @@ MAX_ACCELERATION = 6
 def getTraj():
     pickle_file1 = os.path.join(os.path.dirname(__file__), 'right.pickle')
     pickle_file2 = os.path.join(os.path.dirname(__file__), 'left.pickle')
-    pickle_file3 = os.path.join(os.path.dirname(__file__), 'modifier')
+    pickle_file3 = os.path.join(os.path.dirname(__file__), 'modifier.pickle')
 
     if wpilib.RobotBase.isSimulation():
         points = [

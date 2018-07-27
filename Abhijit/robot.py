@@ -11,6 +11,7 @@ import helper.helper as helper
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
+from robotpy_ext.common_drivers import navx
 import wpilib.buttons
 
 class MyRobot(wpilib.TimedRobot):
@@ -55,7 +56,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.drivetrain = DT.Drivetrain(self.motorsDT,self.encodersDT)
 
-        self.gyro = wpilib.AnalogGyro(1)
+        self.navx = navx.AHRS.create_spi()
 
         self.robot_drive = wpilib.RobotDrive(self.motorsDT[0], self.motorsDT[1])
 
@@ -63,26 +64,6 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def autonomousInit(self):
-        '''
-        # Set up the trajectory
-        points = [
-            pf.Waypoint(0, 0, 0),
-            pf.Waypoint(9, 5, 0),
-        ]
-
-        info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
-                                       dt=self.getPeriod(),
-                                       max_velocity=self.MAX_VELOCITY,
-                                       max_acceleration=self.MAX_ACCELERATION,
-                                       max_jerk=120.0)
-
-        # Wheelbase Width = 2 ft
-        modifier = pf.modifiers.TankModifier(trajectory).modify(2.0)
-
-        # Do something with the new Trajectories...
-        left = modifier.getLeftTrajectory()
-        right = modifier.getRightTrajectory()
-        '''
         [left,right,modifier] = path.getTraj()
 
         leftFollower = pf.followers.EncoderFollower(left)
@@ -110,7 +91,9 @@ class MyRobot(wpilib.TimedRobot):
         l = self.leftFollower.calculate(self.encodersDT[0].get())
         r = self.rightFollower.calculate(self.encodersDT[1].get())
 
-        gyro_heading = -self.gyro.getAngle()    # Assuming the gyro is giving a value in degrees
+        #gyro_heading = -self.gyro.getAngle()    # Assuming the gyro is giving a value in degrees
+        gyro_heading = -self.navx.getAngle()
+        print([self.navx.isConnected(),self.navx.getAngle(),self.navx.getPitch(),self.navx.getYaw(),self.navx.getRoll()])
         desired_heading = pf.r2d(self.leftFollower.getHeading())   # Should also be in degrees
 
         # This is a poor man's P controller
