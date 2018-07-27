@@ -53,3 +53,29 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-1,0))
             renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(1,0))
+
+def initPath(drivetrain):
+    [left,right,modifier] = getTraj()
+    gains = [2,0,1,1/helper.getMaxV(),0]
+
+    leftFollower = pf.followers.EncoderFollower(left)
+    leftFollower.configureEncoder(drivetrain.getEncoders()[0], helper.getPulsesPerRev(), helper.getWheelDiam())
+    leftFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
+
+    rightFollower = pf.followers.EncoderFollower(right)
+    rightFollower.configureEncoder(drivetrain.getEncoders()[1], helper.getPulsesPerRev(), helper.getWheelDiam())
+    rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
+
+    drivetrain.enableNavXPID()
+    showPath(left,right,modifier)
+    return [leftFollower,rightFollower]
+
+def followPath(drivetrain, leftFollower, rightFollower):
+    l = leftFollower.calculate(drivetrain.getEncoders()[0])
+    r = rightFollower.calculate(drivetrain.getEncoders()[1])
+
+    desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
+    drivetrain.setNavXPID(desiredHeading)
+    turn = drivetrain.getNavXPIDOut()
+    [l,r] = [l+turn,r-turn]
+    drivetrain.tank(-l,r)

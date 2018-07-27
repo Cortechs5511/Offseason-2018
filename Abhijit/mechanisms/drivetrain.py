@@ -17,12 +17,27 @@ class Drivetrain(Subsystem):
 
     encoderDists = [0,0]
 
+    #NavX PID Constants
+    if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.05, 0.00, 0.15, 0.00] # These PID parameters are used in simulation
+    else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
+    kToleranceDegrees = 5.0
+
     def __init__(self, motors, encoders,navx):
         self.left = motors[0]
         self.right = motors[1]
         self.leftEncoder = encoders[0]
         self.rightEncoder = encoders[1]
         self.navx = navx
+
+        turnController = wpilib.PIDController(self.kP, self.kI, self.kD, self.kF, self.navx, output=self)
+        turnController.setInputRange(-180.0,  180.0)
+        turnController.setOutputRange(-1.0, 1.0)
+        turnController.setAbsoluteTolerance(self.kToleranceDegrees)
+        turnController.setContinuous(True)
+        self.turnController = turnController
+
+        self.turn = 0
+        self.turnController.disable()
 
     def simpleInit(self):
         self.simpleDrive = DifferentialDrive(self.left,self.right)
@@ -31,6 +46,7 @@ class Drivetrain(Subsystem):
         self.dbLimit = dbLimit
         self.k = k
         self.maxSpeed = maxSpeed
+
 
     def tank(self,left,right):
         if(abs(left)<self.dbLimit):left = 0
@@ -45,12 +61,10 @@ class Drivetrain(Subsystem):
         self.left.set(left)
         self.right.set(right)
 
-        self.updateEncoders()
-
     def tankAuto(self,left,right):
         self.left.set(left)
         self.right.set(right)
-        self.updateEncoders()
+
 
     def arcade(self,throttle,turn):
         left = 0
@@ -71,18 +85,20 @@ class Drivetrain(Subsystem):
         self.left.set(L1)
         self.right.set(R1)
 
-        self.updateEncoders()
 
     def simpleTank(self,left,right):
         self.simpleDrive.tankDrive(left,right)
-        self.updateEncoders()
 
     def simpleArcade(self,left,right):
         self.simpleDrive.arcadeDrive(left,right)
-        self.updateEncoders()
 
-    def updateEncoders(self):
-        self.encoderDists = [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
+
+
+    def getEncoders(self):
+        return [self.leftEncoder.get(),self.rightEncoder.get()]
+
+    def getEncoderDists(self):
+        return [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
 
     def clearEncoders(self):
         self.leftEncoder.reset()
@@ -91,6 +107,28 @@ class Drivetrain(Subsystem):
 
     def printEncoders(self):
         print("Encoder Positions: " + "{0:.2f}".format(self.encoderDists[0])+"\t"+"{0:.2f}".format(self.encoderDists[1]))
+
+
+
+    def enableNavXPID(self):
+        self.turnController.enable()
+
+    def disableNavXPID(self):
+        self.turnController.disable()
+
+    def setNavXPID(self, setpoint):
+        self.turnController.setSetpoint(setpoint)
+
+    def getNavXPIDOut(self):
+        return self.turn
+
+    def getAngle(self):
+        return self.navx.getYaw()
+
+    def pidWrite(self, output):
+        self.turn = output
+
+
 
     def stop(self):
         self.left.set(0)
