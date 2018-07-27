@@ -18,6 +18,21 @@ class MyRobot(wpilib.TimedRobot):
     DTMode = 1 #1 = Complex Tank, 2 = Simple Tank, 3 = Complex Arcade, 4 = Simple Arcade
     printEnc = False
 
+    if wpilib.RobotBase.isSimulation():
+        # These PID parameters are used in simulation
+        kP = 0.05
+        kI = 0.00
+        kD = 0.15
+        kF = 0.00
+    else:
+        # These PID parameters are used on a real robot
+        kP = 0.03
+        kI = 0.00
+        kD = 0.00
+        kF = 0.00
+
+    kToleranceDegrees = 5.0
+
     def robotInit(self):
         self.setPeriod(helper.getPeriod()) #20 milliseconds
 
@@ -58,8 +73,18 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def autonomousInit(self):
+        turnController = wpilib.PIDController(self.kP, self.kI, self.kD, self.kF, self.navx, output=self)
+        turnController.setInputRange(-180.0,  180.0)
+        turnController.setOutputRange(-1.0, 1.0)
+        turnController.setAbsoluteTolerance(self.kToleranceDegrees)
+        turnController.setContinuous(True)
+
+        self.turnController = turnController
+        self.rotateToAngleRate = 0
+        self.turnController.enable()
+
         [left,right,modifier] = path.getTraj()
-        gains = [1,0,1,1/helper.getMaxV(),0]
+        gains = [2,0,1,1/helper.getMaxV(),0]
 
         leftFollower = pf.followers.EncoderFollower(left)
         leftFollower.configureEncoder(self.encodersDT[0].get(), helper.getPulsesPerRev(), helper.getWheelDiam())
@@ -81,14 +106,18 @@ class MyRobot(wpilib.TimedRobot):
         gyro_heading = -self.navx.getYaw() #degrees
         desired_heading = pf.r2d(self.leftFollower.getHeading()) #degrees
 
-        # This is a poor man's P controller
-        angleDifference = pf.boundHalfDegrees(desired_heading - gyro_heading)
-        turn = 2 * (-1.0/80.0) * angleDifference
-
+        self.turnController.setSetpoint(desired_heading)
+        turn = self.rotateToAngleRate
         l = l + turn
         r = r - turn
 
-        self.drivetrain.tankAuto(-l,r)
+        self.drivetrain.tank(-l,r)
+
+    def pidWrite(self, output):
+        """This function is invoked periodically by the PID Controller,
+        based upon navX MXP yaw angle input and PID Coefficients.
+        """
+        self.rotateToAngleRate = output
 
     def teleopInit(self):
         self.drivetrain.stop()
