@@ -11,8 +11,8 @@ from ctre import WPI_VictorSPX as Victor
 import wpilib.buttons
 
 class MyRobot(wpilib.IterativeRobot):
-    DTMode = 1 #1 = Complex Tank, 2 = Simple Tank, 3 = Complex Arcade, 4 = Simple Arcade
-    printEnc = False
+    DTMode = 3 #1 = Complex Tank, 2 = Simple Tank, 3 = Complex Arcade, 4 = Simple Arcade
+    printEnc = True
 
     def robotInit(self):
         self.leftStick = wpilib.Joystick(0)

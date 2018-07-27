@@ -15,6 +15,8 @@ class Drivetrain(Subsystem):
     k = -2
     maxSpeed = 0.85
 
+    encoderDists = [0,0]
+
     def __init__(self, motors, encoders):
         self.left = motors[0]
         self.right = motors[1]
@@ -42,6 +44,8 @@ class Drivetrain(Subsystem):
         self.left.set(left)
         self.right.set(right)
 
+        self.updateEncoders()
+
     def arcade(self,throttle,turn):
         left = 0
         right = 0
@@ -61,21 +65,26 @@ class Drivetrain(Subsystem):
         self.left.set(L1)
         self.right.set(R1)
 
+        self.updateEncoders()
+
     def simpleTank(self,left,right):
         self.simpleDrive.tankDrive(left,right)
+        self.updateEncoders()
 
     def simpleArcade(self,left,right):
         self.simpleDrive.arcadeDrive(left,right)
+        self.updateEncoders()
+
+    def updateEncoders(self):
+        self.encoderDists = [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
 
     def clearEncoders(self):
-        #print("Reset1")
         self.leftEncoder.reset()
         self.rightEncoder.reset()
         simComms.resetEncoders()
-        #print("Reset2")
 
     def printEncoders(self):
-        print("Encoder Positions: " + str(self.leftEncoder.get()) + "\t" + str(self.rightEncoder.get()))
+        print("Encoder Positions: " + "{0:.2f}".format(self.encoderDists[0])+"\t"+"{0:.2f}".format(self.encoderDists[1]))
 
     def stop(self):
         self.left.set(0)
