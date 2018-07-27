@@ -15,15 +15,11 @@ from robotpy_ext.common_drivers import navx
 import wpilib.buttons
 
 class MyRobot(wpilib.TimedRobot):
-    DTMode = 3 #1 = Complex Tank, 2 = Simple Tank, 3 = Complex Arcade, 4 = Simple Arcade
-    printEnc = True
-
-    # Pathfinder constants
-    MAX_VELOCITY = 10 # ft/s
-    MAX_ACCELERATION = 6
+    DTMode = 1 #1 = Complex Tank, 2 = Simple Tank, 3 = Complex Arcade, 4 = Simple Arcade
+    printEnc = False
 
     def robotInit(self):
-        self.setPeriod(0.02) #20 milliseconds
+        self.setPeriod(helper.getPeriod()) #20 milliseconds
 
         self.leftStick = wpilib.Joystick(0)
         self.rightStick = wpilib.Joystick(1)
@@ -54,58 +50,45 @@ class MyRobot(wpilib.TimedRobot):
             encoder.setDistancePerPulse(distPerPulse)
             encoder.setSamplesToAverage(10)
 
-        self.drivetrain = DT.Drivetrain(self.motorsDT,self.encodersDT)
-
         self.navx = navx.AHRS.create_spi()
 
-        self.robot_drive = wpilib.RobotDrive(self.motorsDT[0], self.motorsDT[1])
+        self.drivetrain = DT.Drivetrain(self.motorsDT,self.encodersDT,self.navx)
 
     def robotPeriodic(self):
         pass
 
     def autonomousInit(self):
         [left,right,modifier] = path.getTraj()
+        gains = [1,0,1,1/helper.getMaxV(),0]
 
         leftFollower = pf.followers.EncoderFollower(left)
         leftFollower.configureEncoder(self.encodersDT[0].get(), helper.getPulsesPerRev(), helper.getWheelDiam())
-        leftFollower.configurePIDVA(1.0, 0.0, 0.0, 1/helper.getMaxV(), 0)
+        leftFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
         rightFollower = pf.followers.EncoderFollower(right)
         rightFollower.configureEncoder(self.encodersDT[1].get(), helper.getPulsesPerRev(), helper.getWheelDiam())
-        rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1/helper.getMaxV(), 0)
+        rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
         self.leftFollower = leftFollower
         self.rightFollower = rightFollower
 
-        # This code renders the followed path on the field in simulation (requires pyfrc 2018.2.0+)
-        if wpilib.RobotBase.isSimulation():
-            from pyfrc.sim import get_user_renderer
-            renderer = get_user_renderer()
-            if renderer:
-                renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-1,0))
-                renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
-                renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(1,0))
+        path.showPath(left,right,modifier)
 
     def autonomousPeriodic(self):
-
         l = self.leftFollower.calculate(self.encodersDT[0].get())
         r = self.rightFollower.calculate(self.encodersDT[1].get())
 
-        #gyro_heading = -self.gyro.getAngle()    # Assuming the gyro is giving a value in degrees
-        gyro_heading = -self.navx.getAngle()
-        print([self.navx.isConnected(),self.navx.getAngle(),self.navx.getPitch(),self.navx.getYaw(),self.navx.getRoll()])
-        desired_heading = pf.r2d(self.leftFollower.getHeading())   # Should also be in degrees
+        gyro_heading = -self.navx.getYaw() #degrees
+        desired_heading = pf.r2d(self.leftFollower.getHeading()) #degrees
 
         # This is a poor man's P controller
         angleDifference = pf.boundHalfDegrees(desired_heading - gyro_heading)
-        turn = 5 * (-1.0/80.0) * angleDifference
+        turn = 2 * (-1.0/80.0) * angleDifference
 
         l = l + turn
         r = r - turn
 
-        # -1 is forward, so invert both values
-        #self.drivetrain.tank(-l,r)
-        self.robot_drive.tankDrive(-l, -r)
+        self.drivetrain.tankAuto(-l,r)
 
     def teleopInit(self):
         self.drivetrain.stop()
@@ -114,14 +97,10 @@ class MyRobot(wpilib.TimedRobot):
             self.drivetrain.simpleInit()
 
     def teleopPeriodic(self):
-        if(self.DTMode==1):
-            self.drivetrain.tank(self.leftStick.getY(),self.rightStick.getY())
-        elif(self.DTMode==2):
-            self.drivetrain.simpleTank(self.leftStick.getY(),self.rightStick.getY())
-        elif(self.DTMode==3):
-            self.drivetrain.arcade(self.leftStick.getY(),self.leftStick.getX())
-        else:
-            self.drivetrain.simpleArcade(self.leftStick.getX(),self.leftStick.getY())
+        if(self.DTMode==1): self.drivetrain.tank(self.leftStick.getY(),self.rightStick.getY())
+        elif(self.DTMode==2): self.drivetrain.simpleTank(self.leftStick.getY(),self.rightStick.getY())
+        elif(self.DTMode==3): self.drivetrain.arcade(self.leftStick.getY(),self.leftStick.getX())
+        else: self.drivetrain.simpleArcade(self.leftStick.getX(),self.leftStick.getY())
 
         if(self.printEnc): self.drivetrain.printEncoders()
 

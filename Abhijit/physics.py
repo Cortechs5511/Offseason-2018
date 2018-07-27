@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 from pyfrc.physics import motor_cfgs, tankmodel
 from pyfrc.physics.units import units
@@ -7,50 +8,39 @@ import sim.simComms as simComms
 import helper.helper as helper
 
 class PhysicsEngine(object):
-    def __init__(self, physics_controller):
-        self.physics_controller = physics_controller
+    def __init__(self, controller):
+        self.controller = controller
         self.position = 0
 
         # Change these parameters to fit your robot!
-        bumper_width = 3.5*units.inch
-
         self.drivetrain = tankmodel.TankModel.theory(
-            motor_cfgs.MOTOR_CFG_CIM,           # motor configuration
-            120*units.lbs,                      # robot mass
-            10.71,                              # drivetrain gear ratio
-            3,                                  # motors per side
-            30*units.inch,                      # robot wheelbase
-            32*units.inch + bumper_width*2,     # robot width
-            32*units.inch + bumper_width*2,     # robot length
-            4*units.inch                        # wheel diameter
+            motor_cfgs.MOTOR_CFG_MINI_CIM,           # motor configuration
+            140*units.lbs,                           # robot mass
+            6,                                   # drivetrain gear ratio
+            3,                                       # motors per side
+            (helper.getWidth())*units.feet,        # robot wheelbase
+            helper.getWidthBumpers()*units.feet,     # robot width
+            helper.getLengthBumpers()*units.feet,    # robot length
+            helper.getWheelDiam()*units.feet         # wheel diameter
         )
 
-        # Precompute the encoder constant
-        # -> encoder counts per revolution / wheel circumference
-        self.kEncoder = 1/helper.getDistPerPulse()
+        self.distance = np.array([0.0,0.0])
 
-        self.l_distance = 0
-        self.r_distance = 0
+        self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
 
-        self.physics_controller.add_device_gyro_channel('navxmxp_spi_4_angle')
-
-    def update_sim(self, hal_data, now, tm_diff):
+    def update_sim(self, hal_data, now, timeDiff):
         # Simulate the drivetrain
-        l_motor = hal_data['CAN'][10]['value']
-        r_motor = hal_data['CAN'][20]['value']
+        left = hal_data['CAN'][10]['value']
+        right = hal_data['CAN'][20]['value']
 
-        x, y, angle = self.drivetrain.get_distance(l_motor, r_motor, tm_diff)
-        self.physics_controller.distance_drive(x, y, angle)
+        x,y,angle = self.drivetrain.get_distance(left, right, timeDiff)
+        self.controller.distance_drive(x, y, angle)
 
-        # Update encoders
-        #print(simComms.getEncoders())
         if(simComms.getEncoders()==True):
-            self.l_distance = 0
-            self.r_distance = 0
+            self.distance = [0,0]
             simComms.resetEncodersSim()
         else:
-            self.l_distance += self.drivetrain.l_velocity * tm_diff
-            self.r_distance += self.drivetrain.r_velocity * tm_diff
+            self.distance += np.array([self.drivetrain.l_velocity,self.drivetrain.r_velocity])*timeDiff
 
-        hal_data['encoder'][0]['count'] = int(self.l_distance * self.kEncoder)
-        hal_data['encoder'][1]['count'] = int(self.r_distance * self.kEncoder)
+        hal_data['encoder'][0]['count'] = int(self.distance[0]/helper.getDistPerPulse())
+        hal_data['encoder'][1]['count'] = int(self.distance[1]/helper.getDistPerPulse())

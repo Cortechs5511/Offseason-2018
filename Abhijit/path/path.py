@@ -6,9 +6,7 @@ import pickle
 import os.path
 import pathfinder as pf
 
-# Pathfinder constants
-MAX_VELOCITY = 10 # ft/s
-MAX_ACCELERATION = 6
+import helper.helper as helper
 
 def getTraj():
     pickle_file1 = os.path.join(os.path.dirname(__file__), 'right.pickle')
@@ -18,12 +16,13 @@ def getTraj():
     if wpilib.RobotBase.isSimulation():
         points = [
             pf.Waypoint(0, 0, 0),
-            pf.Waypoint(9, 5, 0),
+            pf.Waypoint(11, 6, 0),
             ]
 
-        info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,dt=0.02,max_velocity=MAX_VELOCITY,max_acceleration=MAX_ACCELERATION,max_jerk=120.0)
+        info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
+            dt=helper.getPeriod(),max_velocity=helper.getMaxV(),max_acceleration=helper.getMaxA(),max_jerk=120.0)
 
-        modifier = pf.modifiers.TankModifier(trajectory).modify(2.0)
+        modifier = pf.modifiers.TankModifier(trajectory).modify(helper.getWidth())
 
         # Do something with the new Trajectories...
         left = modifier.getLeftTrajectory()
@@ -44,3 +43,13 @@ def getTraj():
         with open(pickle_file3,'rb') as fp:
             modifier = pickle.load(fp)
         return [left,right,modifier]
+
+def showPath(left,right,modifier):
+    # This code renders the followed path on the field in simulation (requires pyfrc 2018.2.0+)
+    if wpilib.RobotBase.isSimulation():
+        from pyfrc.sim import get_user_renderer
+        renderer = get_user_renderer()
+        if renderer:
+            renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-1,0))
+            renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
+            renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(1,0))

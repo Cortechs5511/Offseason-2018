@@ -17,11 +17,12 @@ class Drivetrain(Subsystem):
 
     encoderDists = [0,0]
 
-    def __init__(self, motors, encoders):
+    def __init__(self, motors, encoders,navx):
         self.left = motors[0]
         self.right = motors[1]
         self.leftEncoder = encoders[0]
         self.rightEncoder = encoders[1]
+        self.navx = navx
 
     def simpleInit(self):
         self.simpleDrive = DifferentialDrive(self.left,self.right)
@@ -44,6 +45,11 @@ class Drivetrain(Subsystem):
         self.left.set(left)
         self.right.set(right)
 
+        self.updateEncoders()
+
+    def tankAuto(self,left,right):
+        self.left.set(left)
+        self.right.set(right)
         self.updateEncoders()
 
     def arcade(self,throttle,turn):
