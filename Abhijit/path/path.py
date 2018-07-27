@@ -50,9 +50,9 @@ def showPath(left,right,modifier):
         from pyfrc.sim import get_user_renderer
         renderer = get_user_renderer()
         if renderer:
-            renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-1,0))
+            renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-helper.getWidth()/2,0))
             renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
-            renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(1,0))
+            renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(helper.getWidth()/2,0))
 
 def initPath(drivetrain):
     [left,right,modifier] = getTraj()
@@ -71,11 +71,14 @@ def initPath(drivetrain):
     return [leftFollower,rightFollower]
 
 def followPath(drivetrain, leftFollower, rightFollower):
-    l = leftFollower.calculate(drivetrain.getEncoders()[0])
-    r = rightFollower.calculate(drivetrain.getEncoders()[1])
+    if(not leftFollower.isFinished()):
+        l = leftFollower.calculate(drivetrain.getEncoders()[0])
+        r = rightFollower.calculate(drivetrain.getEncoders()[1])
 
-    desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
-    drivetrain.setNavXPID(desiredHeading)
-    turn = drivetrain.getNavXPIDOut()
-    [l,r] = [l+turn,r-turn]
-    drivetrain.tank(-l,r)
+        desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
+        drivetrain.setNavXPID(desiredHeading)
+        turn = drivetrain.getNavXPIDOut()
+        [l,r] = [l+turn,r-turn]
+        drivetrain.tank(-l,r)
+    else:
+        drivetrain.stop()
