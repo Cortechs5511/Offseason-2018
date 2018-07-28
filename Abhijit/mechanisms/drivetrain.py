@@ -18,7 +18,7 @@ class Drivetrain(Subsystem):
     encoderDists = [0,0]
 
     #NavX PID Constants
-    if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [1.50, 0.00, 0.10, 0.00] # These PID parameters are used in simulation
+    if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.015, 0.002, 0.20, 0.00] # These PID parameters are used in simulation
     else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
     kToleranceDegrees = 5.0
 
@@ -35,9 +35,9 @@ class Drivetrain(Subsystem):
         turnController.setAbsoluteTolerance(self.kToleranceDegrees)
         turnController.setContinuous(True)
         self.turnController = turnController
-
-        self.turn = 0
         self.turnController.disable()
+
+
 
     def simpleInit(self):
         self.simpleDrive = DifferentialDrive(self.left,self.right)
@@ -120,16 +120,23 @@ class Drivetrain(Subsystem):
         self.turnController.setSetpoint(setpoint)
 
     def getNavXPIDOut(self):
-        return self.turn
+        return self.turnController.get()
 
     def getAngle(self):
         return self.navx.getYaw()
 
     def pidWrite(self, output):
-        self.turn = output
+        pass
 
-
+    def turnToAngle(self,setpoint):
+        self.turnController.setOutputRange(-0.5, 0.5)
+        self.enableNavXPID()
+        self.setNavXPID(setpoint)
+        turn = self.getNavXPIDOut()
+        self.left.set(turn)
+        self.right.set(-turn)
 
     def stop(self):
         self.left.set(0)
         self.right.set(0)
+        self.disableNavXPID()

@@ -8,6 +8,8 @@ import pathfinder as pf
 
 import helper.helper as helper
 
+desiredHeading=0
+
 def getName(num):
     if(num==0):
         return "DriveStraight"
@@ -108,14 +110,14 @@ def initPath(num,drivetrain):
     return [leftFollower,rightFollower]
 
 def followPath(drivetrain, leftFollower, rightFollower):
+    global desiredHeading
     if(not leftFollower.isFinished()):
         l = leftFollower.calculate(drivetrain.getEncoders()[0])
         r = rightFollower.calculate(drivetrain.getEncoders()[1])
-
         desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
         drivetrain.setNavXPID(desiredHeading)
         turn = drivetrain.getNavXPIDOut()
-        [l,r] = [l+turn,r-turn]
-        drivetrain.tankAuto(-l,r)
-    else:
-        drivetrain.stop()
+        drivetrain.tankAuto(l+turn,r-turn)
+    elif(abs(drivetrain.getAngle()+desiredHeading)>5):
+        drivetrain.turnToAngle(-desiredHeading)
+    else: drivetrain.stop()

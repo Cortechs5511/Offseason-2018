@@ -33,7 +33,7 @@ class PhysicsEngine(object):
         left = hal_data['CAN'][10]['value']
         right = hal_data['CAN'][20]['value']
 
-        x,y,angle = self.drivetrain.get_distance(left, right, timeDiff)
+        x,y,angle = self.drivetrain.get_distance(-left, right, timeDiff)
         self.controller.distance_drive(x, y, angle)
 
         if(simComms.getEncoders()==True):
