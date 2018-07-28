@@ -4,9 +4,11 @@
   	"robot": {
   	  "w": 2.67,
   	  "h": 2.67,
-      "starting_x": 36,
-      "starting_y": 15,
-      "starting_angle": 180
+      "start_positions": [
+        {"x":36,"y":6,"angle":180,"name":"Right"},
+        {"x":36,"y":12,"angle":180,"name":"Middle"},
+        {"x":36,"y":27,"angle":180,"name":"Left"}
+      ]
   	},
 
   	"field": {

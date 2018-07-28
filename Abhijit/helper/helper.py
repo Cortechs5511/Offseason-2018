@@ -57,7 +57,7 @@ def getDistPerPulse():
     return distPerPulse
 
 #PATHFINDER CONSTANTS
-maxV = 5 # ft/s
+maxV = 8 # ft/s
 maxA = 6
 
 def getMaxV():

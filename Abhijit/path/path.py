@@ -13,9 +13,42 @@ def getName(num):
         return "DriveStraight"
     elif(num==1):
         return "LeftSwitch"
+    elif(num==2):
+        return "RightScale"
+    elif(num==3):
+        return "LeftScale"
+
+def getNum(name):
+    for i in range(0,100):
+        if(getName(i)==name): return i
+
+def makeTraj(num):
+    if(num==0): #Drive Straight
+        points = [
+            pf.Waypoint(0,0,0),
+            pf.Waypoint(10,0,0)
+        ]
+    if(num==1): #Left Switch
+        points = [
+            pf.Waypoint(0,0,0),
+            pf.Waypoint(11,8,0),
+        ]
+    if(num==2): #Right Scale
+        points = [
+            pf.Waypoint(0,0,0),
+            pf.Waypoint(24,2,math.radians(30))
+        ]
+    if(num==3): #Left Scale
+        points = [
+            pf.Waypoint(0,0,0),
+            pf.Waypoint(24,-2,math.radians(-30))
+        ]
+    return points
+
 
 def getTraj(num):
     name = getName(num)
+    print(getNum(name))
     path = os.path.join(os.path.dirname(__file__),name)
     if(not os.path.exists(path)): os.makedirs(path)
 
@@ -24,17 +57,11 @@ def getTraj(num):
     pickle_file3 = os.path.join(path,"Modifier.pickle")
 
     if wpilib.RobotBase.isSimulation():
-        points = [
-            pf.Waypoint(0, 0, 0),
-            pf.Waypoint(11, 6, 0),
-            ]
-
+        points = makeTraj(num)
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
             dt=helper.getPeriod(),max_velocity=helper.getMaxV(),max_acceleration=helper.getMaxA(),max_jerk=120.0)
 
-        modifier = pf.modifiers.TankModifier(trajectory).modify(helper.getWidth())
-
-        # Do something with the new Trajectories...
+        modifier = pf.modifiers.TankModifier(trajectory).modify(helper.getWidth()/1.8)
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
 
@@ -66,7 +93,7 @@ def showPath(left,right,modifier):
 
 def initPath(num,drivetrain):
     [left,right,modifier] = getTraj(num)
-    gains = [2,0,1,1/helper.getMaxV(),0]
+    gains = [25,0,2,1/helper.getMaxV(),1/helper.getMaxA()]
 
     leftFollower = pf.followers.EncoderFollower(left)
     leftFollower.configureEncoder(drivetrain.getEncoders()[0], helper.getPulsesPerRev(), helper.getWheelDiam())
@@ -89,6 +116,6 @@ def followPath(drivetrain, leftFollower, rightFollower):
         drivetrain.setNavXPID(desiredHeading)
         turn = drivetrain.getNavXPIDOut()
         [l,r] = [l+turn,r-turn]
-        drivetrain.tank(-l,r)
+        drivetrain.tankAuto(-l,r)
     else:
         drivetrain.stop()

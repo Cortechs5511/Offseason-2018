@@ -18,7 +18,7 @@ class Drivetrain(Subsystem):
     encoderDists = [0,0]
 
     #NavX PID Constants
-    if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.05, 0.00, 0.15, 0.00] # These PID parameters are used in simulation
+    if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [1.50, 0.00, 0.10, 0.00] # These PID parameters are used in simulation
     else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
     kToleranceDegrees = 5.0
 
