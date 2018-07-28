@@ -8,10 +8,20 @@ import pathfinder as pf
 
 import helper.helper as helper
 
-def getTraj():
-    pickle_file1 = os.path.join(os.path.dirname(__file__), 'right.pickle')
-    pickle_file2 = os.path.join(os.path.dirname(__file__), 'left.pickle')
-    pickle_file3 = os.path.join(os.path.dirname(__file__), 'modifier.pickle')
+def getName(num):
+    if(num==0):
+        return "DriveStraight"
+    elif(num==1):
+        return "LeftSwitch"
+
+def getTraj(num):
+    name = getName(num)
+    path = os.path.join(os.path.dirname(__file__),name)
+    if(not os.path.exists(path)): os.makedirs(path)
+
+    pickle_file1 = os.path.join(path,"Right.pickle")
+    pickle_file2 = os.path.join(path,"Left.pickle")
+    pickle_file3 = os.path.join(path,"Modifier.pickle")
 
     if wpilib.RobotBase.isSimulation():
         points = [
@@ -54,8 +64,8 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(helper.getWidth()/2,0))
 
-def initPath(drivetrain):
-    [left,right,modifier] = getTraj()
+def initPath(num,drivetrain):
+    [left,right,modifier] = getTraj(num)
     gains = [2,0,1,1/helper.getMaxV(),0]
 
     leftFollower = pf.followers.EncoderFollower(left)
