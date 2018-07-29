@@ -99,14 +99,14 @@ def initPath(num,drivetrain):
     gains = [25,0,2,1/helper.getMaxV(),1/helper.getMaxA()]
 
     leftFollower = pf.followers.EncoderFollower(left)
-    leftFollower.configureEncoder(drivetrain.getEncoders()[0], helper.getPulsesPerRev(), helper.getWheelDiam())
+    leftFollower.configureEncoder(drivetrain.encoders.get()[0], helper.getPulsesPerRev(), helper.getWheelDiam())
     leftFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
     rightFollower = pf.followers.EncoderFollower(right)
-    rightFollower.configureEncoder(drivetrain.getEncoders()[1], helper.getPulsesPerRev(), helper.getWheelDiam())
+    rightFollower.configureEncoder(drivetrain.encoders.get()[1], helper.getPulsesPerRev(), helper.getWheelDiam())
     rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
-    drivetrain.enableNavXPID()
+    drivetrain.navx.enablePID()
     showPath(left,right,modifier)
 
     timer.reset()
@@ -117,10 +117,10 @@ def initPath(num,drivetrain):
 def followPath(drivetrain, leftFollower, rightFollower):
     global desiredHeading
     if(timer.get()>0.25 and not leftFollower.isFinished()):
-        l = leftFollower.calculate(drivetrain.getEncoders()[0])
-        r = rightFollower.calculate(drivetrain.getEncoders()[1])
+        l = leftFollower.calculate(drivetrain.encoders.get()[0])
+        r = rightFollower.calculate(drivetrain.encoders.get()[1])
         desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
-        drivetrain.setNavXPID(desiredHeading)
-        turn = drivetrain.getNavXPIDOut()
+        drivetrain.navx.setPID(desiredHeading)
+        turn = drivetrain.navx.getPID()
         drivetrain.tank(l+turn,r-turn)
     else: drivetrain.stop()

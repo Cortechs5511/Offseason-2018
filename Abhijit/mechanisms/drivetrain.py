@@ -6,8 +6,15 @@ import numpy as np
 
 from wpilib.command.subsystem import Subsystem
 from wpilib.drive import DifferentialDrive
+
 import helper.helper as helper
 import sim.simComms as simComms
+
+import sensors.navx as navx
+import sensors.DTEncoders as encoders
+
+from ctre import WPI_TalonSRX as Talon
+from ctre import WPI_VictorSPX as Victor
 
 class Drivetrain(Subsystem):
 
@@ -15,29 +22,22 @@ class Drivetrain(Subsystem):
     k = -2
     maxSpeed = 0.85
 
-    encoderDists = [0,0]
+    def __init__(self):
+        [TalonLeft,VictorLeft1,VictorLeft2] = [Talon(10), Victor(11), Victor(12)]
+        VictorLeft1.set(Victor.ControlMode.Follower,10)
+        VictorLeft2.set(Victor.ControlMode.Follower,10)
+        DTLeftMCs = [TalonLeft,VictorLeft1,VictorLeft2]
 
-    #NavX PID Constants
-    if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.015, 0.002, 0.20, 0.00] # These PID parameters are used in simulation
-    else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
-    kToleranceDegrees = 5.0
+        [TalonRight, VictorRight1, VictorRight2] = [Talon(20), Victor(21), Victor(22)]
+        VictorRight1.set(Victor.ControlMode.Follower,20)
+        VictorRight2.set(Victor.ControlMode.Follower,20)
+        DTRightMCs = [TalonRight,VictorRight1,VictorRight2]
 
-    def __init__(self, motors, encoders,navx):
-        self.left = motors[0]
-        self.right = motors[1]
-        self.leftEncoder = encoders[0]
-        self.rightEncoder = encoders[1]
-        self.navx = navx
+        self.left = TalonLeft
+        self.right = TalonRight
 
-        turnController = wpilib.PIDController(self.kP, self.kI, self.kD, self.kF, self.navx, output=self)
-        turnController.setInputRange(-180.0,  180.0)
-        turnController.setOutputRange(-1.0, 1.0)
-        turnController.setAbsoluteTolerance(self.kToleranceDegrees)
-        turnController.setContinuous(True)
-        self.turnController = turnController
-        self.turnController.disable()
-
-        encoderController = wpilib.PIDController
+        self.navx = navx.NavX()
+        self.encoders = encoders.DTEncoders()
 
     def simpleInit(self):
         self.simpleDrive = DifferentialDrive(self.left,self.right)
@@ -65,7 +65,6 @@ class Drivetrain(Subsystem):
         self.left.set(left)
         self.right.set(right)
 
-
     def arcade(self,throttle,turn):
         left = 0
         right = 0
@@ -92,51 +91,22 @@ class Drivetrain(Subsystem):
     def simpleArcade(self,left,right):
         self.simpleDrive.arcadeDrive(left,right)
 
-
-
-    def getEncoders(self):
-        return [self.leftEncoder.get(),self.rightEncoder.get()]
-
-    def getEncoderDists(self):
-        return [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
-
-    def clearEncoders(self):
-        self.leftEncoder.reset()
-        self.rightEncoder.reset()
-        simComms.resetEncoders()
-
-    def printEncoders(self):
-        print("Encoder Positions: " + "{0:.2f}".format(self.encoderDists[0])+"\t"+"{0:.2f}".format(self.encoderDists[1]))
-
-
-
-    def enableNavXPID(self):
-        self.turnController.enable()
-
-    def disableNavXPID(self):
-        self.turnController.disable()
-
-    def setNavXPID(self, setpoint):
-        self.turnController.setSetpoint(setpoint)
-
-    def getNavXPIDOut(self):
-        return self.turnController.get()
-
-    def getAngle(self):
-        return self.navx.getYaw()
-
-    def pidWrite(self, output):
-        pass
+    def driveStraight(self,power):
+        self.encoders.enablePID()
+        self.encoders.setPID(0)
+        adjust = self.encoders.getPID()
+        [left,right] = [power+adjust,power-adjust]
+        self.left.set(left)
+        self.right.set(right)
 
     def turnToAngle(self,setpoint):
-        self.turnController.setOutputRange(-0.5, 0.5)
-        self.enableNavXPID()
-        self.setNavXPID(setpoint)
-        turn = self.getNavXPIDOut()
+        self.navx.enablePID()
+        self.navx.setPID(setpoint)
+        turn = self.navx.getPID()
         self.left.set(turn)
         self.right.set(-turn)
 
     def stop(self):
         self.left.set(0)
         self.right.set(0)
-        self.disableNavXPID()
+        self.navx.disablePID()
