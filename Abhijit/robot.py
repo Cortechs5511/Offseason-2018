@@ -29,7 +29,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def autonomousInit(self):
-        [self.leftFollower,self.rightFollower] = path.initPath(3,self.drivetrain)
+        [self.leftFollower,self.rightFollower] = path.initPath(5,self.drivetrain)
 
     def autonomousPeriodic(self):
         path.followPath(self.drivetrain,self.leftFollower,self.rightFollower)

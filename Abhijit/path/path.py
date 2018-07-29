@@ -20,6 +20,10 @@ def getName(num):
         return "RightScale"
     elif(num==3):
         return "LeftScale"
+    elif(num==4):
+        return "RightOppositeScale"
+    elif(num==5):
+        return "LeftOppositeScale"
 
 def getNum(name):
     for i in range(0,100):
@@ -45,6 +49,20 @@ def makeTraj(num):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,-2,math.radians(-30))
+        ]
+    if(num==4):
+        points = [
+            pf.Waypoint(0,0,0),
+            pf.Waypoint(19,3,math.radians(55)),
+            pf.Waypoint(19,16,math.radians(90)),
+            pf.Waypoint(23,19,math.radians(-30))
+        ]
+    if(num==5): #Start Left, Opposite LeftScale
+        points = [
+            pf.Waypoint(0,0,0),
+            pf.Waypoint(19,-3,math.radians(-55)),
+            pf.Waypoint(19,-16,math.radians(-90)),
+            pf.Waypoint(23,-19,math.radians(30))
         ]
     return points
 

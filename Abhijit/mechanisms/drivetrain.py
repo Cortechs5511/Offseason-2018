@@ -19,19 +19,17 @@ from ctre import WPI_VictorSPX as Victor
 class Drivetrain(Subsystem):
 
     dbLimit = 0.1
-    k = -2
     maxSpeed = 0.85
+    k = -2
 
     def __init__(self):
         [TalonLeft,VictorLeft1,VictorLeft2] = [Talon(10), Victor(11), Victor(12)]
         VictorLeft1.set(Victor.ControlMode.Follower,10)
         VictorLeft2.set(Victor.ControlMode.Follower,10)
-        DTLeftMCs = [TalonLeft,VictorLeft1,VictorLeft2]
 
         [TalonRight, VictorRight1, VictorRight2] = [Talon(20), Victor(21), Victor(22)]
         VictorRight1.set(Victor.ControlMode.Follower,20)
         VictorRight2.set(Victor.ControlMode.Follower,20)
-        DTRightMCs = [TalonRight,VictorRight1,VictorRight2]
 
         self.left = TalonLeft
         self.right = TalonRight
@@ -39,16 +37,21 @@ class Drivetrain(Subsystem):
         self.navx = navx.NavX()
         self.encoders = encoders.DTEncoders()
 
+        self.navx.disablePID()
+        self.encoders.disablePID()
+
     def simpleInit(self):
         self.simpleDrive = DifferentialDrive(self.left,self.right)
 
     def setParams(dbLimit,k,maxSpeed):
         self.dbLimit = dbLimit
-        self.k = k
         self.maxSpeed = maxSpeed
-
+        self.k = k
 
     def tank(self,left,right):
+        self.navx.disablePID()
+        self.encoders.disablePID()
+
         if(abs(left)<self.dbLimit):left = 0
         else: left = abs(left)/left*(math.e**(self.k*abs(left))-1) / (math.exp(self.k)-1)
 
@@ -62,10 +65,16 @@ class Drivetrain(Subsystem):
         self.right.set(right)
 
     def tankAuto(self,left,right):
+        self.navx.disablePID()
+        self.encoders.disablePID()
+
         self.left.set(left)
         self.right.set(right)
 
     def arcade(self,throttle,turn):
+        self.navx.disablePID()
+        self.encoders.disablePID()
+
         left = 0
         right = 0
 
@@ -86,9 +95,13 @@ class Drivetrain(Subsystem):
 
 
     def simpleTank(self,left,right):
+        self.navx.disablePID()
+        self.encoders.disablePID()
         self.simpleDrive.tankDrive(left,right)
 
     def simpleArcade(self,left,right):
+        self.navx.disablePID()
+        self.encoders.disablePID()
         self.simpleDrive.arcadeDrive(left,right)
 
     def driveStraight(self,power):
@@ -98,6 +111,15 @@ class Drivetrain(Subsystem):
         [left,right] = [power+adjust,power-adjust]
         self.left.set(left)
         self.right.set(right)
+
+    def driveStraightAdvanced(self,power):
+        self.encoders.enablePID()
+        self.encoders.setPID(0)
+        self.navx.enablePID()
+        self.navx.setPID(0)
+        adjust = (self.encoders.getPID() + self.navx.getPID())/2
+        self.left.set(power+adjust)
+        self.right.set(power-adjust)
 
     def turnToAngle(self,setpoint):
         self.navx.enablePID()
@@ -110,3 +132,4 @@ class Drivetrain(Subsystem):
         self.left.set(0)
         self.right.set(0)
         self.navx.disablePID()
+        self.encoders.disablePID()
