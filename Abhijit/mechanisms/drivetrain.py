@@ -37,7 +37,7 @@ class Drivetrain(Subsystem):
         self.turnController = turnController
         self.turnController.disable()
 
-
+        encoderController = wpilib.PIDController
 
     def simpleInit(self):
         self.simpleDrive = DifferentialDrive(self.left,self.right)

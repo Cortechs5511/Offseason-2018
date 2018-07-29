@@ -56,7 +56,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def autonomousInit(self):
-        [self.leftFollower,self.rightFollower] = path.initPath(2,self.drivetrain)
+        [self.leftFollower,self.rightFollower] = path.initPath(0,self.drivetrain)
 
     def autonomousPeriodic(self):
         path.followPath(self.drivetrain,self.leftFollower,self.rightFollower)
@@ -72,7 +72,7 @@ class MyRobot(wpilib.TimedRobot):
         elif(self.DTMode==2): self.drivetrain.simpleTank(self.leftStick.getY(),self.rightStick.getY())
         elif(self.DTMode==3): self.drivetrain.arcade(self.leftStick.getY(),self.leftStick.getX())
         else: self.drivetrain.simpleArcade(self.leftStick.getX(),self.leftStick.getY())
-        
+
         if(self.printEnc): self.drivetrain.printEncoders()
 
     def testInit(self):

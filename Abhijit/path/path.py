@@ -9,6 +9,7 @@ import pathfinder as pf
 import helper.helper as helper
 
 desiredHeading=0
+timer = wpilib.Timer()
 
 def getName(num):
     if(num==0):
@@ -28,12 +29,12 @@ def makeTraj(num):
     if(num==0): #Drive Straight
         points = [
             pf.Waypoint(0,0,0),
-            pf.Waypoint(10,0,0)
+            pf.Waypoint(9,0,0)
         ]
     if(num==1): #Left Switch
         points = [
             pf.Waypoint(0,0,0),
-            pf.Waypoint(11,8,0),
+            pf.Waypoint(9,10,0),
         ]
     if(num==2): #Right Scale
         points = [
@@ -63,7 +64,7 @@ def getTraj(num):
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
             dt=helper.getPeriod(),max_velocity=helper.getMaxV(),max_acceleration=helper.getMaxA(),max_jerk=120.0)
 
-        modifier = pf.modifiers.TankModifier(trajectory).modify(helper.getWidth()/1.8)
+        modifier = pf.modifiers.TankModifier(trajectory).modify(helper.getWidth()/2.4)
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
 
@@ -107,17 +108,19 @@ def initPath(num,drivetrain):
 
     drivetrain.enableNavXPID()
     showPath(left,right,modifier)
+
+    timer.reset()
+    timer.start()
+
     return [leftFollower,rightFollower]
 
 def followPath(drivetrain, leftFollower, rightFollower):
     global desiredHeading
-    if(not leftFollower.isFinished()):
+    if(timer.get()>0.25 and not leftFollower.isFinished()):
         l = leftFollower.calculate(drivetrain.getEncoders()[0])
         r = rightFollower.calculate(drivetrain.getEncoders()[1])
         desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
         drivetrain.setNavXPID(desiredHeading)
         turn = drivetrain.getNavXPIDOut()
-        drivetrain.tankAuto(l+turn,r-turn)
-    elif(abs(drivetrain.getAngle()+desiredHeading)>5):
-        drivetrain.turnToAngle(-desiredHeading)
+        drivetrain.tank(l+turn,r-turn)
     else: drivetrain.stop()
