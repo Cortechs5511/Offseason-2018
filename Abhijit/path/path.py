@@ -11,7 +11,9 @@ import helper.helper as helper
 desiredHeading=0
 timer = wpilib.Timer()
 
-paths = 6
+init = False
+leftFollower = None
+rightFollower = None
 
 def getName(num):
     if(num==0):
@@ -68,10 +70,25 @@ def makeTraj(num):
         ]
     return points
 
+def calcNum():
+    auto = helper.getAuto()
+    gameData = helper.getGameData()
+    num = 0
+
+    if(auto=="Left"):
+        if(gameData[1]=='L'): num = getNum("LeftScale")
+        else: num = getNum("LeftOppositeScale")
+    elif(auto=="Middle"):
+        if(gameData[0]=='L'): num = getNum("LeftSwitch")
+        else: num = getNum("DriveStraight")
+    elif(auto=="Right"):
+        if(gameData[1]=='L'): num = getNum("RightOppositeScale")
+        else: num = getNum("RightScale")
+
+    return num
 
 def getTraj(num):
     name = getName(num)
-    print(getNum(name))
     path = os.path.join(os.path.dirname(__file__),name)
     if(not os.path.exists(path)): os.makedirs(path)
 
@@ -114,8 +131,12 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(helper.getWidth()/2,0))
 
-def initPath(num,drivetrain):
+def initPath(drivetrain):
+    global init
+
+    num = calcNum()
     [left,right,modifier] = getTraj(num)
+
     gains = [25,0,2,1/helper.getMaxV(),1/helper.getMaxA()]
 
     leftFollower = pf.followers.EncoderFollower(left)
@@ -126,11 +147,14 @@ def initPath(num,drivetrain):
     rightFollower.configureEncoder(drivetrain.encoders.get()[1], helper.getPulsesPerRev(), helper.getWheelDiam())
     rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
-    drivetrain.navx.enablePID()
+    drivetrain.enablePIDs()
+
     showPath(left,right,modifier)
 
     timer.reset()
     timer.start()
+
+    init = True
 
     return [leftFollower,rightFollower]
 
@@ -144,3 +168,10 @@ def followPath(drivetrain, leftFollower, rightFollower):
         turn = drivetrain.navx.getPID()
         drivetrain.tank(l+turn,r-turn)
     else: drivetrain.stop()
+
+def pathFinder(drivetrain):
+    global leftFollower
+    global rightFollower
+
+    if(init==False and len(helper.getGameData())>0 and len(helper.getAuto())>0): [leftFollower, rightFollower] = initPath(drivetrain)
+    if(init==True): followPath(drivetrain,leftFollower,rightFollower)

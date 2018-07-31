@@ -93,7 +93,6 @@ class Drivetrain(Subsystem):
         self.left.set(L1)
         self.right.set(R1)
 
-
     def simpleTank(self,left,right):
         self.navx.disablePID()
         self.encoders.disablePID()
@@ -104,6 +103,14 @@ class Drivetrain(Subsystem):
         self.encoders.disablePID()
         self.simpleDrive.arcadeDrive(left,right)
 
+    def enablePIDs(self):
+        self.encoders.enablePID()
+        self.navx.enablePID()
+
+    def disablePIDs(self):
+        self.encoders.disablePID()
+        self.navx.disablePID()
+
     def driveStraight(self,power):
         self.encoders.enablePID()
         self.encoders.setPID(0)
@@ -113,9 +120,8 @@ class Drivetrain(Subsystem):
         self.right.set(right)
 
     def driveStraightAdvanced(self,power):
-        self.encoders.enablePID()
+        self.enablePIDs()
         self.encoders.setPID(0)
-        self.navx.enablePID()
         self.navx.setPID(0)
         adjust = (self.encoders.getPID() + self.navx.getPID())/2
         self.left.set(power+adjust)
@@ -149,5 +155,3 @@ class Drivetrain(Subsystem):
     def stop(self):
         self.left.set(0)
         self.right.set(0)
-        self.navx.disablePID()
-        self.encoders.disablePID()

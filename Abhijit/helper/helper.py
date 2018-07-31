@@ -72,3 +72,24 @@ def getMaxV():
 def getMaxA():
     global maxA
     return maxA
+
+
+#AUTONOMOUS CONSTANTS
+auto = ""
+gameData = ""
+
+def getAuto():
+    global auto
+    return auto
+
+def setAuto(input):
+    global auto
+    auto = input
+
+def getGameData():
+    global gameData
+    return gameData
+
+def setGameData(input):
+    global gameData
+    gameData = input

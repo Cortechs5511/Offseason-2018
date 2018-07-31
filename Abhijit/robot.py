@@ -8,7 +8,8 @@ import pathfinder as pf
 import mechanisms.drivetrain as DT
 import path.path as path
 import helper.helper as helper
-import dashboard.dash as dash
+import external.dash as dash
+import external.ds as ds
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
@@ -27,24 +28,31 @@ class MyRobot(wpilib.TimedRobot):
         self.drivetrain = DT.Drivetrain()
 
         dash.init()
+        ds.init()
 
     def robotPeriodic(self):
+        '''
         if(dash.getTime()%helper.getFreq()==0 and dash.getTime()>0):
-            print('dsTime:', "{0:.0f}".format(dash.getTime()*helper.getPeriod()))
+            print("Time:", "{0:.0f}".format(dash.getTime()*helper.getPeriod()))
         dash.setTime(dash.getTime()+1)
+        '''
+
+        helper.setAuto(dash.getAuto())
+        helper.setGameData(ds.getGameData())
 
     def autonomousInit(self):
         #self.drivetrain.initGetWheelbase()
-        [self.leftFollower,self.rightFollower] = path.initPath(5,self.drivetrain)
+        pass
 
     def autonomousPeriodic(self):
         #self.drivetrain.getWheelbase(1,10)
-        path.followPath(self.drivetrain,self.leftFollower,self.rightFollower)
+        path.pathFinder(self.drivetrain)
 
     def teleopInit(self):
         self.drivetrain.stop()
         self.drivetrain.encoders.reset()
-        self.drivetrain.navx.disablePID()
+        self.drivetrain.disablePIDs()
+
         if(self.DTMode%2==0): self.drivetrain.simpleInit()
 
     def teleopPeriodic(self):
@@ -61,10 +69,12 @@ class MyRobot(wpilib.TimedRobot):
 
     def disabledInit(self):
         self.drivetrain.stop()
+        self.drivetrain.disablePIDs()
         self.drivetrain.encoders.reset()
 
     def disabledPeriodic(self):
         self.drivetrain.stop()
+        self.drivetrain.disablePIDs()
         self.drivetrain.encoders.reset()
 
 if __name__ == '__main__':

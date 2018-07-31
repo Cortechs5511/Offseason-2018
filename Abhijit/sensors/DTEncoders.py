@@ -4,6 +4,7 @@ import numpy as np
 import wpilib
 
 import helper.helper as helper
+import sim.simComms as simComms
 
 class DTEncoders():
 
@@ -39,6 +40,7 @@ class DTEncoders():
     def reset(self):
         self.leftEncoder.reset()
         self.rightEncoder.reset()
+        simComms.resetEncoders()
 
     def enablePID(self):
         self.PIDController.enable()

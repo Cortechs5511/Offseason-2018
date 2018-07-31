@@ -9,10 +9,17 @@ NetworkTables.initialize()
 sd = NetworkTables.getTable("SmartDashboard")
 
 def init():
-    sd.putNumber('dsTime',0)
+    sd.putNumber("time",0)
+    sd.putString("auto","Right")
 
 def getTime():
-    return sd.getNumber('dsTime',-1)
+    return sd.getNumber("time",-1)
 
 def setTime(new):
-    sd.putNumber('dsTime', new)
+    sd.putNumber("time", new)
+
+def getAuto():
+    return sd.getString("auto","")
+
+def setAuto(new):
+    sd.putNumber("auto", new)
