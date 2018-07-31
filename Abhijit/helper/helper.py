@@ -34,10 +34,15 @@ def getLengthBumpers():
 
 #Period
 period = 0.02 #20 milliseconds
+freq = 50 #50 runs per second
 
 def getPeriod():
     global period
     return period
+
+def getFreq():
+    global freq
+    return freq
 
 #DT CONSTANTS
 wheelDiam = 4/12 #feet

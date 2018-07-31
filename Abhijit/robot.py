@@ -8,6 +8,7 @@ import pathfinder as pf
 import mechanisms.drivetrain as DT
 import path.path as path
 import helper.helper as helper
+import dashboard.dash as dash
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
@@ -25,8 +26,12 @@ class MyRobot(wpilib.TimedRobot):
 
         self.drivetrain = DT.Drivetrain()
 
+        dash.init()
+
     def robotPeriodic(self):
-        pass
+        if(dash.getTime()%helper.getFreq()==0 and dash.getTime()>0):
+            print('dsTime:', "{0:.0f}".format(dash.getTime()*helper.getPeriod()))
+        dash.setTime(dash.getTime()+1)
 
     def autonomousInit(self):
         #self.drivetrain.initGetWheelbase()

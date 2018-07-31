@@ -136,7 +136,7 @@ class Drivetrain(Subsystem):
 
     def getWheelbase(self,speed,spins):
         if(self.total<spins):
-            self.tankAuto(.5,-.5)
+            self.tankAuto(speed,-speed)
             self.currAngle = self.navx.getAngle()
             if(self.currAngle<self.prevAngle): self.total+=1
             self.prevAngle = self.currAngle
