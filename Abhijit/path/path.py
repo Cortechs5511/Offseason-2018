@@ -11,6 +11,8 @@ import helper.helper as helper
 desiredHeading=0
 timer = wpilib.Timer()
 
+paths = 6
+
 def getName(num):
     if(num==0):
         return "DriveStraight"
@@ -50,14 +52,14 @@ def makeTraj(num):
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,-2,math.radians(-30))
         ]
-    if(num==4):
+    if(num==4): #Start Right, Opposite Scale
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,3,math.radians(55)),
             pf.Waypoint(19,16,math.radians(90)),
             pf.Waypoint(23,19,math.radians(-30))
         ]
-    if(num==5): #Start Left, Opposite LeftScale
+    if(num==5): #Start Left, Opposite Scale
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,-3,math.radians(-55)),

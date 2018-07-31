@@ -29,9 +29,11 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def autonomousInit(self):
+        #self.drivetrain.initGetWheelbase()
         [self.leftFollower,self.rightFollower] = path.initPath(5,self.drivetrain)
 
     def autonomousPeriodic(self):
+        #self.drivetrain.getWheelbase(1,10)
         path.followPath(self.drivetrain,self.leftFollower,self.rightFollower)
 
     def teleopInit(self):

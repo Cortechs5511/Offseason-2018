@@ -128,6 +128,24 @@ class Drivetrain(Subsystem):
         self.left.set(turn)
         self.right.set(-turn)
 
+    def initGetWheelbase(self):
+        self.total = 0
+        self.prevAngle = 0
+        self.currAngle = 0
+        self.print = False
+
+    def getWheelbase(self,speed,spins):
+        if(self.total<spins):
+            self.tankAuto(.5,-.5)
+            self.currAngle = self.navx.getAngle()
+            if(self.currAngle<self.prevAngle): self.total+=1
+            self.prevAngle = self.currAngle
+        elif(self.print==False):
+            self.distance = (abs(self.encoders.getDistance()[0])+abs(self.encoders.getDistance()[1]))/2/spins/math.pi*12
+            print(self.distance)
+            self.print=True
+        else: self.stop()
+
     def stop(self):
         self.left.set(0)
         self.right.set(0)
