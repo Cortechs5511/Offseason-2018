@@ -36,6 +36,16 @@ class MyRobot(wpilib.TimedRobot):
         self.midLeft.configNeutralDeadband(0.04,0)
         self.midRight.configNeutralDeadband(0.04,0)
 
+    def autonomousInit(self):
+        self.timer.reset()
+        self.timer.start()
+
+    def autonomousPeriodic(self):
+        if self.timer.get() < 3.0:
+            self.drive.tankDrive(0.5,0.5,squaredInputs=True)
+        else:
+            self.drive.tankDrive(0.0,0.0,squaredInputs=True)
+
     def teleopPeriodic(self):
         self.drive.tankDrive(self.stick0.getY(hand=None),self.stick1.getY(hand=None),squaredInputs=True)
         
