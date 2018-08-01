@@ -36,6 +36,8 @@ class MyRobot(wpilib.TimedRobot):
         self.midLeft.configNeutralDeadband(0.04,0)
         self.midRight.configNeutralDeadband(0.04,0)
 
+        self.timer = wpilib.Timer()
+
     def autonomousInit(self):
         self.timer.reset()
         self.timer.start()
