@@ -2,6 +2,7 @@ import wpilib
 import wpilib.drive
 import ctre
 
+
 #I, Ashish, wrote this code
 
 class MyRobot(wpilib.TimedRobot):
@@ -44,12 +45,12 @@ class MyRobot(wpilib.TimedRobot):
 
     def autonomousPeriodic(self):
         if self.timer.get() < 3.0:
-            self.drive.tankDrive(0.5,0.5,squaredInputs=True)
+            self.drive.tankDrive(0.7,-0.7,squaredInputs=True)
         else:
             self.drive.tankDrive(0.0,0.0,squaredInputs=True)
 
     def teleopPeriodic(self):
-        self.drive.tankDrive(self.stick0.getY(hand=None),self.stick1.getY(hand=None),squaredInputs=True)
+        self.drive.tankDrive(self.stick0.getY(hand=None),-self.stick1.getY(hand=None),squaredInputs=True)
         
         if self.box.getYButton() == True:
             self.Lift30.set(ctre.WPI_TalonSRX.ControlMode.PercentOutput,-0.6)
