@@ -6,7 +6,9 @@ import numpy as np
 import pathfinder as pf
 
 import mechanisms.drivetrain as DT
-import mechanisms.elevator as elevator
+import mechanisms.lift as lift
+import mechanisms.wrist as wrist
+import mechanisms.intake as intake
 
 import path.path as path
 import helper.helper as helper
@@ -15,7 +17,9 @@ import external.ds as ds
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
+
 from robotpy_ext.common_drivers import navx
+
 import wpilib.buttons
 
 class MyRobot(wpilib.TimedRobot):
@@ -26,9 +30,12 @@ class MyRobot(wpilib.TimedRobot):
 
         self.leftStick = wpilib.Joystick(0)
         self.rightStick = wpilib.Joystick(1)
+        self.xbox = wpilib.XboxController(2)
 
         self.drivetrain = DT.Drivetrain()
-        self.lift = elevator.Elevator()
+        self.lift = lift.lift()
+        self.wrist = wrist.wrist()
+        self.intake = intake.intake()
 
         dash.init()
         ds.init()
@@ -64,6 +71,27 @@ class MyRobot(wpilib.TimedRobot):
         elif(self.DTMode==3): self.drivetrain.arcade(self.leftStick.getY(),self.leftStick.getX())
         else: self.drivetrain.simpleArcade(self.leftStick.getX(),self.leftStick.getY())
 
+        if(self.xbox.getAButton()):
+            self.lift.setOut(0.7)
+        elif(self.xbox.getBButton()):
+            self.lift.setOut(-0.7)
+        else:
+            self.lift.stop()
+
+        if(self.xbox.getXButton()):
+            self.wrist.setOut(0.5)
+        elif(self.xbox.getYButton()):
+            self.wrist.setOut(-0.5)
+        else:
+            self.wrist.stop()
+
+        if(self.xbox.getTriggerAxis(0)>0.5):
+            self.intake.setOut(0.9)
+        elif(self.xbox.getTriggerAxis(1)>0.5):
+            self.intake.setOut(-0.9)
+        else:
+            self.intake.stop()
+
     def testInit(self):
         pass
 
@@ -72,11 +100,19 @@ class MyRobot(wpilib.TimedRobot):
 
     def disabledInit(self):
         self.drivetrain.stop()
+        self.lift.stop()
+        self.wrist.stop()
+        self.intake.stop()
+
         self.drivetrain.disablePIDs()
         self.drivetrain.encoders.reset()
 
     def disabledPeriodic(self):
         self.drivetrain.stop()
+        self.lift.stop()
+        self.wrist.stop()
+        self.intake.stop()
+
         self.drivetrain.disablePIDs()
         self.drivetrain.encoders.reset()
 

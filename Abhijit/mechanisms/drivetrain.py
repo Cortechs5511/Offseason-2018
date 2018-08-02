@@ -23,6 +23,8 @@ class Drivetrain(Subsystem):
     k = -2
 
     def __init__(self):
+        timeout = 0 #max ms to do command
+
         [TalonLeft,VictorLeft1,VictorLeft2] = [Talon(10), Victor(11), Victor(12)]
         VictorLeft1.set(Victor.ControlMode.Follower,10)
         VictorLeft2.set(Victor.ControlMode.Follower,10)
@@ -30,6 +32,16 @@ class Drivetrain(Subsystem):
         [TalonRight, VictorRight1, VictorRight2] = [Talon(20), Victor(21), Victor(22)]
         VictorRight1.set(Victor.ControlMode.Follower,20)
         VictorRight2.set(Victor.ControlMode.Follower,20)
+
+        for motor in [TalonLeft,TalonRight]:
+            motor.clearStickyFaults(timeout) #Clears sticky faults
+            motor.configContinuousCurrentLimit(15,timeout) #15 Amps per motor
+            motor.configPeakCurrentLimit(20,timeout) #20 Amps during Peak Duration
+            motor.configPeakCurrentDuration(100,timeout) #Peak Current for max 100 ms
+            motor.enableCurrentLimit(True)
+
+            motor.enableVoltageCompensation(True) #Compensates for lower voltages
+            motor.configOpenLoopRamp(10.05,timeout) #3 seconds from 0 to 1
 
         self.left = TalonLeft
         self.right = TalonRight

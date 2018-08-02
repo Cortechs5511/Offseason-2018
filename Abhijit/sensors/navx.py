@@ -12,7 +12,7 @@ class NavX():
         self.navx = navx.AHRS.create_spi()
 
         #NavX PID Constants
-        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.015, 0.002, 0.20, 0.00] # These PID parameters are used in simulation
+        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.025, 0.002, 0.20, 0.00] # These PID parameters are used in simulation
         else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
         kToleranceDegrees = 5.0
 
