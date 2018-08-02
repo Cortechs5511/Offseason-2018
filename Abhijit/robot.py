@@ -6,6 +6,8 @@ import numpy as np
 import pathfinder as pf
 
 import mechanisms.drivetrain as DT
+import mechanisms.elevator as elevator
+
 import path.path as path
 import helper.helper as helper
 import external.dash as dash
@@ -26,6 +28,7 @@ class MyRobot(wpilib.TimedRobot):
         self.rightStick = wpilib.Joystick(1)
 
         self.drivetrain = DT.Drivetrain()
+        self.lift = elevator.Elevator()
 
         dash.init()
         ds.init()

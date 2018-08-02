@@ -105,20 +105,14 @@ def getTraj(num):
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
 
-        with open(pickle_file1, 'wb') as fp:
-            pickle.dump(left, fp)
-        with open(pickle_file2,'wb') as fp:
-            pickle.dump(right,fp)
-        with open(pickle_file3,'wb') as fp:
-            pickle.dump(modifier,fp)
+        with open(pickle_file1, 'wb') as fp: pickle.dump(left, fp)
+        with open(pickle_file2,'wb') as fp: pickle.dump(right,fp)
+        with open(pickle_file3,'wb') as fp: pickle.dump(modifier,fp)
         return [left,right,modifier]
     else:
-        with open(pickle_file1, 'rb') as fp:
-            left = pickle.load(fp)
-        with open(pickle_file2,'rb') as fp:
-            right = pickle.load(fp)
-        with open(pickle_file3,'rb') as fp:
-            modifier = pickle.load(fp)
+        with open(pickle_file1, 'rb') as fp: left = pickle.load(fp)
+        with open(pickle_file2,'rb') as fp: right = pickle.load(fp)
+        with open(pickle_file3,'rb') as fp: modifier = pickle.load(fp)
         return [left,right,modifier]
 
 def showPath(left,right,modifier):

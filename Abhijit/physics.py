@@ -28,10 +28,15 @@ class PhysicsEngine(object):
 
         self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
 
+        self.deadZone=0.7
+
     def update_sim(self, hal_data, now, timeDiff):
         # Simulate the drivetrain
         left = hal_data['CAN'][10]['value']
         right = hal_data['CAN'][20]['value']
+
+        if(abs(left)<self.deadZone): left = 0
+        if(abs(right)<self.deadZone): right = 0
 
         x,y,angle = self.drivetrain.get_distance(-left, right, timeDiff)
         self.controller.distance_drive(x, y, angle)
@@ -44,3 +49,6 @@ class PhysicsEngine(object):
 
         hal_data['encoder'][0]['count'] = int(self.distance[0]/helper.getDistPerPulse())
         hal_data['encoder'][1]['count'] = int(self.distance[1]/helper.getDistPerPulse())
+
+        lift = hal_data['CAN'][30]['value']
+        hal_data['encoder'][2]['count'] += lift
