@@ -24,7 +24,7 @@ class PhysicsEngine(object):
             helper.getWheelDiam()*units.feet         # wheel diameter
         )
 
-        self.distance = np.array([0.0,0.0])
+        self.distance = [0,0]
 
         self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
 
@@ -41,20 +41,8 @@ class PhysicsEngine(object):
         x,y,angle = self.drivetrain.get_distance(-left, right, timeDiff)
         self.controller.distance_drive(x, y, angle)
 
-        if(simComms.getEncoders()==True):
-            self.distance = [0,0]
-            simComms.resetEncodersSim()
-        else:
-            self.distance += np.array([self.drivetrain.l_velocity,self.drivetrain.r_velocity])*timeDiff
+        self.distance[0] += self.drivetrain.l_velocity*timeDiff
+        self.distance[1] += self.drivetrain.r_velocity*timeDiff
 
         hal_data['encoder'][0]['count'] = int(self.distance[0]/helper.getDistPerPulse())
         hal_data['encoder'][1]['count'] = int(self.distance[1]/helper.getDistPerPulse())
-
-        lift = hal_data['CAN'][30]['value']
-        hal_data['encoder'][2]['count'] += int(lift*100)
-
-        wrist = hal_data['CAN'][40]['value']
-        hal_data['encoder'][3]['count'] += int(wrist*100)
-
-        #intake = hal_data['CAN'][50]['value']
-        #hal_data['encoder'][4]['count'] += int(intake*100)

@@ -2,7 +2,7 @@
 
 import wpilib
 import math
-import numpy as np
+#import numpy as np
 
 #Robot Dimensions
 bumpers = 3.5/12 #feet
