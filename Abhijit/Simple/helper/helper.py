@@ -46,20 +46,30 @@ def getFreq():
 
 #DT CONSTANTS
 wheelDiam = 4/12 #feet
-pulsesPerRev = 127
-distPerPulse = wheelDiam * math.pi / pulsesPerRev
+pulsesPerRevL = 255
+pulsesPerRevR = -127
+distPerPulseL = wheelDiam * math.pi / pulsesPerRevL
+distPerPulseR = wheelDiam * math.pi / pulsesPerRevR
 
 def getWheelDiam():
     global wheelDiam
     return wheelDiam
 
-def getPulsesPerRev():
-    global pulsesPerRev
-    return pulsesPerRev
+def getPulsesPerRevL():
+    global pulsesPerRevL
+    return pulsesPerRevL
 
-def getDistPerPulse():
-    global distPerPulse
-    return distPerPulse
+def getPulsesPerRevR():
+    global pulsesPerRevR
+    return pulsesPerRevR
+
+def getDistPerPulseL():
+    global distPerPulseL
+    return distPerPulseL
+
+def getDistPerPulseR():
+    global distPerPulseR
+    return distPerPulseR
 
 #PATHFINDER CONSTANTS
 maxV = 8 # ft/s

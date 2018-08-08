@@ -15,11 +15,11 @@ class DTEncoders():
         kTolerance = 50
 
         self.leftEncoder = wpilib.Encoder(0,1)
-        self.leftEncoder.setDistancePerPulse(helper.getDistPerPulse())
+        self.leftEncoder.setDistancePerPulse(helper.getDistPerPulseL())
         self.leftEncoder.setSamplesToAverage(10)
 
         self.rightEncoder = wpilib.Encoder(2,3)
-        self.rightEncoder.setDistancePerPulse(helper.getDistPerPulse())
+        self.rightEncoder.setDistancePerPulse(helper.getDistPerPulseR())
         self.rightEncoder.setSamplesToAverage(10)
 
         PIDController =  wpilib.PIDController(kP, kI, kD, kF, self, output=self)
