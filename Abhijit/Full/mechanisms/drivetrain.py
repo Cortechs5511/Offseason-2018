@@ -2,7 +2,7 @@
 
 import wpilib
 import math
-import numpy as np
+#import numpy as np
 
 from wpilib.command.subsystem import Subsystem
 from wpilib.drive import DifferentialDrive
@@ -90,10 +90,10 @@ class Drivetrain(Subsystem):
         left = 0
         right = 0
 
-        if(abs(throttle)>self.dbLimit): throttle = np.sign(throttle)*(math.exp(self.k*abs(throttle))-1)/(math.exp(self.k)-1)
+        if(abs(throttle)>self.dbLimit): throttle = helper.sign(throttle)*(math.exp(self.k*abs(throttle))-1)/(math.exp(self.k)-1)
         else: throttle = 0
 
-        if(abs(turn)>self.dbLimit): turn = np.sign(turn)*(math.exp(k*abs(turn))-1)/(math.exp(self.k)-1)
+        if(abs(turn)>self.dbLimit): turn = helper.sign(turn)*(math.exp(k*abs(turn))-1)/(math.exp(self.k)-1)
         else: turn = 0
 
         L0 = throttle + turn

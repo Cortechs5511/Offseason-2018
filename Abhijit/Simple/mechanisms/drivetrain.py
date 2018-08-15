@@ -46,13 +46,11 @@ class Drivetrain(Subsystem):
         self.left = TalonLeft
         self.right = TalonRight
 
-        '''
         [TalonLeft,VictorLeft1,VictorLeft2] = [Talon(10), Victor(11), Victor(12)]
         self.left = wpilib.SpeedControllerGroup(TalonLeft,VictorLeft1,VictorLeft2)
 
         [TalonRight, VictorRight1, VictorRight2] = [Talon(20), Victor(21), Victor(22)]
         self.right = wpilib.SpeedControllerGroup(TalonRight,VictorRight1,VictorRight2)
-        '''
 
         self.navx = navx.NavX()
         self.encoders = encoders.DTEncoders()
