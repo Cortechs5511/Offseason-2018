@@ -36,7 +36,8 @@ class ExampleBot(CommandBasedRobot):
         Since OI instantiates commands and commands need access to subsystems,
         OI must be initialized after subsystems.
         '''
-        self.joystick = oi.getJoystick()
+        self.joystick = oi.getJoystick(0)
+        self.joystick1 = oi.getJoystick(1)
 
     def autonomousInit(self):
         '''

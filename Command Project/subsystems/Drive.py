@@ -1,4 +1,6 @@
-import wpilib
+import math
+
+from typing import Any
 from wpilib.command.subsystem import Subsystem
 import ctre
 import wpilib
@@ -6,10 +8,15 @@ import wpilib.buttons
 from wpilib.drive import DifferentialDrive
 from commands.followjoystick import FollowJoystick
 
+
 class Drive(Subsystem):
     '''
     This example subsystem controls a single Talon in PercentVBus mode.
     '''
+
+    dband = 0.1
+    k = -1
+    maxspeed = 0.7
 
     def __init__(self):
         '''Instantiates the motor object.'''
@@ -34,11 +41,23 @@ class Drive(Subsystem):
         self.drive = DifferentialDrive(self.left, self.right)
         self.drive.setExpiration(0.1)
 
+    def setParams(dbLimit, k, maxSpeed):
+        self.dbLimit = dbLimit
+        self.maxSpeed = maxSpeed
+        self.k = k
 
-    def tankDrive(self, leftSpeed, rightSpeed,):
-        self.drive.tankDrive(leftSpeed, rightSpeed)
+    def tankDrive(self,left,right):
 
+        if(abs(left) < self.dband):left = 0
+        else: left = abs(left)/left*(math.e**(self.k*abs(left))-1) / (math.exp(self.k)-1)
 
+        if(abs(right) < self.dband):right = 0
+        else: right = abs(right)/right*(math.e**(self.k*abs(right))-1) / (math.exp(self.k)-1)
+
+        left *= self.maxspeed
+        right *= self.maxspeed
+
+        self.drive.tankDrive(left, right)
 
     def initDefaultCommand(self):
         self.setDefaultCommand(FollowJoystick())

@@ -1,11 +1,13 @@
 from wpilib.command import Command
 from wpilib.drive import DifferentialDrive
+import math
 
 class FollowJoystick(Command):
     '''
     This command will read the joystick's y axis and use that value to control
     the speed of the SingleMotor subsystem.
     '''
+
 
     def __init__(self):
         super().__init__('Follow Joystick')
@@ -19,12 +21,25 @@ class FollowJoystick(Command):
     def execute(self):
         self.getRobot().lift.setSpeed(self.getRobot().joystick.getZ())
 
-        if self.getRobot().joystick.getRawButton(1) == True:
-            self.getRobot().wrist.setSpeed(-0.3)
-        elif self.getRobot().joystick.getRawButton(2) == True:
-            self.getRobot().wrist.setSpeed(0.3)
+        gravity = 0.2
+        wspot = 22000
+
+        LEFT = self.getRobot().joystick.getY()
+        RIGHT = self.getRobot().joystick1.getY()
+
+        if self.getRobot().wrist.getPos() > wspot:
+            x = gravity
+        elif self.getRobot().wrist.getPos() * -1 < wspot:
+            x = gravity * -1
         else:
-            self.getRobot().wrist.setSpeed(0)
+            x = 0
+
+        if self.getRobot().joystick.getRawButton(1) == True:
+            self.getRobot().wrist.setSpeed(-0.3 + x)
+        elif self.getRobot().joystick.getRawButton(2) == True:
+            self.getRobot().wrist.setSpeed(0.3 - x)
+        else:
+            self.getRobot().wrist.setSpeed(x)
 
         if self.getRobot().joystick.getRawButton(3) == True:
             self.getRobot().intake.setSpeed(0.7)
@@ -33,5 +48,5 @@ class FollowJoystick(Command):
         else:
             self.getRobot().intake.setSpeed(0)
 
-        self.getRobot().drive.tankDrive(self.getRobot().joystick.getY(), self.getRobot().joystick.getX())
+        self.getRobot().drive.tankDrive(LEFT,RIGHT)
 

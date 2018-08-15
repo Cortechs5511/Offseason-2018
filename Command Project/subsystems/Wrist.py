@@ -18,10 +18,20 @@ class Wrist(Subsystem):
 
         self.wrist = ctre.WPI_TalonSRX(40)
 
+        self.wrist.clearStickyFaults(0)
+        self.wrist.configContinuousCurrentLimit(15,0)
+        self.wrist.configPeakCurrentLimit(20,0)
+        self.wrist.configPeakCurrentDuration(100, 0)
+        self.wrist.enableCurrentLimit(True)
+
+        self.wrist.enableVoltageCompensation(True)
+        self.wrist.configOpenLoopRamp(3, 0)
 
     def setSpeed(self, speed):
         self.wrist.set(speed)
 
+    def getPos(self):
+        return self.wrist.getQuadraturePosition()
 
     def initDefaultCommand(self):
         self.setDefaultCommand(FollowJoystick())
