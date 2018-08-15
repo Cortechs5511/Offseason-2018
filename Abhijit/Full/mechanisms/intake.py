@@ -1,6 +1,6 @@
 import wpilib
 import math
-import numpy as np
+#import numpy as np
 
 from wpilib.command.subsystem import Subsystem
 

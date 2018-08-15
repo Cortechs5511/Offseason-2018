@@ -1,6 +1,6 @@
 import wpilib
 import math
-import numpy as np
+#import numpy as np
 
 import pickle
 import os.path

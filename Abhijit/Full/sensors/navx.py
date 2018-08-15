@@ -1,5 +1,5 @@
 import math
-import numpy as np
+#import numpy as np
 
 import wpilib
 from robotpy_ext.common_drivers import navx

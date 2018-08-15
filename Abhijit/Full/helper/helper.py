@@ -2,7 +2,7 @@
 
 import wpilib
 import math
-import numpy as np
+#import numpy as np
 
 #Robot Dimensions
 bumpers = 3.5/12 #feet
@@ -93,3 +93,9 @@ def getGameData():
 def setGameData(input):
     global gameData
     gameData = input
+
+
+def sign(num):
+    if(num==0): return 0
+    if(num<0): return -1
+    return 1

@@ -2,7 +2,7 @@
 
 import wpilib
 import math
-import numpy as np
+#import numpy as np
 import pathfinder as pf
 
 import mechanisms.drivetrain as DT
@@ -12,8 +12,8 @@ import mechanisms.intake as intake
 
 import path.path as path
 import helper.helper as helper
-import external.dash as dash
-import external.ds as ds
+#import external.dash as dash
+#import external.ds as ds
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
@@ -37,8 +37,8 @@ class MyRobot(wpilib.TimedRobot):
         self.wrist = wrist.wrist()
         self.intake = intake.intake()
 
-        dash.init()
-        ds.init()
+        #dash.init()
+        #ds.init()
 
     def robotPeriodic(self):
         '''
@@ -47,8 +47,8 @@ class MyRobot(wpilib.TimedRobot):
         dash.setTime(dash.getTime()+1)
         '''
 
-        helper.setAuto(dash.getAuto())
-        helper.setGameData(ds.getGameData())
+        #helper.setAuto(dash.getAuto())
+        #helper.setGameData(ds.getGameData())
 
     def autonomousInit(self):
         #self.drivetrain.initGetWheelbase()
