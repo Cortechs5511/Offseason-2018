@@ -14,7 +14,8 @@ class lift(Subsystem):
     def __init__(self):
         timeout = 0 #Give max ms to do command
 
-        motors = [Talon(30), Talon(31)]
+        motors = [Talon(30)]
+        if not wpilib.RobotBase.isSimulation(): motors = [Talon(30), Talon(31)]
 
         for motor in motors:
             motor.clearStickyFaults(timeout) #Clears sticky faults
@@ -26,7 +27,7 @@ class lift(Subsystem):
             motor.enableVoltageCompensation(True) #Compensates for lower voltages
             motor.configOpenLoopRamp(3,timeout) #3 seconds from 0 to 1
 
-        motors[1].set(Talon.ControlMode.Follower,30)
+        #motors[1].set(Talon.ControlMode.Follower,30)
         self.motor = motors[0]
 
         motor.setQuadraturePosition(0,timeout)
