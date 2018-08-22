@@ -33,5 +33,8 @@ class Wrist(Subsystem):
     def getPos(self):
         return self.wrist.getQuadraturePosition()
 
+    def getOutputCurrent(self):
+        return self.wrist.getOutputCurrent()
+
     def initDefaultCommand(self):
         self.setDefaultCommand(FollowJoystick())

@@ -7,6 +7,7 @@ from subsystems import Wrist, Intake, Lift, Drive
 import oi
 from commands.autonomous import AutonomousProgram
 from wpilib.drive import DifferentialDrive
+from networktables import NetworkTables
 
 
 class ExampleBot(CommandBasedRobot):
@@ -23,14 +24,16 @@ class ExampleBot(CommandBasedRobot):
         This is a good place to set up your subsystems and anything else that
         you will need to access later.
         '''
-
         Command.getRobot = lambda x=0: self
+        self.smartDashboard = NetworkTables.getTable("SmartDashboard")
+
 
         self.lift = Lift.Lift()
         self.wrist = Wrist.Wrist()
         self.intake = Intake.Intake()
         self.drive = Drive.Drive()
         self.autonomousProgram = AutonomousProgram()
+
 
         '''
         Since OI instantiates commands and commands need access to subsystems,
@@ -49,6 +52,11 @@ class ExampleBot(CommandBasedRobot):
 
         self.autonomousProgram.start()
 
+    def robotPeriodic(self):
+        self.smartDashboard.putNumber("Position", self.wrist.getPos())
+        self.smartDashboard.putNumber("WristAmps", self.wrist.getOutputCurrent())
+        self.smartDashboard.putNumber("RightEncoder", self.drive.RightEncoder.get())
+        self.smartDashboard.putNumber("RightDistance", self.drive.RightEncoder.getDistance())
 
 if __name__ == '__main__':
     wpilib.run(ExampleBot)

@@ -1,5 +1,5 @@
 import math
-
+import numpy as np
 from typing import Any
 from wpilib.command.subsystem import Subsystem
 import ctre
@@ -17,8 +17,9 @@ class Drive(Subsystem):
     dband = 0.1
     k = -1
     maxspeed = 0.7
+    DistPerPulse = 4 * np.pi / 127
 
-    def __init__(self):
+    def __init__(self, DistPerPulse=DistPerPulse):
         '''Instantiates the motor object.'''
 
         super().__init__('Drive')
@@ -41,7 +42,12 @@ class Drive(Subsystem):
         self.drive = DifferentialDrive(self.left, self.right)
         self.drive.setExpiration(0.1)
 
-    def setParams(dbLimit, k, maxSpeed):
+        self.RightEncoder = wpilib.Encoder(2,3)
+
+        self.RightEncoder.setDistancePerPulse(DistPerPulse)
+
+
+    def setParams(self, dbLimit, k, maxSpeed):
         self.dbLimit = dbLimit
         self.maxSpeed = maxSpeed
         self.k = k
@@ -55,7 +61,7 @@ class Drive(Subsystem):
         else: right = abs(right)/right*(math.e**(self.k*abs(right))-1) / (math.exp(self.k)-1)
 
         left *= self.maxspeed
-        right *= self.maxspeed
+        right *= self.maxspeed * -1
 
         self.drive.tankDrive(left, right)
 

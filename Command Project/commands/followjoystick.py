@@ -1,6 +1,7 @@
 from wpilib.command import Command
 from wpilib.drive import DifferentialDrive
 import math
+from networktables import NetworkTables
 
 class FollowJoystick(Command):
     '''
@@ -11,6 +12,7 @@ class FollowJoystick(Command):
 
     def __init__(self):
         super().__init__('Follow Joystick')
+        self.smartDashboard = NetworkTables.getTable("SmartDashboard")
 
         self.requires(self.getRobot().lift)
         self.requires(self.getRobot().wrist)
@@ -21,23 +23,25 @@ class FollowJoystick(Command):
     def execute(self):
         self.getRobot().lift.setSpeed(self.getRobot().joystick.getZ())
 
-        gravity = 0.2
+        gravity = 0.35
         wspot = 22000
 
         LEFT = self.getRobot().joystick.getY()
         RIGHT = self.getRobot().joystick1.getY()
 
+        pos = self.getRobot().wrist.getPos()
+        self.smartDashboard.putNumber("Position", pos)
         if self.getRobot().wrist.getPos() > wspot:
-            x = gravity
-        elif self.getRobot().wrist.getPos() * -1 < wspot:
             x = gravity * -1
+        elif self.getRobot().wrist.getPos() * -1 < wspot:
+            x = gravity
         else:
             x = 0
 
         if self.getRobot().joystick.getRawButton(1) == True:
-            self.getRobot().wrist.setSpeed(-0.3 + x)
+            self.getRobot().wrist.setSpeed(-0.4 + x)
         elif self.getRobot().joystick.getRawButton(2) == True:
-            self.getRobot().wrist.setSpeed(0.3 - x)
+            self.getRobot().wrist.setSpeed(0.4 - x)
         else:
             self.getRobot().wrist.setSpeed(x)
 
