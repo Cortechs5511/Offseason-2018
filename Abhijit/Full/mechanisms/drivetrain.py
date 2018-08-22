@@ -25,13 +25,17 @@ class Drivetrain(Subsystem):
     def __init__(self):
         timeout = 0 #max ms to do command
 
-        [TalonLeft,VictorLeft1,VictorLeft2] = [Talon(10), Victor(11), Victor(12)]
-        VictorLeft1.set(Victor.ControlMode.Follower,10)
-        VictorLeft2.set(Victor.ControlMode.Follower,10)
+        TalonLeft = Talon(10)
+        TalonRight = Talon(20)
 
-        [TalonRight, VictorRight1, VictorRight2] = [Talon(20), Victor(21), Victor(22)]
-        VictorRight1.set(Victor.ControlMode.Follower,20)
-        VictorRight2.set(Victor.ControlMode.Follower,20)
+        if not wpilib.RobotBase.isSimulation():
+            [TalonLeft,VictorLeft1,VictorLeft2] = [Talon(10), Victor(11), Victor(12)]
+            VictorLeft1.set(Victor.ControlMode.Follower,10)
+            VictorLeft2.set(Victor.ControlMode.Follower,10)
+
+            [TalonRight, VictorRight1, VictorRight2] = [Talon(20), Victor(21), Victor(22)]
+            VictorRight1.set(Victor.ControlMode.Follower,20)
+            VictorRight2.set(Victor.ControlMode.Follower,20)
 
         for motor in [TalonLeft,TalonRight]:
             motor.clearStickyFaults(timeout) #Clears sticky faults
