@@ -8,17 +8,16 @@ class MyRobot(wpilib.IterativeRobot):
         super().__init__()
 
     def robotInit(self):
+
         self.DriveLeft1 = ctre.WPI_TalonSRX(10)
         self.DriveLeft2 = ctre.WPI_VictorSPX(11)
         self.DriveLeft3 = ctre.WPI_VictorSPX(12)
-        self.DriveLeft2.set(ctre.WPI_VictorSPX.ControlMode.Follower, 10)
-        self.DriveLeft3.set(ctre.WPI_VictorSPX.ControlMode.Follower, 10)
-
+        self.DriveLeft1.enableVoltageCompensation(True)
+        self.DriveLeft1.configVoltageCompSaturation(12,0)
+        self.DriveLeft2.follow(self.DriveLeft1)
+        self.DriveLeft3.follow(self.DriveLeft1)
         self.DriveRight1 = ctre.WPI_TalonSRX(20)
-        self.DriveRight2 = ctre.WPI_VictorSPX(21)
-        self.DriveRight3 = ctre.WPI_VictorSPX(22)
-        self.DriveRight2.set(ctre.WPI_VictorSPX.ControlMode.Follower, 20)
-        self.DriveRight3.set(ctre.WPI_VictorSPX.ControlMode.Follower, 20)
+
 
         self.LeftEncoder = wpilib.Encoder(0, 1)
         self.RightEncoder = wpilib.Encoder(2, 3)
@@ -34,10 +33,21 @@ class MyRobot(wpilib.IterativeRobot):
         self.RightJoystick = wpilib.Joystick(1)
 
     def teleopInit(self):
-        self.myRobot.setSafetyEnabled(True)
+        self.myRobot.setSafetyEnabled(False)
+
 
     def teleopPeriodic(self):
-        self.myRobot.tankDrive((self.LeftJoystick.getY()) * -1 * self.Max_Speed, (self.RightJoystick.getY()) * -1 * self.Max_Speed)
+        self.myRobot.tankDrive((self.LeftJoystick.getY()) * -0.8, (self.RightJoystick.getY()) * -0.8)
+
+    def autonomousInit(self):
+        self.myRobot.setSafetyEnabled(False)
+
+    def autonomousPeriodic(self):
+        self.left.set(0.5)
+        self.right.set(0.5)
+
+
+
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)
