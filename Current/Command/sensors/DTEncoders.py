@@ -3,7 +3,6 @@ import math
 
 import wpilib
 
-import helper.helper as helper
 import sim.simComms as simComms
 
 class DTEncoders():
@@ -15,11 +14,11 @@ class DTEncoders():
         kTolerance = 50
 
         self.leftEncoder = wpilib.Encoder(0,1)
-        self.leftEncoder.setDistancePerPulse(helper.getDistPerPulse())
+        self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 127)
         self.leftEncoder.setSamplesToAverage(10)
 
         self.rightEncoder = wpilib.Encoder(2,3)
-        self.rightEncoder.setDistancePerPulse(helper.getDistPerPulse())
+        self.rightEncoder.setDistancePerPulse(4/12 * math.pi / 255)
         self.rightEncoder.setSamplesToAverage(10)
 
         PIDController =  wpilib.PIDController(kP, kI, kD, kF, self, output=self)

@@ -4,11 +4,6 @@ import math
 from networktables import NetworkTables
 
 class FollowJoystick(Command):
-    '''
-    This command will read the joystick's y axis and use that value to control
-    the speed of the SingleMotor subsystem.
-    '''
-
 
     def __init__(self):
         super().__init__('Follow Joystick')
@@ -26,8 +21,9 @@ class FollowJoystick(Command):
         gravity = 0.35
         wspot = 22000
 
-        LEFT = self.getRobot().joystick.getY()
-        RIGHT = self.getRobot().joystick1.getY()
+        left = self.getRobot().joystick.getY()
+        right = self.getRobot().joystick1.getY()
+        self.getRobot().drive.tankDrive(left,right)
 
         pos = self.getRobot().wrist.getPos()
         self.smartDashboard.putNumber("Position", pos)
@@ -51,6 +47,3 @@ class FollowJoystick(Command):
             self.getRobot().intake.setSpeed(-0.7)
         else:
             self.getRobot().intake.setSpeed(0)
-
-        self.getRobot().drive.tankDrive(LEFT,RIGHT)
-

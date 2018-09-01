@@ -5,12 +5,14 @@ from pyfrc.physics import motor_cfgs, tankmodel
 from pyfrc.physics.units import units
 
 import sim.simComms as simComms
-import helper.helper as helper
 
 class PhysicsEngine(object):
     def __init__(self, controller):
         self.controller = controller
         self.position = 0
+
+        self.DistPerPulseL = 4/12 * math.pi / 127
+        self.DistPerPulseR = 4/12 * math.pi / 255
 
         # Change these parameters to fit your robot!
         self.drivetrain = tankmodel.TankModel.theory(
@@ -18,10 +20,10 @@ class PhysicsEngine(object):
             140*units.lbs,                           # robot mass
             6,                                   # drivetrain gear ratio
             3,                                       # motors per side
-            (helper.getWidth())*units.feet,        # robot wheelbase
-            helper.getWidthBumpers()*units.feet,     # robot width
-            helper.getLengthBumpers()*units.feet,    # robot length
-            helper.getWheelDiam()*units.feet         # wheel diameter
+            (33/12)*units.feet,        # robot wheelbase
+            (40/12)*units.feet,     # robot width
+            (35/12)*units.feet,    # robot length
+            (4/12)*units.feet         # wheel diameter
         )
 
         self.distance = [0.0,0.0]
@@ -48,8 +50,8 @@ class PhysicsEngine(object):
             self.distance[0] += self.drivetrain.l_velocity*timeDiff
             self.distance[1] += self.drivetrain.r_velocity*timeDiff
 
-        hal_data['encoder'][0]['count'] = int(self.distance[0]/helper.getDistPerPulse())
-        hal_data['encoder'][1]['count'] = int(self.distance[1]/helper.getDistPerPulse())
+        hal_data['encoder'][0]['count'] = int(self.distance[0]/self.DistPerPulseL)
+        hal_data['encoder'][1]['count'] = int(self.distance[1]/self.DistPerPulseR)
 
         #lift = hal_data['CAN'][30]['value']
         #hal_data['encoder'][2]['count'] += int(lift*100)

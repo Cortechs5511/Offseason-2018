@@ -1,69 +1,74 @@
 import math
-import numpy as np
-from typing import Any
-from wpilib.command.subsystem import Subsystem
+
 import ctre
+from ctre import WPI_TalonSRX as Talon
+from ctre import WPI_VictorSPX as Victor
+
 import wpilib
-import wpilib.buttons
 from wpilib.drive import DifferentialDrive
+from wpilib.command.subsystem import Subsystem
+
 from commands.followjoystick import FollowJoystick
 
+import sensors.navx as navx
+import sensors.DTEncoders as encoders
 
 class Drive(Subsystem):
-    '''
-    This example subsystem controls a single Talon in PercentVBus mode.
-    '''
 
-    dband = 0.1
+    dbLimit = 0.1
     k = -1
-    maxspeed = 0.7
-    DistPerPulse = 4 * np.pi / 127
+    maxSpeed = 0.7
 
-    def __init__(self, DistPerPulse=DistPerPulse):
-        '''Instantiates the motor object.'''
+    DistPerPulseL = 4/12 * math.pi / 127
+    DistPerPulseR = 4/12 * math.pi / 255
 
+    def __init__(self):
         super().__init__('Drive')
 
-        self.DriveLeft1 = ctre.WPI_TalonSRX(10)
-        self.DriveLeft2 = ctre.WPI_VictorSPX(11)
-        self.DriveLeft3 = ctre.WPI_VictorSPX(12)
-        self.DriveLeft2.set(ctre.WPI_VictorSPX.ControlMode.Follower, 10)
-        self.DriveLeft3.set(ctre.WPI_VictorSPX.ControlMode.Follower, 10)
+        timeout = 0
 
-        self.DriveRight1 = ctre.WPI_TalonSRX(20)
-        self.DriveRight2 = ctre.WPI_VictorSPX(21)
-        self.DriveRight3 = ctre.WPI_VictorSPX(22)
-        self.DriveRight2.set(ctre.WPI_VictorSPX.ControlMode.Follower, 20)
-        self.DriveRight3.set(ctre.WPI_VictorSPX.ControlMode.Follower, 20)
+        TalonLeft = Talon(10)
+        TalonRight = Talon(20)
 
-        self.left = wpilib.SpeedControllerGroup(self.DriveLeft1)
-        self.right = wpilib.SpeedControllerGroup(self.DriveRight1)
+        if not wpilib.RobotBase.isSimulation():
+            [VictorLeft1,VictorLeft2] = [Victor(11), Victor(12)]
+            self.DriveLeft2.follow(self.DriveLeft1)
+            self.DriveLeft3.follow(self.DriveLeft1)
 
-        self.drive = DifferentialDrive(self.left, self.right)
-        self.drive.setExpiration(0.1)
+            [VictorRight1, VictorRight2] = [Victor(21), Victor(22)]
+            self.DriveRight2.follow(self.DriveRight1)
+            self.DriveRight3.follow(self.DriveRight1)
 
-        self.RightEncoder = wpilib.Encoder(2,3)
+        for motor in [TalonLeft,TalonRight]:
+            motor.clearStickyFaults(timeout) #Clears sticky faults
 
-        self.RightEncoder.setDistancePerPulse(DistPerPulse)
+            motor.configContinuousCurrentLimit(15,timeout) #15 Amps per motor
+            motor.configPeakCurrentLimit(20,timeout) #20 Amps during Peak Duration
+            motor.configPeakCurrentDuration(100,timeout) #Peak Current for max 100 ms
+            motor.enableCurrentLimit(True)
 
+            motor.enableVoltageCompensation(True) #Compensates for lower voltages
+            motor.configVoltageCompSaturation(12,0) #Sets saturation value
+            motor.configOpenLoopRamp(0.2,timeout) #number of seconds from 0 to 1
 
-    def setParams(self, dbLimit, k, maxSpeed):
-        self.dbLimit = dbLimit
-        self.maxSpeed = maxSpeed
-        self.k = k
+        self.left = TalonLeft
+        self.right = TalonRight
+
+        self.navx = navx.NavX()
+        self.encoders = encoders.DTEncoders()
+
+        self.navx.disablePID()
+        self.encoders.disablePID()
 
     def tankDrive(self,left,right):
+        if(abs(left) < self.dbLimit): left = 0
+        else: left = self.maxSpeed*abs(left)/left*(math.exp(self.k*abs(left))-1) / (math.exp(self.k)-1)
 
-        if(abs(left) < self.dband):left = 0
-        else: left = abs(left)/left*(math.e**(self.k*abs(left))-1) / (math.exp(self.k)-1)
+        if(abs(right) < self.dbLimit): right = 0
+        else: right = self.maxSpeed*abs(right)/right*(math.exp(self.k*abs(right))-1) / (math.exp(self.k)-1)
 
-        if(abs(right) < self.dband):right = 0
-        else: right = abs(right)/right*(math.e**(self.k*abs(right))-1) / (math.exp(self.k)-1)
-
-        left *= self.maxspeed
-        right *= self.maxspeed * -1
-
-        self.drive.tankDrive(left, right)
+        self.left.set(left)
+        self.right.set(right)
 
     def initDefaultCommand(self):
         self.setDefaultCommand(FollowJoystick())

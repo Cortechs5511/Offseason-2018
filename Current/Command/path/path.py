@@ -6,14 +6,17 @@ import pickle
 import os.path
 import pathfinder as pf
 
-import helper.helper as helper
-
 desiredHeading=0
 timer = wpilib.Timer()
 
 init = False
 leftFollower = None
 rightFollower = None
+
+width = 33/12
+
+auto = "Left" #Options are Left, Middle, Right
+gameData = "RRR" #Options are LLL, LRL, RRR, RLR
 
 def getName(num):
     if(num==0):
@@ -71,19 +74,15 @@ def makeTraj(num):
     return points
 
 def calcNum():
-    auto = helper.getAuto()
-    gameData = helper.getGameData()
-    num = 0
-
     if(auto=="Left"):
-        if(gameData[1]=='L'): num = getNum("LeftScale")
-        else: num = getNum("LeftOppositeScale")
+        if(gameData[1]=='L'): return getNum("LeftScale")
+        else: return getNum("LeftOppositeScale")
     elif(auto=="Middle"):
-        if(gameData[0]=='L'): num = getNum("LeftSwitch")
-        else: num = getNum("DriveStraight")
+        if(gameData[0]=='L'): return getNum("LeftSwitch")
+        else: return getNum("DriveStraight")
     elif(auto=="Right"):
-        if(gameData[1]=='L'): num = getNum("RightOppositeScale")
-        else: num = getNum("RightScale")
+        if(gameData[1]=='L'): return getNum("RightOppositeScale")
+        else: return getNum("RightScale")
 
     return num
 
@@ -99,9 +98,9 @@ def getTraj(num):
     if wpilib.RobotBase.isSimulation():
         points = makeTraj(num)
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
-            dt=helper.getPeriod(),max_velocity=helper.getMaxV(),max_acceleration=helper.getMaxA(),max_jerk=120.0)
+            dt=0.02, max_velocity=8.0, max_acceleration=6.0, max_jerk=120.0)
 
-        modifier = pf.modifiers.TankModifier(trajectory).modify(helper.getWidth()/2.4)
+        modifier = pf.modifiers.TankModifier(trajectory).modify(self.width/2.4)
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
 
@@ -121,9 +120,9 @@ def showPath(left,right,modifier):
         from pyfrc.sim import get_user_renderer
         renderer = get_user_renderer()
         if renderer:
-            renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-helper.getWidth()/2,0))
+            renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-self.width/2,0))
             renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
-            renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(helper.getWidth()/2,0))
+            renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(self.width/2,0))
 
 def initPath(drivetrain):
     global init
@@ -131,14 +130,14 @@ def initPath(drivetrain):
     num = calcNum()
     [left,right,modifier] = getTraj(num)
 
-    gains = [25,0,2,1/helper.getMaxV(),1/helper.getMaxA()]
+    gains = [25,0,2,1/8,1/6] #P,I,D,1/V,1/A
 
     leftFollower = pf.followers.EncoderFollower(left)
-    leftFollower.configureEncoder(drivetrain.encoders.get()[0], helper.getPulsesPerRev(), helper.getWheelDiam())
+    leftFollower.configureEncoder(drivetrain.encoders.get()[0], 127, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
     leftFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
     rightFollower = pf.followers.EncoderFollower(right)
-    rightFollower.configureEncoder(drivetrain.encoders.get()[1], helper.getPulsesPerRev(), helper.getWheelDiam())
+    rightFollower.configureEncoder(drivetrain.encoders.get()[1], 255, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
     rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
     drivetrain.enablePIDs()
@@ -167,5 +166,5 @@ def pathFinder(drivetrain):
     global leftFollower
     global rightFollower
 
-    if(init==False and len(helper.getGameData())>0 and len(helper.getAuto())>0): [leftFollower, rightFollower] = initPath(drivetrain)
+    if(init==False and len(self.gameData)>0 and len(self.auto)>0): [leftFollower, rightFollower] = initPath(drivetrain)
     if(init==True): followPath(drivetrain,leftFollower,rightFollower)
