@@ -16,34 +16,60 @@ class FollowJoystick(Command):
 
 
     def execute(self):
-        self.getRobot().lift.setSpeed(self.getRobot().joystick.getZ())
+        Lift = self.getRobot().lift
+        Wrist = self.getRobot().wrist
+        Intake = self.getRobot().intake
+        Joystick = self.getRobot().joystick
+        Joystick1 = self.getRobot().joystick1
+        wrist_pos = Wrist.getDataUnits()[0]
+        lift_pos = Lift.getDataUnits()[0]
+        gravity_lift = 0.3
+        gravity_wrist = 0.3
+        wrist_tol = 45 #degree position at which wrist needs power to be held up
+        lift_tol = 10 #Inches above the robot at which lift needs to be held up
+        self.smartDashboard.putNumber("Position", wrist_pos)
 
-        gravity = 0.35
-        wspot = 22000
+        # determine gravity value for lift
+        if lift_pos > lift_tol:
+            y = gravity_lift * -1
+        elif lift_pos < lift_tol:
+            y = gravity_lift
+        else:
+            y = 0
 
-        left = self.getRobot().joystick.getY()
-        right = self.getRobot().joystick1.getY()
+        # set speed according to gravity value
+        if Joystick.getZ() > 0.1:
+            Lift.setSpeed(-0.4 - y)
+        elif Joystick.getZ() * -1 <- 0.1:
+            Lift.setSpeed(0.4 + y)
+        else:
+            Lift.setSpeed(y)
+
+        #DRIVE
+        left = Joystick.getY()
+        right = Joystick1.getY()
         self.getRobot().drive.tankDrive(left,right)
 
-        pos = self.getRobot().wrist.getPos()
-        self.smartDashboard.putNumber("Position", pos)
-        if self.getRobot().wrist.getPos() > wspot:
-            x = gravity * -1
-        elif self.getRobot().wrist.getPos() * -1 < wspot:
-            x = gravity
+        # determine gravity value for wrist
+        if wrist_pos > wrist_tol:
+            x = gravity_wrist * -1
+        elif wrist_pos * -1 < wrist_tol:
+            x = gravity_wrist
         else:
             x = 0
 
-        if self.getRobot().joystick.getRawButton(1) == True:
-            self.getRobot().wrist.setSpeed(-0.4 + x)
-        elif self.getRobot().joystick.getRawButton(2) == True:
-            self.getRobot().wrist.setSpeed(0.4 - x)
+        # set speed according to gravity value
+        if Joystick.getRawButton(1) == True:
+            Wrist.setSpeed(-0.4 - x)
+        elif Joystick.getRawButton(2) == True:
+            Wrist.setSpeed(0.4 + x)
         else:
             self.getRobot().wrist.setSpeed(x)
 
-        if self.getRobot().joystick.getRawButton(3) == True:
-            self.getRobot().intake.setSpeed(0.7)
-        elif self.getRobot().joystick.getRawButton(4) == True:
-            self.getRobot().intake.setSpeed(-0.7)
+        # INTAKE
+        if Joystick.getRawButton(3) == True:
+            Intake.setSpeed(0.7)
+        elif Joystick.getRawButton(4) == True:
+            Intake.setSpeed(-0.7)
         else:
-            self.getRobot().intake.setSpeed(0)
+            Intake.setSpeed(0)
