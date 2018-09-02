@@ -37,5 +37,8 @@ class Intake(Subsystem):
     def setSpeed(self, speed):
         self.intake.set(speed)
 
+    def getOutputCurrent(self):
+        return self.intake.getOutputCurrent()*2
+
     def initDefaultCommand(self):
         self.setDefaultCommand(FollowJoystick())

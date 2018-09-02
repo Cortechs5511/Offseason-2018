@@ -75,5 +75,8 @@ class Drive(Subsystem):
         self.left.set(left)
         self.right.set(right)
 
+    def getOutputCurrent(self):
+        return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
+
     def initDefaultCommand(self):
         self.setDefaultCommand(FollowJoystick())

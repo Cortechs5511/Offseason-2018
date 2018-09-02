@@ -9,6 +9,10 @@ from ctre import WPI_VictorSPX as Victor
 from commands.followjoystick import FollowJoystick
 
 class Lift(Subsystem):
+
+    posConv = 1
+    velConv = 1
+
     def __init__(self):
         super().__init__('Lift')
 
@@ -31,10 +35,30 @@ class Lift(Subsystem):
             motor.enableVoltageCompensation(True) #Compensates for lower voltages
             #motor.configOpenLoopRamp(0.2,timeout) #number of seconds from 0 to 1
 
+        Talon0.configSelectedFeedbackSensor(0,0,timeout)
+        Talon0.configVelocityMeasurementPeriod(10,timeout) #Period in ms
+        Talon0.configVelocityMeasurementWindow(32,timeout) #averages 32 to get average
+
         self.lift = Talon0
 
     def setSpeed(self, speed):
         self.lift.set(speed)
+
+    def getData(self):
+        pos = self.lift.getSelectedSensorPosition(0)
+        vel = self.lift.getSelectedSensorVelocity(0)
+        return [pos,vel]
+
+    def getDataUnits(self):
+        pos = self.getData()[0]*self.posConv
+        vel = self.getData()[1]*self.velConv
+        return [pos,vel]
+
+    def getTemp(self):
+        return self.lift.getTemperature()
+
+    def getOutputCurrent(self):
+        return self.lift.getOutputCurrent()*2
 
     def initDefaultCommand(self):
         self.setDefaultCommand(FollowJoystick())

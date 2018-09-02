@@ -52,13 +52,15 @@ class MyRobot(CommandBasedRobot):
         self.autonomousProgram.start()
 
     def robotPeriodic(self):
-        self.smartDashboard.putNumber("Position", self.wrist.getPos())
-        self.smartDashboard.putNumber("WristAmps", self.wrist.getOutputCurrent())
-        self.smartDashboard.putNumber("RightEncoder", self.drive.encoders.get()[0])
+        self.smartDashboard.putNumber("WristPosition", self.wrist.getDataUnits()[0])
+        self.smartDashboard.putNumber("LiftPosition", self.lift.getDataUnits()[0])
         self.smartDashboard.putNumber("RightDistance", self.drive.encoders.getDistance()[0])
-
-        self.smartDashboard.putNumber("LeftEncoder", self.drive.encoders.get()[1])
         self.smartDashboard.putNumber("LeftDistance", self.drive.encoders.getDistance()[1])
+
+        self.smartDashboard.putNumber("DriveAmps",self.drive.getOutputCurrent())
+        self.smartDashboard.putNumber("IntakeAmps",self.intake.getOutputCurrent())
+        self.smartDashboard.putNumber("WristAmps", self.wrist.getOutputCurrent())
+        self.smartDashboard.putNumber("LiftAmps",self.lift.getOutputCurrent())
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)
