@@ -1,84 +1,63 @@
-#
-# See the documentation for more details on how this works
-#
-# The idea here is you provide a simulation object that overrides specific
-# pieces of WPILib, and modifies motors/sensors accordingly depending on the
-# state of the simulation. An example of this would be measuring a motor
-# moving for a set period of time, and then changing a limit switch to turn
-# on after that period of time. This can help you do more complex simulations
-# of your robot code without too much extra effort.
-#
-
+import math
+#import numpy as np
 
 from pyfrc.physics import motor_cfgs, tankmodel
 from pyfrc.physics.units import units
 
+import sim.simComms as simComms
 
 class PhysicsEngine(object):
-    '''
-        Simulates a motor moving something that strikes two limit switches,
-        one on each end of the track. Obviously, this is not particularly
-        realistic, but it's good enough to illustrate the point
-    '''
-    
-    def __init__(self, physics_controller):
-        '''
-            :param physics_controller: `pyfrc.physics.core.PhysicsInterface` object
-                                       to communicate simulation effects to
-        '''
-        
-        self.physics_controller = physics_controller
+    def __init__(self, controller):
+        self.controller = controller
         self.position = 0
-        
+
+        self.DistPerPulseL = 4/12 * math.pi / 127
+        self.DistPerPulseR = 4/12 * math.pi / 255
+
         # Change these parameters to fit your robot!
-        bumper_width = 3.25*units.inch
-        
         self.drivetrain = tankmodel.TankModel.theory(
-            motor_cfgs.MOTOR_CFG_CIM,       # motor configuration
-            110*units.lbs,                  # robot mass
-            10.71,                          # drivetrain gear ratio
-            2,                              # motors per side
-            22*units.inch,                  # robot wheelbase
-            23*units.inch + bumper_width*2, # robot width
-            32*units.inch + bumper_width*2, # robot length
-            6*units.inch                    # wheel diameter
+            motor_cfgs.MOTOR_CFG_MINI_CIM,           # motor configuration
+            140*units.lbs,                           # robot mass
+            6,                                   # drivetrain gear ratio
+            3,                                       # motors per side
+            (33/12)*units.feet,        # robot wheelbase
+            (40/12)*units.feet,     # robot width
+            (35/12)*units.feet,    # robot length
+            (4/12)*units.feet         # wheel diameter
         )
-            
-    def update_sim(self, hal_data, now, tm_diff):
-        '''
-            Called when the simulation parameters for the program need to be
-            updated.
-            
-            :param now: The current time as a float
-            :param tm_diff: The amount of time that has passed since the last
-                            time that this function was called
-        '''
-        
+
+        self.distance = [0.0,0.0]
+
+        self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
+
+        self.deadZone=0.4
+
+    def update_sim(self, hal_data, now, timeDiff):
         # Simulate the drivetrain
-        l_motor = hal_data['pwm'][1]['value']
-        r_motor = hal_data['pwm'][2]['value']
-        
-        x, y, angle = self.drivetrain.get_distance(l_motor, r_motor, tm_diff)
-        self.physics_controller.distance_drive(x, y, angle)
-        
-        
-        # update position (use tm_diff so the rate is constant)
-        self.position += hal_data['pwm'][4]['value'] * tm_diff * 3
-        
-        # update limit switches based on position
-        if self.position <= 0:
-            switch1 = True
-            switch2 = False
-            
-        elif self.position > 10:
-            switch1 = False
-            switch2 = True
-            
+        left = hal_data['CAN'][10]['value']
+        right = hal_data['CAN'][20]['value']
+
+        if(abs(left)<self.deadZone): left = 0
+        if(abs(right)<self.deadZone): right = 0
+
+        x,y,angle = self.drivetrain.get_distance(-left, right, timeDiff)
+        self.controller.distance_drive(x, y, angle)
+
+        if(simComms.getEncoders()==True):
+            self.distance = [0,0]
+            simComms.resetEncodersSim()
         else:
-            switch1 = False
-            switch2 = False
-        
-        # set values here
-        hal_data['dio'][1]['value'] = switch1
-        hal_data['dio'][2]['value'] = switch2
-        hal_data['analog_in'][2]['voltage'] = self.position
+            self.distance[0] += self.drivetrain.l_velocity*timeDiff
+            self.distance[1] += self.drivetrain.r_velocity*timeDiff
+
+        hal_data['encoder'][0]['count'] = int(self.distance[0]/self.DistPerPulseL)
+        hal_data['encoder'][1]['count'] = int(self.distance[1]/self.DistPerPulseR)
+
+        #lift = hal_data['CAN'][30]['value']
+        #hal_data['encoder'][2]['count'] += int(lift*100)
+
+        #wrist = hal_data['CAN'][40]['value']
+        #hal_data['encoder'][3]['count'] += int(wrist*100)
+
+        #intake = hal_data['CAN'][50]['value']
+        #hal_data['encoder'][4]['count'] += int(intake*100)
