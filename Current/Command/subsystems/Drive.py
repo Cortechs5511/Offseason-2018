@@ -39,6 +39,9 @@ class Drive(Subsystem):
             self.DriveRight2.follow(self.DriveRight1)
             self.DriveRight3.follow(self.DriveRight1)
 
+            for motor in [VictorLeft1,VictorLeft2,VictorRight1,VictorRight2]:
+                motor.clearStickyFaults(timeout)
+
         for motor in [TalonLeft,TalonRight]:
             motor.clearStickyFaults(timeout) #Clears sticky faults
 
@@ -47,9 +50,11 @@ class Drive(Subsystem):
             motor.configPeakCurrentDuration(100,timeout) #Peak Current for max 100 ms
             motor.enableCurrentLimit(True)
 
+            motor.configVoltageCompSaturation(12,timeout) #Sets saturation value
             motor.enableVoltageCompensation(True) #Compensates for lower voltages
-            motor.configVoltageCompSaturation(12,0) #Sets saturation value
+
             motor.configOpenLoopRamp(0.2,timeout) #number of seconds from 0 to 1
+
 
         self.left = TalonLeft
         self.right = TalonRight

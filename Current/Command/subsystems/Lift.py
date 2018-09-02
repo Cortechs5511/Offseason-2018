@@ -1,41 +1,40 @@
 import wpilib
-from wpilib.command.subsystem import Subsystem
-import ctre
-import wpilib
 import wpilib.buttons
-from wpilib.drive import DifferentialDrive
+from wpilib.command.subsystem import Subsystem
+
+import ctre
+from ctre import WPI_TalonSRX as Talon
+from ctre import WPI_VictorSPX as Victor
+
 from commands.followjoystick import FollowJoystick
-from ctre import WPI_TalonSRX
 
 class Lift(Subsystem):
-    '''
-    This example subsystem controls a single Talon in PercentVBus mode.
-    '''
-
     def __init__(self):
-        '''Instantiates the motor object.'''
-
         super().__init__('Lift')
 
-        self.lift = ctre.WPI_TalonSRX(30)
-        self.Lift2 = ctre.WPI_TalonSRX(31)
-        self.Lift2.set(WPI_TalonSRX.ControlMode.Follower,30)
+        timeout = 0
 
-        motors = [WPI_TalonSRX(31)]
+        Talon0 = Talon(30)
+        Talon1 = Talon(31)
 
-        for motor in motors:
-            motor.clearStickyFaults(0)
-            motor.configContinuousCurrentLimit(15,0)
-            motor.configPeakCurrentLimit(20,0)
-            motor.configPeakCurrentDuration(100, 0)
+        Talon1.follow(Talon0)
+
+        for motor in [Talon0,Talon1]:
+            motor.clearStickyFaults(timeout) #Clears sticky faults
+
+            motor.configContinuousCurrentLimit(20,timeout) #15 Amps per motor
+            motor.configPeakCurrentLimit(30,timeout) #20 Amps during Peak Duration
+            motor.configPeakCurrentDuration(100,timeout) #Peak Current for max 100 ms
             motor.enableCurrentLimit(True)
 
-            motor.enableVoltageCompensation(True)
-            motor.configOpenLoopRamp(3, 0)
+            motor.configVoltageCompSaturation(12,timeout) #Sets saturation value
+            motor.enableVoltageCompensation(True) #Compensates for lower voltages
+            #motor.configOpenLoopRamp(0.2,timeout) #number of seconds from 0 to 1
+
+        self.lift = Talon0
 
     def setSpeed(self, speed):
         self.lift.set(speed)
-
 
     def initDefaultCommand(self):
         self.setDefaultCommand(FollowJoystick())

@@ -1,31 +1,28 @@
 import wpilib
-from wpilib.command.subsystem import Subsystem
-import ctre
-import wpilib
 import wpilib.buttons
-from wpilib.drive import DifferentialDrive
+from wpilib.command.subsystem import Subsystem
+
+import ctre
+from ctre import WPI_TalonSRX as Talon
+
 from commands.followjoystick import FollowJoystick
 
 class Wrist(Subsystem):
-    '''
-    This example subsystem controls a single Talon in PercentVBus mode.
-    '''
-
     def __init__(self):
-        '''Instantiates the motor object.'''
-
         super().__init__('Wrist')
+        timeout = 0
 
-        self.wrist = ctre.WPI_TalonSRX(40)
+        self.wrist = Talon(40)
 
-        self.wrist.clearStickyFaults(0)
-        self.wrist.configContinuousCurrentLimit(15,0)
-        self.wrist.configPeakCurrentLimit(20,0)
-        self.wrist.configPeakCurrentDuration(100, 0)
+        self.wrist.clearStickyFaults(timeout)
+        self.wrist.configContinuousCurrentLimit(15,timeout)
+        self.wrist.configPeakCurrentLimit(20,timeout)
+        self.wrist.configPeakCurrentDuration(100, timeout)
         self.wrist.enableCurrentLimit(True)
 
+        self.wrist.configVoltageCompSaturation(12,timeout) #Sets saturation value
         self.wrist.enableVoltageCompensation(True)
-        self.wrist.configOpenLoopRamp(3, 0)
+        #self.wrist.configOpenLoopRamp(3, timeout)
 
     def setSpeed(self, speed):
         self.wrist.set(speed)
