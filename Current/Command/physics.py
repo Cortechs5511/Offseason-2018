@@ -28,7 +28,7 @@ class PhysicsEngine(object):
 
         self.distance = [0.0,0.0]
 
-        self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
+        #self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
 
         self.deadZone=0.4
 

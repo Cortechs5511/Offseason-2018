@@ -10,7 +10,7 @@ from wpilib.command.subsystem import Subsystem
 
 from commands.followjoystick import FollowJoystick
 
-import sensors.navx as navx
+#import sensors.navx as navx
 import sensors.DTEncoders as encoders
 
 class Drive(Subsystem):
@@ -31,13 +31,15 @@ class Drive(Subsystem):
         TalonRight = Talon(20)
 
         if not wpilib.RobotBase.isSimulation():
-            [VictorLeft1,VictorLeft2] = [Victor(11), Victor(12)]
-            self.DriveLeft2.follow(self.DriveLeft1)
-            self.DriveLeft3.follow(self.DriveLeft1)
+            VictorLeft1 = Victor(11)
+            VictorLeft2 = Victor(12)
+            VictorLeft1.follow(TalonLeft)
+            VictorLeft2.follow(TalonLeft)
 
-            [VictorRight1, VictorRight2] = [Victor(21), Victor(22)]
-            self.DriveRight2.follow(self.DriveRight1)
-            self.DriveRight3.follow(self.DriveRight1)
+            VictorRight1 = Victor(21)
+            VictorRight2 = Victor(22)
+            VictorRight1.follow(TalonRight)
+            VictorRight2.follow(TalonRight)
 
             for motor in [VictorLeft1,VictorLeft2,VictorRight1,VictorRight2]:
                 motor.clearStickyFaults(timeout)
@@ -59,10 +61,10 @@ class Drive(Subsystem):
         self.left = TalonLeft
         self.right = TalonRight
 
-        self.navx = navx.NavX()
+        #self.navx = navx.NavX()
         self.encoders = encoders.DTEncoders()
 
-        self.navx.disablePID()
+        #self.navx.disablePID()
         self.encoders.disablePID()
 
     def tankDrive(self,left,right):

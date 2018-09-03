@@ -39,9 +39,9 @@ class FollowJoystick(Command):
 
         # set speed according to gravity value
         if Joystick.getZ() > 0.1:
-            Lift.setSpeed(-0.4 - y)
+            Lift.setSpeed(Joystick.getZ() + y)
         elif Joystick.getZ() * -1 <- 0.1:
-            Lift.setSpeed(0.4 + y)
+            Lift.setSpeed(Joystick.getZ() - y)
         else:
             Lift.setSpeed(y)
 

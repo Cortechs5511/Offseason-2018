@@ -1,4 +1,4 @@
-import wpilib
+'''import wpilib
 import math
 #import numpy as np
 
@@ -157,8 +157,8 @@ def followPath(drivetrain, leftFollower, rightFollower):
         l = leftFollower.calculate(drivetrain.encoders.get()[0])
         r = rightFollower.calculate(drivetrain.encoders.get()[1])
         desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
-        drivetrain.navx.setPID(desiredHeading)
-        turn = drivetrain.navx.getPID()
+        #drivetrain.navx.setPID(desiredHeading)
+        #turn = drivetrain.navx.getPID()
         drivetrain.tank(l+turn,r-turn)
     else: drivetrain.stop()
 
@@ -167,4 +167,4 @@ def pathFinder(drivetrain):
     global rightFollower
 
     if(init==False and len(self.gameData)>0 and len(self.auto)>0): [leftFollower, rightFollower] = initPath(drivetrain)
-    if(init==True): followPath(drivetrain,leftFollower,rightFollower)
+    if(init==True): followPath(drivetrain,leftFollower,rightFollower)'''

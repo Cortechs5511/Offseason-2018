@@ -14,13 +14,13 @@ import oi
 
 from networktables import NetworkTables
 
-import pathfinder as pf
-import path.path as path
+#import pathfinder as pf
+#import path.path as path
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-from robotpy_ext.common_drivers import navx
+#from robotpy_ext.common_drivers import navx
 
 import wpilib.buttons
 

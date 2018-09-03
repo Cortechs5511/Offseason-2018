@@ -26,10 +26,10 @@ class Lift(Subsystem):
         for motor in [Talon0,Talon1]:
             motor.clearStickyFaults(timeout) #Clears sticky faults
 
-            motor.configContinuousCurrentLimit(20,timeout) #15 Amps per motor
-            motor.configPeakCurrentLimit(30,timeout) #20 Amps during Peak Duration
-            motor.configPeakCurrentDuration(100,timeout) #Peak Current for max 100 ms
-            motor.enableCurrentLimit(True)
+            #motor.configContinuousCurrentLimit(20,timeout) #15 Amps per motor
+            #motor.configPeakCurrentLimit(30,timeout) #20 Amps during Peak Duration
+            #motor.configPeakCurrentDuration(100,timeout) #Peak Current for max 100 ms
+            #motor.enableCurrentLimit(True)
 
             motor.configVoltageCompSaturation(12,timeout) #Sets saturation value
             motor.enableVoltageCompensation(True) #Compensates for lower voltages
