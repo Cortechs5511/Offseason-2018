@@ -14,13 +14,13 @@ import oi
 
 from networktables import NetworkTables
 
-#import pathfinder as pf
-#import path.path as path
+import pathfinder as pf
+import path.path as path
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-#from robotpy_ext.common_drivers import navx
+from robotpy_ext.common_drivers import navx
 
 import wpilib.buttons
 
@@ -47,6 +47,7 @@ class MyRobot(CommandBasedRobot):
         '''
         self.joystick = oi.getJoystick(0)
         self.joystick1 = oi.getJoystick(1)
+        self.xbox = oi.getJoystick(2)
 
     def autonomousInit(self):
         self.autonomousProgram.start()
