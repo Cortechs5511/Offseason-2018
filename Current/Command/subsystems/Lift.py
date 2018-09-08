@@ -1,6 +1,7 @@
 import wpilib
 import wpilib.buttons
 from wpilib.command.subsystem import Subsystem
+from networktables import NetworkTables
 
 import ctre
 from ctre import WPI_TalonSRX as Talon
@@ -10,8 +11,7 @@ from commands.followjoystick import FollowJoystick
 
 class Lift(Subsystem):
 
-    posConv = 1
-    velConv = 1
+    posConv = 1/2380
 
     def __init__(self):
         super().__init__('Lift')
@@ -44,15 +44,13 @@ class Lift(Subsystem):
     def setSpeed(self, speed):
         self.lift.set(speed)
 
-    def getData(self):
-        pos = self.lift.getSelectedSensorPosition(0)
-        vel = self.lift.getSelectedSensorVelocity(0)
-        return [pos,vel]
+    def getLiftGravity(self):
+        return self.smartDashboard.getNumber("lift_gravity", 0.0)
 
-    def getDataUnits(self):
-        pos = self.getData()[0]*self.posConv
-        vel = self.getData()[1]*self.velConv
-        return [pos,vel]
+    def getHeight(self):
+        pos = self.lift.getSelectedSensorPosition(0)*self.posConv
+        self.smartDashboard.putNumber("lift_height",pos)
+        return pos
 
     def getTemp(self):
         return self.lift.getTemperature()
