@@ -44,6 +44,9 @@ class Lift(Subsystem):
     def setSpeed(self, speed):
         self.lift.set(speed)
 
+    def pidGet(self):
+        return self.getHeight()
+
     def getLiftGravity(self):
         return self.smartDashboard.getNumber("lift_gravity", 0.0)
 

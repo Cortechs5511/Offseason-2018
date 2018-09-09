@@ -1,4 +1,4 @@
-'''import wpilib
+import wpilib
 import math
 #import numpy as np
 
@@ -167,4 +167,4 @@ def pathFinder(drivetrain):
     global rightFollower
 
     if(init==False and len(self.gameData)>0 and len(self.auto)>0): [leftFollower, rightFollower] = initPath(drivetrain)
-    if(init==True): followPath(drivetrain,leftFollower,rightFollower)'''
+    if(init==True): followPath(drivetrain,leftFollower,rightFollower)
