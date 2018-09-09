@@ -39,8 +39,7 @@ class Wrist(Subsystem):
         self.wrist.configVelocityMeasurementWindow(32,timeout) #averages 32 to get average
 
     def getAngle(self):
-
-        return pos
+        return self.wrist.getSelectedSensorPosition(0)*self.posConv
 
 
     def getGravity(self):

@@ -10,7 +10,7 @@ class setPositionWrist(Command):
         self.Wrist = self.getRobot().wrist
 
     def pidGet(self):
-        return self.Wrist.getHeight()
+        return self.Wrist.getAngle()
 
     def enablePID(self):
         self.wristController.enable()
