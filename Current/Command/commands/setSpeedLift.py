@@ -12,8 +12,8 @@ class setSpeedLift(Command):
     def execute(self):
         liftPos = self.Lift.getHeight()
         liftSpeed = self.getRobot().xbox.getY(0)
-        if liftSpeed > 0.1 and liftPos < 50: self.Lift.setSpeed(liftSpeed)
-        elif liftSpeed < - 0.1 and liftPos > 20: self.Lift.setSpeed(liftSpeed)
+        if liftSpeed > 0.1 and liftPos < 28: self.Lift.setSpeed(liftSpeed)
+        elif liftSpeed < - 0.1 and liftPos > -1: self.Lift.setSpeed(liftSpeed)
         else: self.Lift.setSpeed(0)
 
     def interrupted(self):

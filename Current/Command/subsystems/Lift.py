@@ -12,12 +12,16 @@ from networktables import NetworkTables
 
 class Lift(Subsystem):
 
-    posConv = 1/2380 #convert from encoder count to inches
+    posConv = 1/183 #convert from encoder count to inches
 
     def __init__(self):
         super().__init__('Lift')
 
         self.smartDashboard = NetworkTables.getTable("SmartDashboard")
+
+        self.LiftEncoder = wpilib.Encoder(4,5)
+        self.LiftEncoder.setSamplesToAverage(10)
+        self.LiftEncoder.reset()
 
         timeout = 0
 
@@ -45,13 +49,13 @@ class Lift(Subsystem):
         self.lift = Talon0
 
     def getHeight(self):
-        pos = self.lift.getSelectedSensorPosition(0)*self.posConv
+        pos = self.LiftEncoder.get()*self.posConv
         self.smartDashboard.putNumber("liftHeight",pos)
         return pos
 
     def getGravity(self):
-        return self.smartDashboard.getNumber("liftGravity", 0.0)
-        #return 0.17
+        #return self.smartDashboard.getNumber("liftGravity", 0.0)
+        return 0.17
 
     def getTemp(self):
         return self.lift.getTemperature()
@@ -60,7 +64,7 @@ class Lift(Subsystem):
         return self.lift.getOutputCurrent()*2
 
     def setSpeed(self, speed):
-        self.lift.set(speed+self.getGravity())
+        self.lift.set(speed + self.getGravity())
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedLift())

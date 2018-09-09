@@ -12,9 +12,11 @@ class setSpeedWrist(Command):
     def execute(self):
         wristPos = self.Wrist.getAngle()
         Joystick = self.getRobot().xbox
-        if Joystick.getXButton()==True and wristPos < 120: self.Wrist.setSpeed(-0.4)
+        '''if Joystick.getXButton()==True and wristPos < 120: self.Wrist.setSpeed(0.4)
         elif Joystick.getBButton()==True and wristPos > -30: self.Wrist.setSpeed(0.4)
         else: self.Wrist.setSpeed(0)
+        '''
+        self.Wrist.setSpeed(Joystick.getY(2))
 
     def interrupted(self):
         self.Wrist.setSpeed(0)
