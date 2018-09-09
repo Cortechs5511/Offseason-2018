@@ -5,15 +5,21 @@ from wpilib.command.subsystem import Subsystem
 import ctre
 from ctre import WPI_TalonSRX as Talon
 
-from commands.followjoystick import FollowJoystick
+import math
+
+from commands.setSpeedWrist import setSpeedWrist
+
+from networktables import NetworkTables
 
 class Wrist(Subsystem):
 
-    posConv = 1
-    velConv = 1
+    posConv = 1/2222
 
     def __init__(self):
         super().__init__('Wrist')
+
+        self.smartDashboard = NetworkTables.getTable("SmartDashboard")
+
         timeout = 0
 
         self.wrist = Talon(40)
@@ -32,18 +38,12 @@ class Wrist(Subsystem):
         self.wrist.configVelocityMeasurementPeriod(10,timeout) #Period in ms
         self.wrist.configVelocityMeasurementWindow(32,timeout) #averages 32 to get average
 
-    def setSpeed(self, speed):
-        self.wrist.set(speed)
+    def getAngle(self):
+        return self.wrist.getSelectedSensorPosition(0)*self.posConv
 
-    def getData(self):
-        pos = self.wrist.getSelectedSensorPosition(0)
-        vel = self.wrist.getSelectedSensorVelocity(0)
-        return [pos,vel]
-
-    def getDataUnits(self):
-        pos = self.getData()[0]*self.posConv
-        vel = self.getData()[1]*self.velConv
-        return [pos,vel]
+    def getGravity(self):
+        return self.smartDashboard.getNumber("wristGravity", 0.0) * math.sin(self.getAngle())
+        #return 0.17
 
     def getTemp(self):
         return self.wrist.getTemperature()
@@ -51,5 +51,8 @@ class Wrist(Subsystem):
     def getOutputCurrent(self):
         return self.wrist.getOutputCurrent()
 
+    def setSpeed(self, speed):
+        self.wrist.set(speed+self.getGravity())
+
     def initDefaultCommand(self):
-        self.setDefaultCommand(FollowJoystick())
+        self.setDefaultCommand(setSpeedWrist())

@@ -26,7 +26,7 @@ class FollowJoystick(Command):
         Lift = self.getRobot().lift
         Wrist = self.getRobot().wrist
         Intake = self.getRobot().intake
-        Joystick = self.getRobot().joystick
+        Joystick0 = self.getRobot().joystick0
         Joystick1 = self.getRobot().joystick1
         Joystick2 = self.getRobot().xbox
         wrist_pos = Wrist.getDataUnits()[0]
@@ -62,7 +62,7 @@ class FollowJoystick(Command):
 
 
         #DRIVE
-        left = Joystick.getY()
+        left = Joystick0.getY()
         right = Joystick1.getY()
         self.getRobot().drive.tankDrive(left,right)
 

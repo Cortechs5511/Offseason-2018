@@ -8,7 +8,7 @@ import wpilib
 from wpilib.drive import DifferentialDrive
 from wpilib.command.subsystem import Subsystem
 
-from commands.followjoystick import FollowJoystick
+from commands.setSpeedDT import setSpeedDT
 
 #import sensors.navx as navx
 import sensors.DTEncoders as encoders
@@ -81,4 +81,4 @@ class Drive(Subsystem):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(FollowJoystick())
+        self.setDefaultCommand(setSpeedDT())

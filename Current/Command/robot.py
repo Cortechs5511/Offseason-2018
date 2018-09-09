@@ -45,7 +45,7 @@ class MyRobot(CommandBasedRobot):
         Since OI instantiates commands and commands need access to subsystems,
         OI must be initialized after subsystems.
         '''
-        self.joystick = oi.getJoystick(0)
+        self.joystick0 = oi.getJoystick(0)
         self.joystick1 = oi.getJoystick(1)
         self.xbox = oi.getJoystick(2)
 
@@ -53,7 +53,7 @@ class MyRobot(CommandBasedRobot):
         self.autonomousProgram.start()
 
     def robotPeriodic(self):
-        self.smartDashboard.putNumber("WristPosition", self.wrist.getDataUnits()[0])
+        self.smartDashboard.putNumber("WristPosition", self.wrist.getAngle())
         self.smartDashboard.putNumber("LiftPosition", self.lift.getHeight())
         self.smartDashboard.putNumber("RightDistance", self.drive.encoders.getDistance()[0])
         self.smartDashboard.putNumber("LeftDistance", self.drive.encoders.getDistance()[1])

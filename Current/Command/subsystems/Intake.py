@@ -6,7 +6,7 @@ import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-from commands.followjoystick import FollowJoystick
+from commands.setSpeedIntake import setSpeedIntake
 
 class Intake(Subsystem):
 
@@ -41,4 +41,4 @@ class Intake(Subsystem):
         return self.intake.getOutputCurrent()*2
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(FollowJoystick())
+        self.setDefaultCommand(setSpeedIntake())

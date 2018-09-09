@@ -5,15 +5,15 @@ import math
 class setSpeedLift(Command):
 
     def __init__(self):
-        super().__init__('SetLiftSpeed')
+        super().__init__('setSpeedLift')
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
 
     def execute(self):
         liftPos = self.Lift.getHeight()
         liftSpeed = self.getRobot().xbox.getY(0)
-        if liftSpeed > 0.1 and lift_pos < 48: self.Lift.setSpeed(liftSpeed)
-        elif liftSpeed < - 0.1 and lift_pos > 20: self.Lift.setSpeed(liftSpeed)
+        if liftSpeed > 0.1 and liftPos < 50: self.Lift.setSpeed(liftSpeed)
+        elif liftSpeed < - 0.1 and liftPos > 20: self.Lift.setSpeed(liftSpeed)
         else: self.Lift.setSpeed(0)
 
     def interrupted(self):

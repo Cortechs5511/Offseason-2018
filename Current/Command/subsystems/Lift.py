@@ -1,13 +1,14 @@
 import wpilib
 import wpilib.buttons
 from wpilib.command.subsystem import Subsystem
-from networktables import NetworkTables
 
 import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
 from commands.setSpeedLift import setSpeedLift
+
+from networktables import NetworkTables
 
 class Lift(Subsystem):
 
@@ -43,14 +44,14 @@ class Lift(Subsystem):
 
         self.lift = Talon0
 
-    def getLiftGravity(self):
-        return self.smartDashboard.getNumber("liftGravity", 0.0)
-        #return 0.17
-
     def getHeight(self):
         pos = self.lift.getSelectedSensorPosition(0)*self.posConv
         self.smartDashboard.putNumber("liftHeight",pos)
         return pos
+
+    def getGravity(self):
+        return self.smartDashboard.getNumber("liftGravity", 0.0)
+        #return 0.17
 
     def getTemp(self):
         return self.lift.getTemperature()
@@ -59,7 +60,7 @@ class Lift(Subsystem):
         return self.lift.getOutputCurrent()*2
 
     def setSpeed(self, speed):
-        self.lift.set(speed+self.getLiftGravity())
+        self.lift.set(speed+self.getGravity())
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedLift())
