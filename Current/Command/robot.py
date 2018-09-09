@@ -54,7 +54,7 @@ class MyRobot(CommandBasedRobot):
 
     def robotPeriodic(self):
         self.smartDashboard.putNumber("WristPosition", self.wrist.getDataUnits()[0])
-        self.smartDashboard.putNumber("LiftPosition", self.lift.getDataUnits()[0])
+        self.smartDashboard.putNumber("LiftPosition", self.lift.getHeight())
         self.smartDashboard.putNumber("RightDistance", self.drive.encoders.getDistance()[0])
         self.smartDashboard.putNumber("LeftDistance", self.drive.encoders.getDistance()[1])
 

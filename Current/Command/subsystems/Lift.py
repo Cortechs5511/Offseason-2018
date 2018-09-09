@@ -7,14 +7,16 @@ import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-from commands.followjoystick import FollowJoystick
+from commands.setSpeedLift import setSpeedLift
 
 class Lift(Subsystem):
 
-    posConv = 1/2380
+    posConv = 1/2380 #convert from encoder count to inches
 
     def __init__(self):
         super().__init__('Lift')
+
+        self.smartDashboard = NetworkTables.getTable("SmartDashboard")
 
         timeout = 0
 
@@ -41,18 +43,13 @@ class Lift(Subsystem):
 
         self.lift = Talon0
 
-    def setSpeed(self, speed):
-        self.lift.set(speed)
-
-    def pidGet(self):
-        return self.getHeight()
-
     def getLiftGravity(self):
-        return self.smartDashboard.getNumber("lift_gravity", 0.0)
+        return self.smartDashboard.getNumber("liftGravity", 0.0)
+        #return 0.17
 
     def getHeight(self):
         pos = self.lift.getSelectedSensorPosition(0)*self.posConv
-        self.smartDashboard.putNumber("lift_height",pos)
+        self.smartDashboard.putNumber("liftHeight",pos)
         return pos
 
     def getTemp(self):
@@ -61,5 +58,8 @@ class Lift(Subsystem):
     def getOutputCurrent(self):
         return self.lift.getOutputCurrent()*2
 
+    def setSpeed(self, speed):
+        self.lift.set(speed+self.getLiftGravity())
+
     def initDefaultCommand(self):
-        self.setDefaultCommand(FollowJoystick())
+        self.setDefaultCommand(setSpeedLift())

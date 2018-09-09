@@ -30,7 +30,7 @@ class FollowJoystick(Command):
         Joystick1 = self.getRobot().joystick1
         Joystick2 = self.getRobot().xbox
         wrist_pos = Wrist.getDataUnits()[0]
-        lift_pos = Lift.getDataUnits()[0]
+        lift_pos = Lift.getHeight()
         gravity_lift = self.getLiftGravity()
         gravity_wrist = self.getLiftGravity()
         wrist_tol = 45 #degree position at which wrist needs power to be held up
@@ -45,7 +45,7 @@ class FollowJoystick(Command):
         else:
             y = 0'''
 
-        lift_height = lift_pos / 2380
+        lift_height = lift_pos
         y = lift_height * gravity_lift / 50
         self.smartDashboard.putNumber("lift_height",lift_height)
 

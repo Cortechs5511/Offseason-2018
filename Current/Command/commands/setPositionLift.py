@@ -2,12 +2,15 @@ from wpilib.command import Command
 import math
 from networktables import NetworkTables
 
-class setLiftSpeed(Command):
+class setPositionLift(Command):
 
     def __init__(self):
-        super().__init__('Follow Joystick')
-        self.smartDashboard = NetworkTables.getTable("SmartDashboard")
+        super().__init__('setLiftSpeed')
         self.requires(self.getRobot().lift)
+        self.Lift = self.getRobot().lift
+
+    def pidGet(self):
+        return self.Lift.getHeight()
 
     def enablePID(self):
         self.liftController.enable()
@@ -24,30 +27,26 @@ class setLiftSpeed(Command):
     def pidWrite(self, output):
         pass
 
-    def initiate(self, lift_pos):
-        self.liftTarget = lift_pos
+    def initiate(self, setpoint):
         if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.025, 0.002, 0.20, 0.00] # These PID parameters are used in simulation
         else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
-        kToleranceInches = 5.0
 
-        liftController = wpilib.PIDController(kP, kI, kD, kF, self.getRobot().lift, output=self)
-        liftController.setInputRange(20, 50)
-        liftController.setOutputRange(-0.8, 0.8)
-        liftController.setAbsoluteTolerance(kToleranceInches)
-        liftController.setContinuous(True)
-        self.liftController = liftController
+        self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
+        self.liftController.setInputRange(20, 50) #input range in inches
+        self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
+        self.liftController.setAbsoluteTolerance(5.0) #tolerance in inches
+        self.liftController.setContinuous(True)
+
         self.enablePID()
         self.setPID(setpoint)
 
     def execute(self):
-        Lift = self.getRobot().lift
-        lift_pos = Lift.getHeight()
-        gravity_lift = self.getLiftGravity()
-        initial = self.getPID()
-        Lift.setSpeed(initial + gravity_lift)
+        self.Lift.setSpeed(self.getPID())
 
     def interrupted(self):
         self.disablePID()
+        self.Lift.setSpeed(0)
 
     def end(self):
         self.disablePID()
+        self.Lift.setSpeed(0)
