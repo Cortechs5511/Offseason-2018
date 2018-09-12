@@ -28,10 +28,10 @@ class setPositionWrist(Command):
        return pos
 
     def setPIDSourceType(self):
-        pass
+        return 0
 
     def getPIDSourceType(self):
-        return 0
+        pass
 
     def setPID(self, setpoint):
         self.wristController.setSetpoint(setpoint)
@@ -58,8 +58,7 @@ class setPositionWrist(Command):
 
 
     def execute(self):
-        pass
-
+    
     def interrupted(self):
         self.disablePID()
         self.Wrist.setSpeed(0)

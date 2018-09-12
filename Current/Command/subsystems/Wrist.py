@@ -8,6 +8,8 @@ from ctre import WPI_TalonSRX as Talon
 import math
 
 from commands.setSpeedWrist import setSpeedWrist
+from commands.setPositionWrist import setPositionWrist
+
 
 from networktables import NetworkTables
 
@@ -64,4 +66,4 @@ class Wrist(Subsystem):
         self.smartDashboard.putNumber("WristPower",power)
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setSpeedWrist())
+        self.setDefaultCommand(setPositionWrist())
