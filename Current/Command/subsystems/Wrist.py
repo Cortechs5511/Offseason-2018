@@ -22,6 +22,7 @@ class Wrist(Subsystem):
 
         timeout = 0
 
+
         self.wrist = Talon(40)
 
         self.wrist.clearStickyFaults(timeout)
@@ -38,17 +39,17 @@ class Wrist(Subsystem):
         self.wrist.configVelocityMeasurementPeriod(10,timeout) #Period in ms
         self.wrist.configVelocityMeasurementWindow(32,timeout) #averages 32 to get average
 
-    def getAngle(self):
-        return self.wrist.getSelectedSensorPosition(0)*self.posConv
+        self.wrist.setQuadraturePosition(0,timeout)
 
+    def getAngle(self):
+        return math.radians(self.wrist.getSelectedSensorPosition(0)*self.posConv)
+
+    def getRawPosition(self):
+        return self.wrist.getSelectedSensorPosition(0)
 
     def getGravity(self):
-        gravity = 0.17
-        if self.getAngle() < 0:
-            return gravity * 1
-        else:
-            return gravity * -1
-
+        gravity = -0.2
+        return gravity
 
     def getTemp(self):
         return self.wrist.getTemperature()
@@ -57,7 +58,10 @@ class Wrist(Subsystem):
         return self.wrist.getOutputCurrent()
 
     def setSpeed(self, speed):
-        self.wrist.set(speed+self.getGravity())
+        """ Moves wrist up if speed is negative. """
+        power = speed + (self.getGravity()) *  math.sin(self.getAngle())
+        self.wrist.set(power)
+        self.smartDashboard.putNumber("WristPower",power)
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedWrist())

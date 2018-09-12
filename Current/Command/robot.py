@@ -8,10 +8,11 @@ from wpilib.drive import DifferentialDrive
 
 from commandbased import CommandBasedRobot
 from commands.autonomous import AutonomousProgram
+from commands import setPositionWrist
 
 from subsystems import Wrist, Intake, Lift, Drive
 import oi
-
+from wpilib import SmartDashboard
 from networktables import NetworkTables
 
 import pathfinder as pf
@@ -33,12 +34,12 @@ class MyRobot(CommandBasedRobot):
         '''
         Command.getRobot = lambda x=0: self
         self.smartDashboard = NetworkTables.getTable("SmartDashboard")
-
         self.lift = Lift.Lift()
         self.wrist = Wrist.Wrist()
         self.intake = Intake.Intake()
         self.drive = Drive.Drive()
         self.autonomousProgram = AutonomousProgram()
+        SmartDashboard.putData("WristCommand", setPositionWrist.setPositionWrist())
 
 
         '''
@@ -54,6 +55,7 @@ class MyRobot(CommandBasedRobot):
 
     def robotPeriodic(self):
         self.smartDashboard.putNumber("WristPosition", self.wrist.getAngle())
+        self.smartDashboard.putNumber("RawWristPosition", self.wrist.getRawPosition())
         self.smartDashboard.putNumber("LiftPosition", self.lift.getHeight())
         self.smartDashboard.putNumber("RightDistance", self.drive.encoders.getDistance()[0])
         self.smartDashboard.putNumber("LeftDistance", self.drive.encoders.getDistance()[1])

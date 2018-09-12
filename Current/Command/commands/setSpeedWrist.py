@@ -16,7 +16,7 @@ class setSpeedWrist(Command):
         elif Joystick.getBButton()==True and wristPos > -30: self.Wrist.setSpeed(0.4)
         else: self.Wrist.setSpeed(0)
         '''
-        self.Wrist.setSpeed(Joystick.getY(2))
+        self.Wrist.setSpeed(Joystick.getY(2) * 1/5)
 
     def interrupted(self):
         self.Wrist.setSpeed(0)
