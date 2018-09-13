@@ -14,6 +14,8 @@ from commands.setFixedDT import setFixedDT
 import sensors.navx as navx
 import sensors.DTEncoders as encoders
 
+from wpilib import SmartDashboard
+
 class Drive(Subsystem):
 
     dbLimit = 0.1
@@ -67,6 +69,8 @@ class Drive(Subsystem):
 
         self.navx.disablePID()
         self.encoders.disablePID()
+
+        #SmartDashboard.putData("DT", self)
 
     def tankDrive(self,left,right):
         if(abs(left) < self.dbLimit): left = 0

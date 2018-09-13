@@ -11,7 +11,7 @@ from commands.setSpeedWrist import setSpeedWrist
 from commands.setFixedWrist import setFixedWrist
 from commands.setPositionWrist import setPositionWrist
 
-from networktables import NetworkTables
+from wpilib import SmartDashboard
 
 class Wrist(Subsystem):
 
@@ -19,8 +19,6 @@ class Wrist(Subsystem):
 
     def __init__(self):
         super().__init__('Wrist')
-
-        self.smartDashboard = NetworkTables.getTable("SmartDashboard")
 
         timeout = 0
 
@@ -41,6 +39,8 @@ class Wrist(Subsystem):
         self.wrist.configVelocityMeasurementWindow(32,timeout) #averages 32 to get average
 
         self.wrist.setQuadraturePosition(0,timeout)
+
+        #SmartDashboard.putData("Wrist", self)
 
     def getAngle(self):
         return math.radians(self.wrist.getSelectedSensorPosition(0)*self.posConv)
@@ -63,7 +63,7 @@ class Wrist(Subsystem):
         power = speed + (self.getGravity()) *  math.sin(self.getAngle())
 
         self.wrist.set(power)
-        self.smartDashboard.putNumber("WristPower",power)
+        SmartDashboard.putNumber("WristPower",power)
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setFixedWrist(0))

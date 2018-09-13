@@ -1,6 +1,8 @@
-from networktables import NetworkTables
-from wpilib.command import Command
 import math
+
+import wpilib
+from wpilib.command import Command
+from wpilib import SmartDashboard
 
 class setFixedLift(Command):
 
@@ -9,6 +11,8 @@ class setFixedLift(Command):
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
         self.speed = speed
+
+        SmartDashboard.putData("setFixedLift", self)
 
     def execute(self):
         self.Lift.setSpeed(self.speed)

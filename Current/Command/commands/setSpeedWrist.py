@@ -1,6 +1,8 @@
-from networktables import NetworkTables
-from wpilib.command import Command
 import math
+
+import wpilib
+from wpilib.command import Command
+from wpilib import SmartDashboard
 
 class setSpeedWrist(Command):
 
@@ -8,6 +10,7 @@ class setSpeedWrist(Command):
         super().__init__('setSpeedWrist')
         self.requires(self.getRobot().wrist)
         self.Wrist = self.getRobot().wrist
+        SmartDashboard.putData("setSpeedWrist", self)
 
     def execute(self):
         wristPos = self.Wrist.getAngle()

@@ -1,15 +1,13 @@
 import math
-from networktables import NetworkTables
 
 import wpilib
-from wpilib import SmartDashboard
-
 from wpilib.command import Command
+from wpilib import SmartDashboard
 
 class setPositionWrist(Command):
 
     def __init__(self, setpoint = 0):
-        super().__init__('setWristSpeed')
+        super().__init__('setPositionWrist')
         self.setpoint = setpoint
         self.requires(self.getRobot().wrist)
         self.Wrist = self.getRobot().wrist
@@ -25,6 +23,7 @@ class setPositionWrist(Command):
         self.wristController.setContinuous(False)
 
         SmartDashboard.putData("WristPID", self.wristController)
+        SmartDashboard.putData("setPositionWrist", self)
 
     def pidGet(self):
         return self.Wrist.getAngle()

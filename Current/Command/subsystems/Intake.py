@@ -9,6 +9,8 @@ from ctre import WPI_VictorSPX as Victor
 from commands.setSpeedIntake import setSpeedIntake
 from commands.setFixedIntake import setFixedIntake
 
+from wpilib import SmartDashboard
+
 class Intake(Subsystem):
 
     def __init__(self):
@@ -34,6 +36,8 @@ class Intake(Subsystem):
             #motor.configOpenLoopRamp(0.2,timeout) #number of seconds from 0 to 1
 
         self.intake = TalonLeft
+
+        #SmartDashboard.putData("Intake", self)
 
     def setSpeed(self, speed):
         self.intake.set(speed)

@@ -1,13 +1,13 @@
-from wpilib.command import Command
 import math
-from networktables import NetworkTables
+
 import wpilib
+from wpilib.command import Command
 from wpilib import SmartDashboard
 
 class setPositionLift(Command):
 
     def __init__(self, setpoint):
-        super().__init__('setLiftSpeed')
+        super().__init__('setPositionLift')
         self.setpoint = setpoint
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
@@ -21,6 +21,9 @@ class setPositionLift(Command):
         self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
         self.liftController.setAbsoluteTolerance(5.0) #tolerance in inches
         self.liftController.setContinuous(False)
+
+        SmartDashboard.putData("LiftPID", self.liftController)
+        SmartDashboard.putData("setPositionLift", self)
 
     def setPIDSourceType(self):
         return 0

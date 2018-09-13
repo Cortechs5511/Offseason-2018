@@ -1,6 +1,8 @@
-from networktables import NetworkTables
-from wpilib.command import Command
 import math
+
+import wpilib
+from wpilib.command import Command
+from wpilib import SmartDashboard
 
 class setFixedDT(Command):
 
@@ -10,6 +12,8 @@ class setFixedDT(Command):
         self.DT = self.getRobot().drive
         self.lspeed = leftSpeed
         self.rspeed = rightSpeed
+
+        SmartDashboard.putData("setFixedDT", self)
 
     def execute(self):
         self.DT.tankDrive(self.leftSpeed,self.rightSpeed)

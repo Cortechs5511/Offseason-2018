@@ -1,4 +1,5 @@
 from wpilib.command import CommandGroup
+
 from commands.setSpeedWrist import setSpeedWrist
 from commands.setPositionWrist import setPositionWrist
 from commands.setSpeedLift import setSpeedLift

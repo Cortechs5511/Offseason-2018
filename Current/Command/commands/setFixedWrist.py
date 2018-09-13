@@ -1,6 +1,8 @@
-from networktables import NetworkTables
-from wpilib.command import Command
 import math
+
+import wpilib
+from wpilib.command import Command
+from wpilib import SmartDashboard
 
 class setFixedWrist(Command):
 
@@ -9,6 +11,8 @@ class setFixedWrist(Command):
         self.requires(self.getRobot().wrist)
         self.Wrist = self.getRobot().wrist
         self.speed = speed
+
+        SmartDashboard.putData("setFixedWrist", self)
 
     def execute(self):
         self.Wrist.setSpeed(self.speed)

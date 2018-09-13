@@ -10,7 +10,7 @@ from commands.setSpeedLift import setSpeedLift
 from commands.setFixedLift import setFixedLift
 from commands.setPositionLift import setPositionLift
 
-from networktables import NetworkTables
+from wpilib import SmartDashboard
 
 class Lift(Subsystem):
 
@@ -18,8 +18,6 @@ class Lift(Subsystem):
 
     def __init__(self):
         super().__init__('Lift')
-
-        self.smartDashboard = NetworkTables.getTable("SmartDashboard")
 
         self.LiftEncoder = wpilib.Encoder(4,5)
         self.LiftEncoder.setSamplesToAverage(10)
@@ -50,9 +48,11 @@ class Lift(Subsystem):
 
         self.lift = Talon0
 
+        #SmartDashboard.putData("Lift", self)
+
     def getHeight(self):
         pos = self.LiftEncoder.get()*self.posConv
-        self.smartDashboard.putNumber("liftHeight",pos)
+        SmartDashboard.putNumber("liftHeight",pos)
         return pos
 
     def getGravity(self):
