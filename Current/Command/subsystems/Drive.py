@@ -85,5 +85,8 @@ class Drive(Subsystem):
     def getOutputCurrent(self):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
 
+    def getDistance(self):
+        return self.encoders.getDistance()
+
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedDT())

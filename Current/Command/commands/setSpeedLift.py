@@ -2,7 +2,6 @@ import math
 
 import wpilib
 from wpilib.command import Command
-from wpilib import SmartDashboard
 
 class setSpeedLift(Command):
 
@@ -10,7 +9,6 @@ class setSpeedLift(Command):
         super().__init__('setSpeedLift')
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
-        SmartDashboard.putData("setSpeedLift", self)
 
     def execute(self):
         liftPos = self.Lift.getHeight()

@@ -2,7 +2,6 @@ import math
 
 import wpilib
 from wpilib.command import Command
-from wpilib import SmartDashboard
 
 class setSpeedIntake(Command):
 
@@ -10,7 +9,6 @@ class setSpeedIntake(Command):
         super().__init__('SetSpeedIntake')
         self.requires(self.getRobot().intake)
         self.Intake = self.getRobot().intake
-        SmartDashboard.putData("setSpeedIntake", self)
 
     def execute(self):
         Joystick = self.getRobot().xbox

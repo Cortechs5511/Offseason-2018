@@ -6,7 +6,7 @@ from wpilib import SmartDashboard
 
 class setPositionLift(Command):
 
-    def __init__(self, setpoint):
+    def __init__(self, setpoint = 0):
         super().__init__('setPositionLift')
         self.setpoint = setpoint
         self.requires(self.getRobot().lift)
@@ -23,7 +23,6 @@ class setPositionLift(Command):
         self.liftController.setContinuous(False)
 
         SmartDashboard.putData("LiftPID", self.liftController)
-        SmartDashboard.putData("setPositionLift", self)
 
     def setPIDSourceType(self):
         return 0

@@ -8,14 +8,26 @@ from wpilib.drive import DifferentialDrive
 
 from commandbased import CommandBasedRobot
 from commands.autonomous import AutonomousProgram
-from commands import setPositionWrist
-from commands import Sequences
 
+from commands import setPositionWrist
+from commands import setPositionLift
+
+from commands import setFixedDT
+from commands import setFixedIntake
+from commands import setFixedLift
+from commands import setFixedWrist
+
+from commands import setSpeedDT
+from commands import setSpeedIntake
+from commands import setSpeedLift
+from commands import setSpeedWrist
+
+from commands import Sequences
 
 from subsystems import Wrist, Intake, Lift, Drive
 import oi
+
 from wpilib import SmartDashboard
-from networktables import NetworkTables
 
 import pathfinder as pf
 import path.path as path
@@ -35,16 +47,25 @@ class MyRobot(CommandBasedRobot):
         you will need to access later.
         '''
         Command.getRobot = lambda x=0: self
-        self.smartDashboard = NetworkTables.getTable("SmartDashboard")
+
+        self.drive = Drive.Drive()
         self.lift = Lift.Lift()
         self.wrist = Wrist.Wrist()
         self.intake = Intake.Intake()
-        self.drive = Drive.Drive()
+        
         self.autonomousProgram = AutonomousProgram()
-        SmartDashboard.putData("WristCommand", setPositionWrist.setPositionWrist())
+
+        SmartDashboard.putData("setPositionWrist", setPositionWrist.setPositionWrist())
+        SmartDashboard.putData("setPositionLift", setPositionLift.setPositionLift())
+        SmartDashboard.putData("setFixedDT", setFixedDT.setFixedDT())
+        SmartDashboard.putData("setFixedIntake", setFixedIntake.setFixedIntake())
+        SmartDashboard.putData("setFixedLift", setFixedLift.setFixedLift())
+        SmartDashboard.putData("setFixedWrist", setFixedWrist.setFixedWrist())
+        SmartDashboard.putData("setSpeedDT", setSpeedDT.setSpeedDT())
+        SmartDashboard.putData("setSpeedIntake", setSpeedIntake.setSpeedIntake())
+        SmartDashboard.putData("setSpeedLift", setSpeedLift.setSpeedLift())
+        SmartDashboard.putData("setSpeedWrist", setSpeedWrist.setSpeedWrist())
         Sequences.UpdateDashboard()
-
-
 
         '''
         Since OI instantiates commands and commands need access to subsystems,
@@ -58,16 +79,18 @@ class MyRobot(CommandBasedRobot):
         self.autonomousProgram.start()
 
     def robotPeriodic(self):
-        self.smartDashboard.putNumber("WristPosition", self.wrist.getAngle())
-        self.smartDashboard.putNumber("RawWristPosition", self.wrist.getRawPosition())
-        self.smartDashboard.putNumber("LiftPosition", self.lift.getHeight())
-        self.smartDashboard.putNumber("RightDistance", self.drive.encoders.getDistance()[0])
-        self.smartDashboard.putNumber("LeftDistance", self.drive.encoders.getDistance()[1])
+        SmartDashboard.putNumber("WristPosition", self.wrist.getAngle())
+        SmartDashboard.putNumber("LiftPosition", self.lift.getHeight())
+        SmartDashboard.putNumber("RightDistance", self.drive.getDistance()[0])
+        SmartDashboard.putNumber("LeftDistance", self.drive.getDistance()[1])
 
-        self.smartDashboard.putNumber("DriveAmps",self.drive.getOutputCurrent())
-        self.smartDashboard.putNumber("IntakeAmps",self.intake.getOutputCurrent())
-        self.smartDashboard.putNumber("WristAmps", self.wrist.getOutputCurrent())
-        self.smartDashboard.putNumber("LiftAmps",self.lift.getOutputCurrent())
+        SmartDashboard.putNumber("DriveAmps",self.drive.getOutputCurrent())
+        SmartDashboard.putNumber("IntakeAmps",self.intake.getOutputCurrent())
+        SmartDashboard.putNumber("WristAmps", self.wrist.getOutputCurrent())
+        SmartDashboard.putNumber("LiftAmps",self.lift.getOutputCurrent())
+
+        total = self.drive.getOutputCurrent()+self.intake.getOutputCurrent()+self.wrist.getOutputCurrent()+self.lift.getOutputCurrent()
+        SmartDashboard.putNumber("TotalAmps",total)
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)

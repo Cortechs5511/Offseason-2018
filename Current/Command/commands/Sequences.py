@@ -13,42 +13,42 @@ def IntakePosition():
     cg = CommandGroup("IntakePositon")
     cg.addParallel(setPositionLift(0))
     cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(0.5))
+    cg.addParallel(setFixedIntake(0.8))
     return cg
 
 def Level2IntakePosition():
     cg = CommandGroup("Level2IntakePositon")
     cg.addParallel(setPositionLift(13))
     cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(0.5))
+    cg.addParallel(setFixedIntake(0.8))
     return cg
 
 def Level3IntakePosition():
     cg = CommandGroup("Level3IntakePositon")
     cg.addParallel(setPositionLift(21))
     cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(0.5))
+    cg.addParallel(setFixedIntake(0.8))
     return cg
 
 def SwitchPosition():
-    cg = CommandGroup("IntakePositon")
+    cg = CommandGroup("SwitchPositon")
     cg.addParallel(setPositionLift(25))
     cg.addParallel(setPositionWrist(90))
-    cg.addParallel(setFixedIntake(0))
+    cg.addParallel(setFixedIntake(0.3))
     return cg
 
 def SwitchShoot():
     cg = CommandGroup("SwitchShoot")
     cg.addParallel(setPositionLift(25))
     cg.addParallel(setPositionWrist(90))
-    cg.addParallel(setFixedIntake(-0.4))
+    cg.addParallel(setFixedIntake(-0.7))
     return cg
 
 def ExchangePosition():
     cg = CommandGroup("ExchangePosition")
     cg.addParallel(setPositionLift(0))
     cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(-0.5))
+    cg.addParallel(setFixedIntake(0.5))
     return cg
 
 def ExchangeShoot():
@@ -62,8 +62,15 @@ def ProtectPosition():
     cg = CommandGroup("ProtectPosition")
     cg.addParallel(setPositionLift(0))
     cg.addParallel(setPositionWrist(-100))
-    cg.addParallel(setFixedIntake(0))
-
+    cg.addParallel(setFixedIntake(0.3))
+    return cg
 
 def UpdateDashboard():
-    SmartDashboard.putData("Intake_Position", IntakePosition())
+    SmartDashboard.putData("IntakePosition", IntakePosition())
+    SmartDashboard.putData("Level2IntakePosition",Level2IntakePosition())
+    SmartDashboard.putData("Level3IntakePosition",Level3IntakePosition())
+    SmartDashboard.putData("SwitchPositon",SwitchPosition())
+    SmartDashboard.putData("SwitchShoot",SwitchShoot())
+    SmartDashboard.putData("ExchangePositon",ExchangePosition())
+    SmartDashboard.putData("ExchangeShoot",ExchangeShoot())
+    SmartDashboard.putData("ProtectPosition",ProtectPosition())

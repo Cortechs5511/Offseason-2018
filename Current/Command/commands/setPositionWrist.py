@@ -23,7 +23,6 @@ class setPositionWrist(Command):
         self.wristController.setContinuous(False)
 
         SmartDashboard.putData("WristPID", self.wristController)
-        SmartDashboard.putData("setPositionWrist", self)
 
     def pidGet(self):
         return self.Wrist.getAngle()
