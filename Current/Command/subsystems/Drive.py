@@ -9,8 +9,9 @@ from wpilib.drive import DifferentialDrive
 from wpilib.command.subsystem import Subsystem
 
 from commands.setSpeedDT import setSpeedDT
+from commands.setFixedDT import setFixedDT
 
-#import sensors.navx as navx
+import sensors.navx as navx
 import sensors.DTEncoders as encoders
 
 class Drive(Subsystem):
@@ -61,10 +62,10 @@ class Drive(Subsystem):
         self.left = TalonLeft
         self.right = TalonRight
 
-        #self.navx = navx.NavX()
+        self.navx = navx.NavX()
         self.encoders = encoders.DTEncoders()
 
-        #self.navx.disablePID()
+        self.navx.disablePID()
         self.encoders.disablePID()
 
     def tankDrive(self,left,right):

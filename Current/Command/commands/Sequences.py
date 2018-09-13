@@ -13,7 +13,6 @@ def IntakePosition():
     cg.addParallel(setPositionLift(0))
     cg.addParallel(setPositionWrist(110))
     cg.addParallel(setFixedIntake(0.5))
-
     return cg
 
 def UpdateDashboard():

@@ -7,6 +7,7 @@ from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
 from commands.setSpeedIntake import setSpeedIntake
+from commands.setFixedIntake import setFixedIntake
 
 class Intake(Subsystem):
 
@@ -41,4 +42,4 @@ class Intake(Subsystem):
         return self.intake.getOutputCurrent()*2
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setSpeedIntake())
+        self.setDefaultCommand(setFixedIntake(0))

@@ -8,8 +8,8 @@ from ctre import WPI_TalonSRX as Talon
 import math
 
 from commands.setSpeedWrist import setSpeedWrist
+from commands.setFixedWrist import setFixedWrist
 from commands.setPositionWrist import setPositionWrist
-
 
 from networktables import NetworkTables
 
@@ -24,7 +24,6 @@ class Wrist(Subsystem):
 
         timeout = 0
 
-
         self.wrist = Talon(40)
 
         self.wrist.clearStickyFaults(timeout)
@@ -33,7 +32,7 @@ class Wrist(Subsystem):
         self.wrist.configPeakCurrentDuration(100, timeout)
         self.wrist.enableCurrentLimit(True)
 
-        self.wrist.configVoltageCompSaturation(5,timeout) #Sets saturation value
+        self.wrist.configVoltageCompSaturation(6,timeout) #Sets saturation value
         self.wrist.enableVoltageCompensation(True)
         #self.wrist.configOpenLoopRamp(3, timeout)
 
@@ -50,7 +49,7 @@ class Wrist(Subsystem):
         return self.wrist.getSelectedSensorPosition(0)
 
     def getGravity(self):
-        gravity = -0.2
+        gravity = -0.4 #Remain constant -2.4 V (take into account VoltageCompSaturation)
         return gravity
 
     def getTemp(self):
@@ -61,10 +60,10 @@ class Wrist(Subsystem):
 
     def setSpeed(self, speed):
         """ Moves wrist up if speed is negative. """
-        maxspeedWrist = 0.5
         power = speed + (self.getGravity()) *  math.sin(self.getAngle())
+
         self.wrist.set(power)
         self.smartDashboard.putNumber("WristPower",power)
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setPositionWrist(0))
+        self.setDefaultCommand(setFixedWrist(0))

@@ -8,21 +8,19 @@ class setPositionLift(Command):
 
     def __init__(self, setpoint):
         super().__init__('setLiftSpeed')
-
         self.setpoint = setpoint
+        self.requires(self.getRobot().lift)
+        self.Lift = self.getRobot().lift
 
-        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.025, 0.002, 0.20, 0.00] # These PID parameters are used in simulation
-        else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
+        SmartDashboard.putNumber("kPLift", 0.03)
+
+        [kP,kI,kD,kF] = [SmartDashboard.getNumber("kPLift", 0.03), 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
 
         self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
         self.liftController.setInputRange(20, 50) #input range in inches
         self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
         self.liftController.setAbsoluteTolerance(5.0) #tolerance in inches
-        self.liftController.setContinuous(True)
-
-        self.requires(self.getRobot().lift)
-        self.Lift = self.getRobot().lift
-
+        self.liftController.setContinuous(False)
 
     def setPIDSourceType(self):
         return 0
