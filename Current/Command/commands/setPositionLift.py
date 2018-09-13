@@ -1,13 +1,34 @@
 from wpilib.command import Command
 import math
 from networktables import NetworkTables
+import wpilib
+from wpilib import SmartDashboard
 
 class setPositionLift(Command):
 
-    def __init__(self):
+    def __init__(self, setpoint):
         super().__init__('setLiftSpeed')
+
+        self.setpoint = setpoint
+
+        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.025, 0.002, 0.20, 0.00] # These PID parameters are used in simulation
+        else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
+
+        self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
+        self.liftController.setInputRange(20, 50) #input range in inches
+        self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
+        self.liftController.setAbsoluteTolerance(5.0) #tolerance in inches
+        self.liftController.setContinuous(True)
+
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
+
+
+    def setPIDSourceType(self):
+        return 0
+
+    def getPIDSourceType(self):
+        return 0
 
     def pidGet(self):
         return self.Lift.getHeight()
@@ -18,30 +39,23 @@ class setPositionLift(Command):
     def disablePID(self):
         self.liftController.disable()
 
-    def getPID(self):
-        return self.liftController.get()
+    def pidGet(self):
+       pos =  self.Lift.getHeight()
+       SmartDashboard.putNumber("LiftPIDget", pos)
+       return pos
 
     def setPID(self, setpoint):
         self.liftController.setSetpoint(setpoint)
 
     def pidWrite(self, output):
-        pass
+        SmartDashboard.putNumber("LiftPID_Out", output)
+        SmartDashboard.putNumber("LiftError", self.liftController.getError())
+        self.Lift.setSpeed(output)
 
-    def initiate(self, setpoint):
-        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.025, 0.002, 0.20, 0.00] # These PID parameters are used in simulation
-        else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
-
-        self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
-        self.liftController.setInputRange(20, 50) #input range in inches
-        self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
-        self.liftController.setAbsoluteTolerance(5.0) #tolerance in inches
-        self.liftController.setContinuous(True)
-
+    def initialize(self):
         self.enablePID()
-        self.setPID(setpoint)
+        self.setPID(self.setpoint)
 
-    def execute(self):
-        self.Lift.setSpeed(self.getPID())
 
     def interrupted(self):
         self.disablePID()

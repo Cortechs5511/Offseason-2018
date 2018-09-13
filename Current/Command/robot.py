@@ -9,6 +9,8 @@ from wpilib.drive import DifferentialDrive
 from commandbased import CommandBasedRobot
 from commands.autonomous import AutonomousProgram
 from commands import setPositionWrist
+from commands import Sequences
+
 
 from subsystems import Wrist, Intake, Lift, Drive
 import oi
@@ -40,6 +42,8 @@ class MyRobot(CommandBasedRobot):
         self.drive = Drive.Drive()
         self.autonomousProgram = AutonomousProgram()
         SmartDashboard.putData("WristCommand", setPositionWrist.setPositionWrist())
+        Sequences.UpdateDashboard()
+
 
 
         '''

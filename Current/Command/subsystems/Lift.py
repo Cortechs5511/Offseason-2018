@@ -7,6 +7,7 @@ from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
 from commands.setSpeedLift import setSpeedLift
+from commands.setPositionLift import setPositionLift
 
 from networktables import NetworkTables
 
@@ -66,5 +67,5 @@ class Lift(Subsystem):
     def setSpeed(self, speed):
         self.lift.set(speed + self.getGravity())
 
-    def initDefaultCommand(self):
-        self.setDefaultCommand(setSpeedLift())
+#    def initDefaultCommand(self):
+#        self.setDefaultCommand(setPositionLift())

@@ -33,7 +33,7 @@ class Wrist(Subsystem):
         self.wrist.configPeakCurrentDuration(100, timeout)
         self.wrist.enableCurrentLimit(True)
 
-        self.wrist.configVoltageCompSaturation(12,timeout) #Sets saturation value
+        self.wrist.configVoltageCompSaturation(5,timeout) #Sets saturation value
         self.wrist.enableVoltageCompensation(True)
         #self.wrist.configOpenLoopRamp(3, timeout)
 
@@ -61,9 +61,10 @@ class Wrist(Subsystem):
 
     def setSpeed(self, speed):
         """ Moves wrist up if speed is negative. """
+        maxspeedWrist = 0.5
         power = speed + (self.getGravity()) *  math.sin(self.getAngle())
         self.wrist.set(power)
         self.smartDashboard.putNumber("WristPower",power)
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setPositionWrist())
+        self.setDefaultCommand(setPositionWrist(0))
