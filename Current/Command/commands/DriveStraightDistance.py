@@ -42,10 +42,8 @@ class DriveStraightDistance(Command):
         self.DT.tankDrive(0,0)
 
     def isFinished(self):
-        if abs(self.distError) < self.TolDist and abs(self.angleError) < self.TolAngle:
-            return True
-        else:
-            return False
+        if abs(self.distError) < self.TolDist and abs(self.angleError) < self.TolAngle: return True
+        return False
 
     def end(self):
         self.DT.tankDrive(0,0)

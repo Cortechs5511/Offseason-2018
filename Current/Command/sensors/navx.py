@@ -18,6 +18,7 @@ class NavX():
         turnController.setOutputRange(-1.0, 1.0)
         turnController.setAbsoluteTolerance(kToleranceDegrees)
         turnController.setContinuous(True)
+        
         self.turnController = turnController
         self.turnController.disable()
 

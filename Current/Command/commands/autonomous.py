@@ -5,6 +5,9 @@ from wpilib.command.waitcommand import WaitCommand
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightTime import DriveStraightTime
 
+from commands.DriveStraightDistancePID import DriveStraightDistancePID
+from commands.DriveStraightTimePID import DriveStraightTimePID
+
 class AutonomousProgram(CommandGroup):
     '''
     A simple program that spins the motor for two seconds, pauses for a second,
@@ -14,6 +17,9 @@ class AutonomousProgram(CommandGroup):
     def __init__(self):
         super().__init__('Autonomous Program')
 
-        self.addSequential(DriveStraightDistance(3))
-        self.addSequential(WaitCommand(1))
-        self.addSequential(DriveStraightTime(0.7, 2))
+        #self.addSequential(DriveStraightDistance(3))
+        #self.addSequential(WaitCommand(1))
+        #self.addSequential(DriveStraightTime(0.7, 2))
+
+        #self.addSequential(DriveStraightDistancePID(10))
+        self.addSequential(DriveStraightTimePID(0.7, 4))

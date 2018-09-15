@@ -9,9 +9,9 @@ class DTEncoders():
 
     def __init__(self):
         #Encoder PID Constants
-        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.5, 0.00, 0.10, 0.00] # These PID parameters are used in simulation
+        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [2.00, 0.00, 0.00, 0.00] # These PID parameters are used in simulation
         else: [kP,kI,kD,kF] = [0.03, 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
-        kTolerance = 50
+        kTolerance = .1 #feet
 
         self.leftEncoder = wpilib.Encoder(0,1)
         self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 127)
