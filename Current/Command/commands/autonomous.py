@@ -1,7 +1,9 @@
 from wpilib.command.commandgroup import CommandGroup
 
 from wpilib.command.waitcommand import WaitCommand
-#from commands.setspeed import SetSpeed
+
+from commands.DriveStraightDistance import DriveStraightDistance
+from commands.DriveStraightTime import DriveStraightTime
 
 class AutonomousProgram(CommandGroup):
     '''
@@ -12,6 +14,6 @@ class AutonomousProgram(CommandGroup):
     def __init__(self):
         super().__init__('Autonomous Program')
 
-        #self.addSequential(SetSpeed(power=0.7, timeoutInSeconds=2))
-        #self.addSequential(WaitCommand(timeout=1))
-        #self.addSequential(SetSpeed(power=-0.7, timeoutInSeconds=2))
+        self.addSequential(DriveStraightDistance(3))
+        self.addSequential(WaitCommand(1))
+        self.addSequential(DriveStraightTime(0.7, 2))

@@ -88,5 +88,11 @@ class Drive(Subsystem):
     def getDistance(self):
         return self.encoders.getDistance()
 
+    def getAvgDistance(self):
+        return (self.getDistance()[0]+self.getDistance()[1])/2.0
+
+    def getAngle(self):
+        return self.navx.getAngle()
+
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedDT())

@@ -7,28 +7,24 @@ from sensors.navx import NavX
 
 class DriveStraightTime(TimedCommand):
 
-    def __init__(self,speed = 0):
-        super().__init__('DriveStraightTime', timeoutInSeconds = 0)
+    def __init__(self,speed = 0, timeout = 0):
+        super().__init__('DriveStraightTime', timeoutInSeconds = timeout)
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
         self.speed = speed
 
-    def execute(self):
-        Kp_Angle = 0.2
-        Tol_Angle = 3
-        CurrAngle = NavX.getAngle()
-        AngleError = CurrAngle
-        # get speed based on how far you travelled
+        self.kpAngle = 0.05
+        self.TolAngle = 10 #degrees
 
-        if CurrAngle < Tol_Angle * -1:
-            LeftSpeed = speed - (CurrAngle * Kp_Angle)
-            RightSpeed = speed
-        if CurrAngle > Tol_Angle:
-            RightSpeed = (speed + (CurrAngle * Kp_Angle)) * math.copysign(1,self.setpoint)
-            LeftSpeed = speed
-        else:
-            LeftSpeed = speed
-            RightSpeed = speed
+    def execute(self):
+        angle = self.DT.getAngle()
+        self.angleError = angle #-0
+
+        LeftSpeed = self.speed
+        RightSpeed = self.speed
+        if abs(self.angleError) > self.TolAngle:
+            LeftSpeed = self.speed - (self.angleError * self.kpAngle)
+            RightSpeed = self.speed + (self.angleError * self.kpAngle)
 
         self.DT.tankDrive(LeftSpeed,RightSpeed)
 
