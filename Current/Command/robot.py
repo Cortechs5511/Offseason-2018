@@ -21,7 +21,9 @@ from commands import setSpeedDT
 from commands import setSpeedIntake
 from commands import setSpeedLift
 from commands import setSpeedWrist
-
+from commands import DriveStraightTime
+from commands import DriveStraightDistance
+from commands import TurnAngle
 from commands import Sequences
 
 from subsystems import Wrist, Intake, Lift, Drive
@@ -52,7 +54,7 @@ class MyRobot(CommandBasedRobot):
         self.lift = Lift.Lift()
         self.wrist = Wrist.Wrist()
         self.intake = Intake.Intake()
-        
+
         self.autonomousProgram = AutonomousProgram()
 
         SmartDashboard.putData("setPositionWrist", setPositionWrist.setPositionWrist())
@@ -65,6 +67,9 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("setSpeedIntake", setSpeedIntake.setSpeedIntake())
         SmartDashboard.putData("setSpeedLift", setSpeedLift.setSpeedLift())
         SmartDashboard.putData("setSpeedWrist", setSpeedWrist.setSpeedWrist())
+        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance.DriveStraightDistance())
+        SmartDashboard.putData("DriveStraightTime", DriveStraightTime.DriveStraightTime())
+        SmartDashboard.putData("TurnAngle", TurnAngle.TurnAngle())
         Sequences.UpdateDashboard()
 
         '''
