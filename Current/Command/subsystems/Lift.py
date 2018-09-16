@@ -68,5 +68,8 @@ class Lift(Subsystem):
     def setSpeed(self, speed):
         self.lift.set(speed + self.getGravity())
 
+    def zero(self):
+        self.lift.reset()
+
     def initDefaultCommand(self):
         self.setDefaultCommand(setFixedLift(0))

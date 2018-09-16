@@ -12,14 +12,12 @@ class setPositionWrist(Command):
         self.requires(self.getRobot().wrist)
         self.Wrist = self.getRobot().wrist
 
-        SmartDashboard.putNumber("kPWrist", 0.01 )
-
-        [kP,kI,kD,kF] = [SmartDashboard.getNumber("kPWrist", 0.01), 0.00, 0.00, 0.00]
+        [kP,kI,kD,kF] = [0.40, 0.00, 2.00, 0.00]
 
         self.wristController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
         self.wristController.setInputRange(-30, 120) #input range in degrees
         self.wristController.setOutputRange(-0.8, 0.8) #output range in percent
-        self.wristController.setAbsoluteTolerance(5.0) #tolerance in degrees
+        self.wristController.setAbsoluteTolerance(2.0) #tolerance in degrees
         self.wristController.setContinuous(False)
 
         if Debug == True:

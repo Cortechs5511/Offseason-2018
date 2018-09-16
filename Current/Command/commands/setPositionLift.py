@@ -12,7 +12,7 @@ class setPositionLift(Command):
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
 
-        [kP,kI,kD,kF] = [0.03 , 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
+        [kP,kI,kD,kF] = [0.20 , 0.20, 0.00, 0.00] # These PID parameters are used on a real robot
 
         self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
         self.liftController.setInputRange(0, 30) #input range in inches

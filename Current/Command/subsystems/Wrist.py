@@ -42,8 +42,6 @@ class Wrist(Subsystem):
 
         self.wrist.setQuadraturePosition(0,timeout)
 
-        #SmartDashboard.putData("Wrist", self)
-
     def getAngle(self):
         return math.radians(self.wrist.getSelectedSensorPosition(0)*self.posConv)
 
@@ -66,6 +64,12 @@ class Wrist(Subsystem):
         power = (powerpercentage * (speed)) + (self.getGravity()) *  (math.sin(self.getAngle()) * (1-powerpercentage))
         self.wrist.set(power)
         SmartDashboard.putNumber("WristPower",power)
+
+    def setSpeed2(self, speed):
+        power = speed + self.getGravity() * math.sin(self.getAngle())
+
+    def zero(self):
+        self.lift.setQuadraturePosition(0)
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setFixedWrist(0,))
