@@ -6,7 +6,7 @@ from wpilib import SmartDashboard
 
 class setPositionWrist(Command):
 
-    def __init__(self, setpoint = 0):
+    def __init__(self, setpoint = 0, Debug = False):
         super().__init__('setPositionWrist')
         self.setpoint = setpoint
         self.requires(self.getRobot().wrist)
@@ -22,7 +22,9 @@ class setPositionWrist(Command):
         self.wristController.setAbsoluteTolerance(5.0) #tolerance in degrees
         self.wristController.setContinuous(False)
 
-        SmartDashboard.putData("WristPID", self.wristController)
+        if Debug == True:
+            SmartDashboard.putData("WristPID", self.wristController)
+            SmartDashboard.putData("setPositionWrist", self)
 
     def pidGet(self):
         return self.Wrist.getAngle()
@@ -50,7 +52,8 @@ class setPositionWrist(Command):
     def pidWrite(self, output):
         SmartDashboard.putNumber("WristPID_Out", output)
         SmartDashboard.putNumber("WristError", self.wristController.getError())
-        self.Wrist.setSpeed(output)
+        if output > 0 and self.wrist.getAngle() > 0:
+            self.Wrist.setSpeed(output)
 
     def initialize(self):
         self.enablePID()

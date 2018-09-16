@@ -57,8 +57,8 @@ class MyRobot(CommandBasedRobot):
 
         self.autonomousProgram = AutonomousProgram()
 
-        SmartDashboard.putData("setPositionWrist", setPositionWrist.setPositionWrist())
-        SmartDashboard.putData("setPositionLift", setPositionLift.setPositionLift())
+        SmartDashboard.putData("setPositionWrist", setPositionWrist.setPositionWrist(0,True))
+        SmartDashboard.putData("setPositionLift", setPositionLift.setPositionLift(0, True))
         SmartDashboard.putData("setFixedDT", setFixedDT.setFixedDT())
         SmartDashboard.putData("setFixedIntake", setFixedIntake.setFixedIntake())
         SmartDashboard.putData("setFixedLift", setFixedLift.setFixedLift())
@@ -84,7 +84,7 @@ class MyRobot(CommandBasedRobot):
         self.autonomousProgram.start()
 
     def robotPeriodic(self):
-        SmartDashboard.putNumber("WristPosition", self.wrist.getAngle())
+        SmartDashboard.putNumber("WristPosition", math.degrees(self.wrist.getAngle()))
         SmartDashboard.putNumber("LiftPosition", self.lift.getHeight())
         SmartDashboard.putNumber("RightDistance", self.drive.getDistance()[0])
         SmartDashboard.putNumber("LeftDistance", self.drive.getDistance()[1])

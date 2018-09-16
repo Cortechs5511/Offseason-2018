@@ -10,7 +10,7 @@ import math
 from commands.setSpeedWrist import setSpeedWrist
 from commands.setFixedWrist import setFixedWrist
 from commands.setPositionWrist import setPositionWrist
-
+from wpilib import LiveWindow
 from wpilib import SmartDashboard
 
 class Wrist(Subsystem):
@@ -19,11 +19,13 @@ class Wrist(Subsystem):
 
     def __init__(self):
         super().__init__('Wrist')
-
+        SmartDashboard.putNumber("WristPowerPercentage", 0.4)
+        SmartDashboard.putNumber("WristGravity", -0.4)
         timeout = 0
 
         self.wrist = Talon(40)
 
+        LiveWindow.addActuator("Wrist", "Motor", self.wrist)
         self.wrist.clearStickyFaults(timeout)
         self.wrist.configContinuousCurrentLimit(15,timeout)
         self.wrist.configPeakCurrentLimit(20,timeout)
@@ -49,7 +51,7 @@ class Wrist(Subsystem):
         return self.wrist.getSelectedSensorPosition(0)
 
     def getGravity(self):
-        gravity = -0.4 #Remain constant -2.4 V (take into account VoltageCompSaturation)
+        gravity = SmartDashboard.getNumber("WristGravity", -0.4) #Remain constant -2.4 V (take into account VoltageCompSaturation)
         return gravity
 
     def getTemp(self):
@@ -60,10 +62,11 @@ class Wrist(Subsystem):
 
     def setSpeed(self, speed):
         """ Moves wrist up if speed is negative. """
-        power = speed + (self.getGravity()) *  math.sin(self.getAngle())
-
+        powerpercentage = SmartDashboard.getNumber("WristPowerPercentage", 0.4)
+        power = (powerpercentage * (speed)) + (self.getGravity()) *  (math.sin(self.getAngle()) * (1-powerpercentage))
         self.wrist.set(power)
         SmartDashboard.putNumber("WristPower",power)
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setFixedWrist(0))
+        self.setDefaultCommand(setFixedWrist(0,))
+        SmartDashboard.putData("WristCommand", self)

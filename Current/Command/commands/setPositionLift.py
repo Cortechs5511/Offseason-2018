@@ -6,23 +6,22 @@ from wpilib import SmartDashboard
 
 class setPositionLift(Command):
 
-    def __init__(self, setpoint = 0):
+    def __init__(self, setpoint = 0, Debug = False):
         super().__init__('setPositionLift')
         self.setpoint = setpoint
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
 
-        SmartDashboard.putNumber("kPLift", 0.03)
-
-        [kP,kI,kD,kF] = [SmartDashboard.getNumber("kPLift", 0.03), 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
+        [kP,kI,kD,kF] = [0.03 , 0.00, 0.00, 0.00] # These PID parameters are used on a real robot
 
         self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
-        self.liftController.setInputRange(20, 50) #input range in inches
+        self.liftController.setInputRange(0, 30) #input range in inches
         self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
-        self.liftController.setAbsoluteTolerance(5.0) #tolerance in inches
+        self.liftController.setAbsoluteTolerance(0.5) #tolerance in inches
         self.liftController.setContinuous(False)
 
-        SmartDashboard.putData("LiftPID", self.liftController)
+        if Debug:
+            SmartDashboard.putData("LiftPID", self.liftController)
 
     def setPIDSourceType(self):
         return 0
@@ -55,7 +54,6 @@ class setPositionLift(Command):
     def initialize(self):
         self.enablePID()
         self.setPID(self.setpoint)
-
 
     def interrupted(self):
         self.disablePID()

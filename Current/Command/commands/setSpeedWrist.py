@@ -2,6 +2,7 @@ import math
 
 import wpilib
 from wpilib.command import Command
+from wpilib import SmartDashboard
 
 class setSpeedWrist(Command):
 
@@ -9,12 +10,14 @@ class setSpeedWrist(Command):
         super().__init__('setSpeedWrist')
         self.requires(self.getRobot().wrist)
         self.Wrist = self.getRobot().wrist
+        SmartDashboard.putNumber("WristJoystickSpeed", 0.3)
 
     def execute(self):
         wristPos = self.Wrist.getAngle()
         Joystick = self.getRobot().xbox
-        if Joystick.getXButton()==True and wristPos < 120: self.Wrist.setSpeed(0.4)
-        elif Joystick.getBButton()==True and wristPos > -30: self.Wrist.setSpeed(0.4)
+        speed = SmartDashboard.getNumber("WristJoystickSpeed", 0.3)
+        if Joystick.getXButton()==True and wristPos < (math.pi * 4 / 6): self.Wrist.setSpeed(speed)
+        elif Joystick.getBButton()==True and wristPos > (math.pi / -6): self.Wrist.setSpeed(speed * -1)
         else: self.Wrist.setSpeed(0)
 
         #self.Wrist.setSpeed(Joystick.getY(2) * 1/5)
