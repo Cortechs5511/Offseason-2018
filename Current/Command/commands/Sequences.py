@@ -1,10 +1,10 @@
 from wpilib.command import CommandGroup
 
-from commands.setSpeedWrist import setSpeedWrist
 from commands.setPositionWrist import setPositionWrist
-from commands.setSpeedLift import setSpeedLift
 from commands.setPositionLift import setPositionLift
-from commands.setSpeedIntake import setSpeedIntake
+
+from commands.setFixedLift import setFixedLift
+from commands.setFixedIntake import setFixedIntake
 from commands.setFixedIntake import setFixedIntake
 
 from wpilib import SmartDashboard
@@ -13,21 +13,21 @@ def IntakePosition():
     cg = CommandGroup("IntakePositon")
     cg.addParallel(setPositionLift(0))
     cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(-0.3))
+    cg.addParallel(setFixedIntake(-0.6))
     return cg
 
 def Level2IntakePosition():
     cg = CommandGroup("Level2IntakePositon")
     cg.addParallel(setPositionLift(10))
     cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(-0.3))
+    cg.addParallel(setFixedIntake(-0.6))
     return cg
 
 def Level3IntakePosition():
     cg = CommandGroup("Level3IntakePositon")
     cg.addParallel(setPositionLift(20))
     cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(-0.3))
+    cg.addParallel(setFixedIntake(-0.6))
     return cg
 
 def SwitchPosition():
@@ -51,10 +51,17 @@ def ExchangeShoot():
     cg.addParallel(setFixedIntake(0.8))
     return cg
 
+def ExchangePosition():
+    cg = CommandGroup("ExchangePositon")
+    cg.addParallel(setPositionLift(0))
+    cg.addParallel(setPositionWrist(110))
+    cg.addParallel(setFixedIntake(-0.3))
+    return cg
+
 def ProtectPosition():
     cg = CommandGroup("ProtectPosition")
     cg.addParallel(setPositionLift(0))
-    cg.addParallel(setPositionWrist(-100))
+    cg.addParallel(setPositionWrist(-20))
     cg.addParallel(setFixedIntake(-0.3))
     return cg
 

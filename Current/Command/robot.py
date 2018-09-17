@@ -9,21 +9,22 @@ from wpilib.drive import DifferentialDrive
 from commandbased import CommandBasedRobot
 from commands.autonomous import AutonomousProgram
 
-from commands import setPositionWrist
-from commands import setPositionLift
+from commands.setPositionWrist import setPositionWrist
+from commands.setPositionLift import setPositionLift
 
-from commands import setFixedDT
-from commands import setFixedIntake
-from commands import setFixedLift
-from commands import setFixedWrist
+from commands.setFixedDT import setFixedDT
+from commands.setFixedIntake import setFixedIntake
+from commands.setFixedLift import setFixedLift
+from commands.setFixedWrist import setFixedWrist
 
-from commands import setSpeedDT
-from commands import setSpeedIntake
-from commands import setSpeedLift
-from commands import setSpeedWrist
-from commands import DriveStraightTime
-from commands import DriveStraightDistance
-from commands import TurnAngle
+from commands.setSpeedDT import setSpeedDT
+from commands.DriveStraightTime import DriveStraightTime
+from commands.DriveStraightDistance import DriveStraightDistance
+from commands.TurnAngle import TurnAngle
+from commands.DriveStraightTimePID import DriveStraightTimePID
+from commands.DriveStraightDistancePID import DriveStraightDistancePID
+#from commands.TurnAnglePID import TurnAnglePID
+
 from commands import Sequences
 
 from subsystems import Wrist, Intake, Lift, Drive
@@ -57,19 +58,24 @@ class MyRobot(CommandBasedRobot):
 
         self.autonomousProgram = AutonomousProgram()
 
-        SmartDashboard.putData("setPositionWrist", setPositionWrist.setPositionWrist(0,True))
-        SmartDashboard.putData("setPositionLift", setPositionLift.setPositionLift(0, True))
-        SmartDashboard.putData("setFixedDT", setFixedDT.setFixedDT())
-        SmartDashboard.putData("setFixedIntake", setFixedIntake.setFixedIntake())
-        SmartDashboard.putData("setFixedLift", setFixedLift.setFixedLift())
-        SmartDashboard.putData("setFixedWrist", setFixedWrist.setFixedWrist())
-        SmartDashboard.putData("setSpeedDT", setSpeedDT.setSpeedDT())
-        SmartDashboard.putData("setSpeedIntake", setSpeedIntake.setSpeedIntake())
-        SmartDashboard.putData("setSpeedLift", setSpeedLift.setSpeedLift())
-        SmartDashboard.putData("setSpeedWrist", setSpeedWrist.setSpeedWrist())
-        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance.DriveStraightDistance())
-        SmartDashboard.putData("DriveStraightTime", DriveStraightTime.DriveStraightTime())
-        SmartDashboard.putData("TurnAngle", TurnAngle.TurnAngle())
+        SmartDashboard.putData("setPositionWrist", setPositionWrist(0,True))
+        SmartDashboard.putData("setPositionLift", setPositionLift(0, True))
+
+        SmartDashboard.putData("setFixedDT", setFixedDT())
+        SmartDashboard.putData("setFixedIntake", setFixedIntake())
+        SmartDashboard.putData("setFixedLift", setFixedLift())
+        SmartDashboard.putData("setFixedWrist", setFixedWrist())
+
+        SmartDashboard.putData("setSpeedDT", setSpeedDT())
+
+        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
+        SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
+        SmartDashboard.putData("TurnAngle", TurnAngle())
+
+        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistancePID())
+        SmartDashboard.putData("DriveStraightTime", DriveStraightTimePID())
+        #SmartDashboard.putData("TurnAngle", TurnAnglePID())
+
         Sequences.UpdateDashboard()
 
         '''
@@ -79,6 +85,8 @@ class MyRobot(CommandBasedRobot):
         self.joystick0 = oi.getJoystick(0)
         self.joystick1 = oi.getJoystick(1)
         self.xbox = oi.getJoystick(2)
+
+        oi.commands()
 
     def autonomousInit(self):
         self.autonomousProgram.start()
@@ -96,6 +104,11 @@ class MyRobot(CommandBasedRobot):
 
         total = self.drive.getOutputCurrent()+self.intake.getOutputCurrent()+self.wrist.getOutputCurrent()+self.lift.getOutputCurrent()
         SmartDashboard.putNumber("TotalAmps",total)
+
+        SmartDashboard.putData("Drive", self.drive)
+        SmartDashboard.putData("Intake", self.intake)
+        SmartDashboard.putData("Lift", self.lift)
+        SmartDashboard.putData("Wrist", self.wrist)
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)

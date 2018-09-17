@@ -70,8 +70,6 @@ class Drive(Subsystem):
         self.navx.disablePID()
         self.encoders.disablePID()
 
-        #SmartDashboard.putData("DT", self)
-
     def tankDrive(self,left,right):
         if(abs(left) < self.dbLimit): left = 0
         else: left = self.maxSpeed*abs(left)/left*(math.exp(self.k*abs(left))-1) / (math.exp(self.k)-1)

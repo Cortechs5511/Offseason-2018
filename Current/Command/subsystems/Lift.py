@@ -6,7 +6,6 @@ import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-from commands.setSpeedLift import setSpeedLift
 from commands.setFixedLift import setFixedLift
 from commands.setPositionLift import setPositionLift
 
@@ -47,8 +46,6 @@ class Lift(Subsystem):
         Talon0.configVelocityMeasurementWindow(32,timeout) #averages 32 to get average
 
         self.lift = Talon0
-
-        #SmartDashboard.putData("Lift", self)
 
     def getHeight(self):
         pos = self.LiftEncoder.get()*self.posConv

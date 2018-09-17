@@ -7,9 +7,9 @@ from ctre import WPI_TalonSRX as Talon
 
 import math
 
-from commands.setSpeedWrist import setSpeedWrist
 from commands.setFixedWrist import setFixedWrist
 from commands.setPositionWrist import setPositionWrist
+
 from wpilib import LiveWindow
 from wpilib import SmartDashboard
 

@@ -50,7 +50,7 @@ class setPositionWrist(Command):
     def pidWrite(self, output):
         SmartDashboard.putNumber("WristPID_Out", output)
         SmartDashboard.putNumber("WristError", self.wristController.getError())
-        if output > 0 and self.wrist.getAngle() > 0:
+        if output > 0 and self.Wrist.getAngle() > 0:
             self.Wrist.setSpeed(output)
 
     def initialize(self):

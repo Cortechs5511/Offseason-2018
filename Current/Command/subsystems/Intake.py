@@ -6,7 +6,6 @@ import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-from commands.setSpeedIntake import setSpeedIntake
 from commands.setFixedIntake import setFixedIntake
 
 from wpilib import SmartDashboard
@@ -37,8 +36,6 @@ class Intake(Subsystem):
 
         self.intake = TalonLeft
 
-        #SmartDashboard.putData("Intake", self)
-
     def setSpeed(self, speed):
         self.intake.set(speed)
 
@@ -46,4 +43,4 @@ class Intake(Subsystem):
         return self.intake.getOutputCurrent()*2
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setFixedIntake(0))
+        self.setDefaultCommand(setFixedIntake())
