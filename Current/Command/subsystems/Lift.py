@@ -11,16 +11,20 @@ from commands.setPositionLift import setPositionLift
 
 from wpilib import SmartDashboard
 
+import math
+
 class Lift(Subsystem):
 
     posConv = 1/183 #convert from encoder count to inches
 
-    def __init__(self):
+    def __init__(self, Robot):
         super().__init__('Lift')
 
         self.LiftEncoder = wpilib.Encoder(4,5)
         self.LiftEncoder.setSamplesToAverage(10)
         self.LiftEncoder.reset()
+
+        self.Robot = Robot
 
         timeout = 0
 
@@ -63,10 +67,18 @@ class Lift(Subsystem):
         return self.lift.getOutputCurrent()*2
 
     def setSpeed(self, speed):
-        self.lift.set(speed + self.getGravity())
+        SmartDashboard.putBoolean("LiftSafety", (speed > 0 and self.Robot.wrist.getAngle() < math.pi/12))
+        if (speed > 0 and self.Robot.wrist.getAngle() < math.pi/12):
+            self.lift.set(self.getGravity())
+        else:
+            self.lift.set(speed + self.getGravity())
 
     def zero(self):
         self.lift.reset()
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setFixedLift(0))
+
+    def UpdateDashboard(self):
+        SmartDashboard.putNumber("Lift_Volts", self.lift.getMotorOutputVoltage())
+        SmartDashboard.putNumber("Lift_Speed", self.lift.get())

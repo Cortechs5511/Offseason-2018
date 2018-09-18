@@ -23,6 +23,7 @@ from commands.DriveStraightDistance import DriveStraightDistance
 from commands.TurnAngle import TurnAngle
 from commands.DriveStraightTimePID import DriveStraightTimePID
 from commands.DriveStraightDistancePID import DriveStraightDistancePID
+from commands.Zero import Zero
 #from commands.TurnAnglePID import TurnAnglePID
 
 from commands import Sequences
@@ -42,6 +43,8 @@ from robotpy_ext.common_drivers import navx
 
 import wpilib.buttons
 
+from sensors.DTEncoders import DTEncoders
+
 class MyRobot(CommandBasedRobot):
 
     def robotInit(self):
@@ -52,7 +55,7 @@ class MyRobot(CommandBasedRobot):
         Command.getRobot = lambda x=0: self
 
         self.drive = Drive.Drive()
-        self.lift = Lift.Lift()
+        self.lift = Lift.Lift(self)
         self.wrist = Wrist.Wrist()
         self.intake = Intake.Intake()
 
@@ -75,7 +78,7 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistancePID())
         SmartDashboard.putData("DriveStraightTime", DriveStraightTimePID())
         #SmartDashboard.putData("TurnAngle", TurnAnglePID())
-
+        SmartDashboard.putData("Zero", Zero())
         Sequences.UpdateDashboard()
 
         '''
@@ -109,6 +112,9 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("Intake", self.intake)
         SmartDashboard.putData("Lift", self.lift)
         SmartDashboard.putData("Wrist", self.wrist)
+
+        self.lift.UpdateDashboard()
+        self.drive.UpdateDashboard()
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)

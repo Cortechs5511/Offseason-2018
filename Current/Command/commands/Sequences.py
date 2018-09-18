@@ -60,7 +60,8 @@ def ExchangePosition():
 
 def ProtectPosition():
     cg = CommandGroup("ProtectPosition")
-    cg.addParallel(setPositionLift(0))
+    cg.addParallel(setFixedLift(-0.1))
+    
     cg.addParallel(setPositionWrist(-20))
     cg.addParallel(setFixedIntake(-0.3))
     return cg

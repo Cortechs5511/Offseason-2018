@@ -6,7 +6,7 @@ from robotpy_ext.common_drivers import navx
 class NavX():
 
     def __init__(self):
-        self.navx = navx.AHRS.create_spi()
+        #self.navx = navx.AHRS.create_spi()
 
         #NavX PID Constants
         if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.025, 0.002, 0.20, 0.00] # These PID parameters are used in simulation
@@ -18,7 +18,7 @@ class NavX():
         turnController.setOutputRange(-1.0, 1.0)
         turnController.setAbsoluteTolerance(kToleranceDegrees)
         turnController.setContinuous(True)
-        
+
         self.turnController = turnController
         self.turnController.disable()
 

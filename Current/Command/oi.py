@@ -82,7 +82,7 @@ def commands():
     trigger0.whileActive(setFixedIntake(xbox.getTriggerAxis(0)))
     trigger1 = axisButton(xbox.getTriggerAxis, 1, 0.1)
     trigger1.whileActive(setFixedIntake(-xbox.getTriggerAxis(1)))
-    '''
+'''
 
     axis0 = axisButton(xbox.getY, 0, 0.1)
     axis0.whileActive(setFixedLift(0.2))

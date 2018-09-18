@@ -12,7 +12,7 @@ class setPositionWrist(Command):
         self.requires(self.getRobot().wrist)
         self.Wrist = self.getRobot().wrist
 
-        [kP,kI,kD,kF] = [0.40, 0.00, 2.00, 0.00]
+        [kP,kI,kD,kF] = [0.60, 0.00, 5.00, 0.00]
 
         self.wristController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
         self.wristController.setInputRange(-30, 120) #input range in degrees
@@ -48,10 +48,17 @@ class setPositionWrist(Command):
         self.wristController.setSetpoint(self.setpoint)
 
     def pidWrite(self, output):
-        SmartDashboard.putNumber("WristPID_Out", output)
         SmartDashboard.putNumber("WristError", self.wristController.getError())
-        if output > 0 and self.Wrist.getAngle() > 0:
-            self.Wrist.setSpeed(output)
+        angle = self.Wrist.getAngle()
+        if output > 0 and angle > 0:
+            output = min(output, 0.25) + math.cos(angle) * 0.25 * output
+        elif output < 0 and angle > 0:
+            output = -1
+        elif output < 0 and angle < 0:
+            output = max(output, -0.25)
+        SmartDashboard.putNumber("WristPID_Out", output)
+        self.Wrist.setSpeed(output)
+
 
     def initialize(self):
         self.enablePID()

@@ -3,7 +3,7 @@ import wpilib
 from wpilib.command import Command
 from wpilib.command import TimedCommand
 from sensors.DTEncoders import DTEncoders
-from sensors.navx import NavX
+#from sensors.navx import NavX
 
 class DriveStraightTime(TimedCommand):
 
