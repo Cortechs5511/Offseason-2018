@@ -19,7 +19,7 @@ class DriveStraightDistancePID(Command):
         self.TolDist = 0.2 #feet
         self.finished = False
 
-        [kP,kI,kD,kF] = [0.32, 0.00, 3.50, 0.00] #Tuned for simulation
+        [kP,kI,kD,kF] = [0.32, 0.0001, 3.50, 0.00] #Tuned for simulation
         distController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
 
         distController.setInputRange(0,  50) #feet

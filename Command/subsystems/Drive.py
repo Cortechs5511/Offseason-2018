@@ -91,7 +91,6 @@ class Drive(Subsystem):
 
     def getAngle(self):
         return self.navx.getAngle()
-        return 0
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedDT())

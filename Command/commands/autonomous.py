@@ -8,6 +8,7 @@ from commands.TurnAngle import TurnAngle
 
 from commands.DriveStraightDistancePID import DriveStraightDistancePID
 from commands.DriveStraightTimePID import DriveStraightTimePID
+from commands.TurnAnglePID import TurnAnglePID
 
 class AutonomousProgram(CommandGroup):
     '''
@@ -24,4 +25,4 @@ class AutonomousProgram(CommandGroup):
 
         #self.addSequential(DriveStraightDistancePID(10))
         self.addSequential(DriveStraightDistancePID(10))
-        self.addSequential(TurnAngle(90))
+        self.addSequential(TurnAnglePID(90))
