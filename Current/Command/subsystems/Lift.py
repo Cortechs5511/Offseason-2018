@@ -53,7 +53,6 @@ class Lift(Subsystem):
 
     def getHeight(self):
         pos = self.LiftEncoder.get()*self.posConv
-        SmartDashboard.putNumber("liftHeight",pos)
         return pos
 
     def getGravity(self):
@@ -82,3 +81,4 @@ class Lift(Subsystem):
     def UpdateDashboard(self):
         SmartDashboard.putNumber("Lift_Volts", self.lift.getMotorOutputVoltage())
         SmartDashboard.putNumber("Lift_Speed", self.lift.get())
+        SmartDashboard.putNumber("liftHeight",self.getHeight())

@@ -85,9 +85,9 @@ def commands():
 '''
 
     axis0 = axisButton(xbox.getY, 0, 0.1)
-    axis0.whileActive(setFixedLift(0.2))
+    axis0.whileActive(setSpeedLift())
     axis1 = axisButton(xbox.getX, 1, 0.1)
-    axis1.whileActive(setFixedWrist(0.2))
+    axis1.whileActive(setSpeedWrist())
     trigger0 = axisButton(xbox.getTriggerAxis, 0, 0.1)
     trigger0.whileActive(setFixedIntake(0.5))
     trigger1 = axisButton(xbox.getTriggerAxis, 1, 0.1)
