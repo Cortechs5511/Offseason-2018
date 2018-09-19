@@ -14,6 +14,9 @@ from commands.setFixedIntake import setFixedIntake
 from commands.setPositionWrist import setPositionWrist
 from commands.setPositionLift import setPositionLift
 
+from commands.setSpeedLift import setSpeedLift
+from commands.setSpeedWrist import setSpeedWrist
+
 import commands.Sequences as seq
 
 from commands.crash import Crash

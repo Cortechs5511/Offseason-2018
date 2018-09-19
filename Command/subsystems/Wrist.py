@@ -17,7 +17,7 @@ class Wrist(Subsystem):
 
     posConv = 1/2222
 
-    def __init__(self):
+    def __init__(self,Robot):
         super().__init__('Wrist')
         SmartDashboard.putNumber("WristPowerPercentage", 0.4)
         SmartDashboard.putNumber("WristGravity", -0.4)

@@ -25,7 +25,7 @@ class Drive(Subsystem):
     DistPerPulseL = 4/12 * math.pi / 127
     DistPerPulseR = 4/12 * math.pi / 255
 
-    def __init__(self):
+    def __init__(self, Robot):
         super().__init__('Drive')
 
         timeout = 0

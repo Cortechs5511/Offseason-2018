@@ -23,8 +23,10 @@ from commands.DriveStraightDistance import DriveStraightDistance
 from commands.TurnAngle import TurnAngle
 from commands.DriveStraightTimePID import DriveStraightTimePID
 from commands.DriveStraightDistancePID import DriveStraightDistancePID
-from commands.Zero import Zero
 #from commands.TurnAnglePID import TurnAnglePID
+
+from commands.Zero import Zero
+
 
 from commands import Sequences
 
@@ -52,34 +54,15 @@ class MyRobot(CommandBasedRobot):
         This is a good place to set up your subsystems and anything else that
         you will need to access later.
         '''
+
         Command.getRobot = lambda x=0: self
 
-        self.drive = Drive.Drive()
+        self.drive = Drive.Drive(self)
         self.lift = Lift.Lift(self)
-        self.wrist = Wrist.Wrist()
-        self.intake = Intake.Intake()
+        self.wrist = Wrist.Wrist(self)
+        self.intake = Intake.Intake(self)
 
         self.autonomousProgram = AutonomousProgram()
-
-        SmartDashboard.putData("setPositionWrist", setPositionWrist(0,True))
-        SmartDashboard.putData("setPositionLift", setPositionLift(0, True))
-
-        SmartDashboard.putData("setFixedDT", setFixedDT())
-        SmartDashboard.putData("setFixedIntake", setFixedIntake())
-        SmartDashboard.putData("setFixedLift", setFixedLift())
-        SmartDashboard.putData("setFixedWrist", setFixedWrist())
-
-        SmartDashboard.putData("setSpeedDT", setSpeedDT())
-
-        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
-        SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
-        SmartDashboard.putData("TurnAngle", TurnAngle())
-
-        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistancePID())
-        SmartDashboard.putData("DriveStraightTime", DriveStraightTimePID())
-        #SmartDashboard.putData("TurnAngle", TurnAnglePID())
-        SmartDashboard.putData("Zero", Zero())
-        Sequences.UpdateDashboard()
 
         '''
         Since OI instantiates commands and commands need access to subsystems,
@@ -91,15 +74,58 @@ class MyRobot(CommandBasedRobot):
 
         oi.commands()
 
+        self.updateDashboardInit()
+
     def autonomousInit(self):
         self.autonomousProgram.start()
 
     def robotPeriodic(self):
+        self.updateDashboardPeriodic()
+
+
+
+
+    def updateDashboardInit(self):
+        '''Subsystems'''
+        SmartDashboard.putData("Drive", self.drive)
+        SmartDashboard.putData("Intake", self.intake)
+        SmartDashboard.putData("Lift", self.lift)
+        SmartDashboard.putData("Wrist", self.wrist)
+
+        '''Commands'''
+        SmartDashboard.putData("setPositionWrist", setPositionWrist(0,True))
+        SmartDashboard.putData("setPositionLift", setPositionLift(0, True))
+
+        SmartDashboard.putData("setFixedDT", setFixedDT())
+        SmartDashboard.putData("setFixedIntake", setFixedIntake())
+        SmartDashboard.putData("setFixedLift", setFixedLift())
+        SmartDashboard.putData("setFixedWrist", setFixedWrist())
+
+        SmartDashboard.putData("setSpeedDT", setSpeedDT())
+        SmartDashboard.putData("setSpeedLift", setSpeedDT())
+        SmartDashboard.putData("setSpeedWrist", setSpeedDT())
+
+        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
+        SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
+        SmartDashboard.putData("TurnAngle", TurnAngle())
+
+        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistancePID())
+        SmartDashboard.putData("DriveStraightTime", DriveStraightTimePID())
+        #SmartDashboard.putData("TurnAngle", TurnAnglePID())
+
+        SmartDashboard.putData("Zero", Zero())
+
+        '''Additional UpdateDashboard Functions'''
+        Sequences.UpdateDashboard()
+
+    def updateDashboardPeriodic(self):
+        '''Sensor Output'''
         SmartDashboard.putNumber("WristPosition", math.degrees(self.wrist.getAngle()))
         SmartDashboard.putNumber("LiftPosition", self.lift.getHeight())
         SmartDashboard.putNumber("RightDistance", self.drive.getDistance()[0])
         SmartDashboard.putNumber("LeftDistance", self.drive.getDistance()[1])
 
+        '''Current Logging'''
         SmartDashboard.putNumber("DriveAmps",self.drive.getOutputCurrent())
         SmartDashboard.putNumber("IntakeAmps",self.intake.getOutputCurrent())
         SmartDashboard.putNumber("WristAmps", self.wrist.getOutputCurrent())
@@ -108,13 +134,13 @@ class MyRobot(CommandBasedRobot):
         total = self.drive.getOutputCurrent()+self.intake.getOutputCurrent()+self.wrist.getOutputCurrent()+self.lift.getOutputCurrent()
         SmartDashboard.putNumber("TotalAmps",total)
 
-        SmartDashboard.putData("Drive", self.drive)
-        SmartDashboard.putData("Intake", self.intake)
-        SmartDashboard.putData("Lift", self.lift)
-        SmartDashboard.putData("Wrist", self.wrist)
-
-        self.lift.UpdateDashboard()
+        '''Additional UpdateDashboard Functions'''
         self.drive.UpdateDashboard()
+        self.lift.UpdateDashboard()
+        #self.wrist.UpdateDashboard()
+        #self.intake.UpdateDashboard()
+
+
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)

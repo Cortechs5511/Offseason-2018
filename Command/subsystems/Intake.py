@@ -12,7 +12,7 @@ from wpilib import SmartDashboard
 
 class Intake(Subsystem):
 
-    def __init__(self):
+    def __init__(self, Robot):
         super().__init__('Intake')
 
         timeout = 0
