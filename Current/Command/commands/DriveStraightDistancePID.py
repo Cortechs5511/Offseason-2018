@@ -32,14 +32,17 @@ class DriveStraightDistancePID(Command):
 
         self.DT.tankDrive(LeftSpeed,RightSpeed)
 
+        if abs(self.distError) < self.TolDist and (LeftSpeed+RightSpeed) / 2 < 0.2:  self.done = True
+        else: self.done = False
+
     def interrupted(self):
         self.DT.encoders.disablePID()
 #        self.DT.navx.disablePID()
         self.DT.tankDrive(0,0)
 
     def isFinished(self):
-        if abs(self.distError) < self.TolDist: return True
-        return False
+        return self.done
+
 
     def end(self):
         self.DT.encoders.disablePID()
