@@ -4,6 +4,7 @@ from wpilib.command.waitcommand import WaitCommand
 
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightTime import DriveStraightTime
+from commands.TurnAngle import TurnAngle
 
 from commands.DriveStraightDistancePID import DriveStraightDistancePID
 from commands.DriveStraightTimePID import DriveStraightTimePID
@@ -23,3 +24,4 @@ class AutonomousProgram(CommandGroup):
 
         #self.addSequential(DriveStraightDistancePID(10))
         self.addSequential(DriveStraightDistancePID(10))
+        self.addSequential(TurnAngle(90))

@@ -6,37 +6,30 @@ from sensors.navx import NavX
 
 class TurnAngle(Command):
 
-    def __init__(self, angle = 0, speed = 0):
+    def __init__(self, angle = 0):
         super().__init__('TurnAngle')
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
+
         self.setpoint = angle
-        self.speed = speed
+        self.speed = 0.3
+
+        self.KpAngle = 0.005
+        self.TolAngle = 3
 
     def execute(self):
-        Kp_Angle = 0.2
-        Tol_Angle = 3
-        CurrAngle = NavX.getAngle()
-        AngleError = math.fabs(self.setpoint) - CurrAngle
-        # get speed based on how far you travelled
-
-        if math.fabs(AngleError) > Tol_Angle:
-            LeftSpeed = self.speed + (CurrAngle * Kp_Angle * math.copysign(1,self.setpoint))
-            RightSpeed = self.speed - (currAngle * Kp_Angle * math.copysign(1,self.setpoint))
-        else:
-            pass
-
-
+        angle = self.DT.navx.getAngle()
+        self.AngleError = self.setpoint - angle
+        LeftSpeed = self.speed + (self.KpAngle * self.AngleError)
+        RightSpeed = self.speed - (self.KpAngle * self.AngleError)
         self.DT.tankDrive(LeftSpeed,RightSpeed)
 
     def interrupted(self):
         self.DT.tankDrive(0,0)
 
     def isFinished(self):
-        if math.fabs(AngleError) <= Tol_Angle:
-            return True
-        else:
-            return False
+        if abs(self.AngleError) <= self.TolAngle: return True
+        else: return False
 
     def end(self):
         self.DT.tankDrive(0,0)

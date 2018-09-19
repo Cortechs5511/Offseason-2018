@@ -14,11 +14,11 @@ class DriveStraightTimePID(TimedCommand):
         self.speed = speed
 
         self.DT.encoders.enablePID()
-#        self.DT.navx.enablePID()
+        #self.DT.navx.enablePID()
 
     def execute(self):
         ePID = self.DT.encoders.getPID()
-#        nPID = self.DT.navx.getPID()
+        #nPID = self.DT.navx.getPID()
         nPID = ePID
         err = (ePID+nPID)/2.0
 
@@ -28,7 +28,7 @@ class DriveStraightTimePID(TimedCommand):
 
     def interrupted(self):
         self.DT.encoders.disablePID()
-#        self.DT.navx.disablePID()
+        #self.DT.navx.disablePID()
         self.DT.tankDrive(0,0)
 
     def isFinished(self):
@@ -36,5 +36,5 @@ class DriveStraightTimePID(TimedCommand):
 
     def end(self):
         self.DT.encoders.disablePID()
-#        self.DT.navx.disablePID()
+        #self.DT.navx.disablePID()
         self.DT.tankDrive(0,0)

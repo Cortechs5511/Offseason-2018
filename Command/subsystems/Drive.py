@@ -11,7 +11,7 @@ from wpilib.command.subsystem import Subsystem
 from commands.setSpeedDT import setSpeedDT
 from commands.setFixedDT import setFixedDT
 
-#import sensors.navx as navx
+import sensors.navx as navx
 import sensors.DTEncoders as encoders
 
 from wpilib import SmartDashboard
@@ -64,10 +64,10 @@ class Drive(Subsystem):
         self.left = TalonLeft
         self.right = TalonRight
 
-        #self.navx = navx.NavX()
+        self.navx = navx.NavX()
         self.encoders = encoders.DTEncoders()
 
-        #self.navx.disablePID()
+        self.navx.disablePID()
         self.encoders.disablePID()
 
     def tankDrive(self,left,right):
@@ -90,7 +90,7 @@ class Drive(Subsystem):
         return (self.getDistance()[0]+self.getDistance()[1])/2.0
 
     def getAngle(self):
-#        return self.navx.getAngle()
+        return self.navx.getAngle()
         return 0
 
     def initDefaultCommand(self):

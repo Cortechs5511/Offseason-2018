@@ -16,7 +16,7 @@ class DriveStraightDistancePID(Command):
         self.DT.encoders.enablePID()
         #self.DT.navx.enablePID()
 
-        self.TolDist = 0.5 #feet
+        self.TolDist = 0.2 #feet
         self.finished = False
 
         [kP,kI,kD,kF] = [0.32, 0.00, 3.50, 0.00] #Tuned for simulation
