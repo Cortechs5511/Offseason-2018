@@ -22,4 +22,4 @@ class AutonomousProgram(CommandGroup):
         #self.addSequential(DriveStraightTime(0.7, 2))
 
         #self.addSequential(DriveStraightDistancePID(10))
-        self.addSequential(DriveStraightTimePID(0.7, 4))
+        self.addSequential(DriveStraightDistancePID(10))
