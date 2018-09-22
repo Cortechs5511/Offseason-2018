@@ -7,7 +7,7 @@ from wpilib.command import Command
 from wpilib.drive import DifferentialDrive
 
 from commandbased import CommandBasedRobot
-from commands.autonomous import AutonomousProgram
+import commands.autonomous as auto
 
 from commands.setPositionWrist import setPositionWrist
 from commands.setPositionLift import setPositionLift
@@ -76,14 +76,27 @@ class MyRobot(CommandBasedRobot):
 
         self.updateDashboardInit()
 
-    def autonomousInit(self):
-        self.autonomousProgram.start()
-
     def robotPeriodic(self):
         self.updateDashboardPeriodic()
+        
+    def autonomousInit(self):
+        self.autoMode = "Nothing"
 
-
-
+    def autonomousPeriodic(self):
+        if self.autoMode == "Nothing":
+            gameData =
+            position =
+            self.autoMode = autoSelector.calcNum(gameData, position)
+            if self.autoMode == "DriveStraight":
+                auto.DriveStraight().start()
+            elif self.autoMode == "LeftSwitchSide":
+                auto.LeftSwitchSide().start()
+            elif self.autoMode == "LeftSwitchMiddle":
+                auto.LeftSwitchMiddle().start()
+            elif self.autoMode == "RightSwitchSide":
+                auto.RightSwitchSide().start()
+            elif self.autoMode == "RightSwitchMiddle":
+                auto.RightSwitchMiddle().start()
 
     def updateDashboardInit(self):
         '''Subsystems'''

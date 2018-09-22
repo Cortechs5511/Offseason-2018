@@ -18,11 +18,3 @@ class AutonomousProgram(CommandGroup):
 
     def __init__(self):
         super().__init__('Autonomous Program')
-
-        #self.addSequential(DriveStraightDistance(3))
-        #self.addSequential(WaitCommand(1))
-        #self.addSequential(DriveStraightTime(0.7, 2))
-
-        #self.addSequential(DriveStraightDistancePID(10))
-        self.addSequential(DriveStraightDistancePID(10))
-        self.addSequential(TurnAnglePID(90))
