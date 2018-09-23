@@ -13,7 +13,7 @@ class setSpeedDT(Command):
     def execute(self):
         left = self.getRobot().joystick0.getY()
         right = self.getRobot().joystick1.getY()
-        self.DT.tankDrive(left,right)
+        self.DT.tankDrive(-left,-right)
 
     def interrupted(self):
         self.DT.tankDrive(0,0)

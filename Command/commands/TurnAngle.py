@@ -2,7 +2,7 @@ import math
 import wpilib
 from wpilib.command import Command
 from sensors.DTEncoders import DTEncoders
-from sensors.navx import NavX
+#from sensors.navx import NavX
 
 class TurnAngle(Command):
 
@@ -18,7 +18,7 @@ class TurnAngle(Command):
         self.TolAngle = 3
 
     def execute(self):
-        angle = self.DT.navx.getAngle()
+        angle = 0
         self.AngleError = self.setpoint - angle
         LeftSpeed = self.speed + (self.KpAngle * self.AngleError)
         RightSpeed = self.speed - (self.KpAngle * self.AngleError)

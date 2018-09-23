@@ -2,6 +2,7 @@
 
 import wpilib
 import math
+import autoSelector
 
 from wpilib.command import Command
 from wpilib.drive import DifferentialDrive
@@ -32,6 +33,7 @@ from commands import Sequences
 
 from subsystems import Wrist, Intake, Lift, Drive
 import oi
+import wpilib
 
 from wpilib import SmartDashboard
 
@@ -41,7 +43,8 @@ import path.path as path
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-from robotpy_ext.common_drivers import navx
+#from robotpy_ext.common_drivers import navx
+#import navx
 
 import wpilib.buttons
 
@@ -62,7 +65,7 @@ class MyRobot(CommandBasedRobot):
         self.wrist = Wrist.Wrist(self)
         self.intake = Intake.Intake(self)
 
-        self.autonomousProgram = AutonomousProgram()
+        #self.autonomousProgram = AutonomousProgram()
 
         '''
         Since OI instantiates commands and commands need access to subsystems,
@@ -78,14 +81,14 @@ class MyRobot(CommandBasedRobot):
 
     def robotPeriodic(self):
         self.updateDashboardPeriodic()
-        
+
     def autonomousInit(self):
         self.autoMode = "Nothing"
 
     def autonomousPeriodic(self):
         if self.autoMode == "Nothing":
-            gameData =
-            position =
+            gameData = "LRL"
+            position = "L"
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight":
                 auto.DriveStraight().start()
@@ -122,7 +125,8 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
         SmartDashboard.putData("TurnAngle", TurnAngle())
 
-        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistancePID())
+        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistancePID(10,True))
+        SmartDashboard.putData("DriveStraightDistanceBack", DriveStraightDistancePID(-10))
         SmartDashboard.putData("DriveStraightTime", DriveStraightTimePID())
         #SmartDashboard.putData("TurnAngle", TurnAnglePID())
 

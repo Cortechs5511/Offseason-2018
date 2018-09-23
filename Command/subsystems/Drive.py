@@ -11,7 +11,7 @@ from wpilib.command.subsystem import Subsystem
 from commands.setSpeedDT import setSpeedDT
 from commands.setFixedDT import setFixedDT
 
-import sensors.navx as navx
+#import sensors.navx as navx
 import sensors.DTEncoders as encoders
 
 from wpilib import SmartDashboard
@@ -27,11 +27,12 @@ class Drive(Subsystem):
 
     def __init__(self, Robot):
         super().__init__('Drive')
-
+        SmartDashboard.putNumber("RightGain", 0.9)
         timeout = 0
-
         TalonLeft = Talon(10)
         TalonRight = Talon(20)
+        TalonLeft.setSafetyEnabled(False)
+        TalonRight.setSafetyEnabled(False)
 
         if not wpilib.RobotBase.isSimulation():
             VictorLeft1 = Victor(11)
@@ -46,8 +47,12 @@ class Drive(Subsystem):
 
             for motor in [VictorLeft1,VictorLeft2,VictorRight1,VictorRight2]:
                 motor.clearStickyFaults(timeout)
+                motor.setSafetyEnabled(False)
+                motor.setInverted(True)
 
         for motor in [TalonLeft,TalonRight]:
+            motor.setInverted(True)
+            motor.setSafetyEnabled(False)
             motor.clearStickyFaults(timeout) #Clears sticky faults
 
             motor.configContinuousCurrentLimit(15,timeout) #15 Amps per motor
@@ -64,21 +69,22 @@ class Drive(Subsystem):
         self.left = TalonLeft
         self.right = TalonRight
 
-        self.navx = navx.NavX()
+        #self.navx = navx.NavX()
         self.encoders = encoders.DTEncoders()
 
-        self.navx.disablePID()
+        #self.navx.disablePID()
         self.encoders.disablePID()
 
     def tankDrive(self,left,right):
-        if(abs(left) < self.dbLimit): left = 0
-        else: left = self.maxSpeed*abs(left)/left*(math.exp(self.k*abs(left))-1) / (math.exp(self.k)-1)
+        #if(abs(left) < self.dbLimit): left = 0
+        #else: left = self.maxSpeed*abs(left)/left*(math.exp(self.k*abs(left))-1) / (math.exp(self.k)-1)
 
-        if(abs(right) < self.dbLimit): right = 0
-        else: right = self.maxSpeed*abs(right)/right*(math.exp(self.k*abs(right))-1) / (math.exp(self.k)-1)
-
+        #if(abs(right) < self.dbLimit): right = 0
+        #else: right = self.maxSpeed*abs(right)/right*(math.exp(self.k*abs(right))-1) / (math.exp(self.k)-1)
+        RightGain = SmartDashboard.getNumber("RightGain", 1.0)
         self.left.set(left)
-        self.right.set(right)
+        self.right.set(right * RightGain)
+
 
     def getOutputCurrent(self):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
@@ -90,7 +96,8 @@ class Drive(Subsystem):
         return (self.getDistance()[0]+self.getDistance()[1])/2.0
 
     def getAngle(self):
-        return self.navx.getAngle()
+        #return self.navx.getAngle()
+        return 0
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedDT())

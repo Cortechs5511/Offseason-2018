@@ -14,12 +14,14 @@ class DTEncoders():
         kTolerance = .1 #feet
 
         self.leftEncoder = wpilib.Encoder(0,1)
-        self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 127)
+        gain = 58/120
+        self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 127 * gain)
         self.leftEncoder.setSamplesToAverage(10)
 
         self.rightEncoder = wpilib.Encoder(2,3)
-        self.rightEncoder.setDistancePerPulse(4/12 * math.pi / 255)
+        self.rightEncoder.setDistancePerPulse(-4/12 * math.pi / 255 * gain * 4)
         self.rightEncoder.setSamplesToAverage(10)
+
 
         PIDController =  wpilib.PIDController(kP, kI, kD, kF, self, output=self)
         PIDController.setOutputRange(-1.0, 1.0)
@@ -32,6 +34,10 @@ class DTEncoders():
 
     def getDistance(self):
         return [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
+
+    def getAvgVelocity(self):
+        '''feet per second'''
+        return (self.leftEncoder.getRate() + self.rightEncoder.getRate())/ 2
 
     def updateDiff(self):
         self.diff = self.leftEncoder.getDistance()-self.rightEncoder.getDistance()

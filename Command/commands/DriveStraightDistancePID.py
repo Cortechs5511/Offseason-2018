@@ -1,12 +1,13 @@
 import math
 import wpilib
 from wpilib.command import Command
+from wpilib import SmartDashboard
 from sensors.DTEncoders import DTEncoders
 #from sensors.navx import NavX
 
 class DriveStraightDistancePID(Command):
 
-    def __init__(self, distance = 10):
+    def __init__(self, distance = 10, Debug = False):
         super().__init__('DriveStraightDistancePID')
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
@@ -19,32 +20,38 @@ class DriveStraightDistancePID(Command):
         self.TolDist = 0.2 #feet
         self.finished = False
 
-        [kP,kI,kD,kF] = [0.32, 0.0001, 3.50, 0.00] #Tuned for simulation
+        [kP,kI,kD,kF] = [0.07, 0.0, 0.20, 0.00] #Tuned for simulation
         distController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
-
         distController.setInputRange(0,  50) #feet
-        distController.setOutputRange(-0.8, 0.8)
+        distController.setOutputRange(-0.55, 0.55)
         distController.setAbsoluteTolerance(self.TolDist)
         distController.setContinuous(False)
         self.distController = distController
-
-        self.setPID(distance)
         self.distController.disable()
+        if Debug == True:
+            SmartDashboard.putData("Distance_PID",self.distController)
 
-    def execute(self):
+
+    def initialize(self):
+        setpoint = self.setpoint + self.pidGet()
+        self.setPID(setpoint)
         self.distController.enable()
 
-        speed = self.getPID()
+    def execute(self):
+        pass
+        '''speed = self.getPID()
         #err = (self.DT.encoders.getPID()+self.DT.navx.getPID())/2
         err = self.DT.encoders.getPID()
 
-        self.DT.tankDrive(speed+err, speed-err)
-
-        if abs(self.setpoint-self.DT.getAvgDistance()) < self.TolDist and speed < 0.1:  self.finished = True
-        else: self.finished = False
+        self.DT.tankDrive(speed+err, speed-err)'''
 
     def isFinished(self):
-        return self.finished
+        rate = abs(self.DT.encoders.getAvgVelocity())
+        minrate = 0.25
+        return self.distController.onTarget() and rate < minrate
+        '''if abs(self.setpoint-self.DT.getAvgDistance()) < self.TolDist and speed < 0.1:  self.finished = True
+        else: self.finished = False
+        return self.finished'''
 
     def interrupted(self):
         self.DT.tankDrive(0,0)
@@ -77,4 +84,10 @@ class DriveStraightDistancePID(Command):
         return self.DT.getAvgDistance()
 
     def pidWrite(self, output):
-        pass
+        nominal = 0.2
+        if output < nominal and output > 0:
+            output = nominal
+        elif output > -nominal and output < 0:
+            output = -nominal
+
+        self.DT.tankDrive(output, output)

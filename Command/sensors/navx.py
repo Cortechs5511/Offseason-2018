@@ -1,7 +1,7 @@
-import math
+'''import math
 
 import wpilib
-from robotpy_ext.common_drivers import navx
+#from robotpy_ext.common_drivers import navx
 
 class NavX():
 
@@ -38,4 +38,4 @@ class NavX():
         return self.navx.getYaw()
 
     def pidWrite(self, output):
-        pass
+        pass'''
