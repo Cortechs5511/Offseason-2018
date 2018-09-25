@@ -14,12 +14,11 @@ class DTEncoders():
         kTolerance = .1 #feet
 
         self.leftEncoder = wpilib.Encoder(0,1)
-        gain = 58/120
-        self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 127 * gain)
+        self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 255)
         self.leftEncoder.setSamplesToAverage(10)
 
         self.rightEncoder = wpilib.Encoder(2,3)
-        self.rightEncoder.setDistancePerPulse(-4/12 * math.pi / 255 * gain * 4)
+        self.rightEncoder.setDistancePerPulse(-4/12 * math.pi / 127)
         self.rightEncoder.setSamplesToAverage(10)
 
 

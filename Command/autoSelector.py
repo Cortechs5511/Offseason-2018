@@ -1,14 +1,13 @@
-def calcNum(auto, gameData):
-    if(auto=="Left"):
-        if(gameData[0]=='L'): "LeftSwitchSide"
+def calcNum(gameData, auto):
+    if(auto=="L"):
+        if(gameData[0]=='L'): return "LeftSwitchSide"
         else: return "DriveStraight"
-    elif(auto=="Middle"):
+    elif(auto=="M"):
         if(gameData[0]=='L'): return "LeftSwitchMiddle"
         else: return "RightSwitchMiddle"
-    elif(auto=="Right"):
-        if(gameData[1]=='L'): return "DriveStraight"
+    elif(auto=="R"):
+        if(gameData[0]=='L'): return "DriveStraight"
         else: return "RightSwitchSide"
     else:
         return "Nothing"
-
-    return num
+    return "Nothing"

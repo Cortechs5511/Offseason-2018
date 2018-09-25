@@ -2,7 +2,7 @@ import math
 import wpilib
 from wpilib.command import Command
 from sensors.DTEncoders import DTEncoders
-#from sensors.navx import NavX
+from sensors.navx import NavX
 
 class TurnAnglePID(Command):
 
@@ -14,7 +14,7 @@ class TurnAnglePID(Command):
         self.setpoint = angle
 
         self.TolAngle = 3
-        [kP,kI,kD,kF] = [0.015, 0.0001, 0.20, 0.00] #Tuned for simulation
+        [kP,kI,kD,kF] = [0.022, 0.00, 0.20, 0.00] #Tuned for simulation
         angleController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
         angleController.setInputRange(-180,  180) #degrees
         angleController.setOutputRange(-0.8, 0.8)

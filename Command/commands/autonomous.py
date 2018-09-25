@@ -10,11 +10,48 @@ from commands.DriveStraightDistancePID import DriveStraightDistancePID
 from commands.DriveStraightTimePID import DriveStraightTimePID
 from commands.TurnAnglePID import TurnAnglePID
 
-class AutonomousProgram(CommandGroup):
-    '''
-    A simple program that spins the motor for two seconds, pauses for a second,
-    and then spins it in the opposite direction for two seconds.
-    '''
+import commands.Sequences as seq
 
+from commands.setFixedDT import setFixedDT
+
+class LeftSwitchSide(CommandGroup):
     def __init__(self):
-        super().__init__('Autonomous Program')
+        super().__init__('LeftSwitchSide')
+        self.addSequential(DriveStraightDistancePID(154/12.0))
+        self.addParallel(seq.SwitchPosition())
+        self.addSequential(TurnAnglePID(90))
+        self.addSequential(DriveStraightDistancePID(20/12.0))
+        self.addSequential(seq.SwitchShoot())
+
+class RightSwitchSide(CommandGroup):
+    def __init__(self):
+        super().__init__('RightSwitchSide')
+        self.addSequential(DriveStraightDistancePID(154/12.0))
+        self.addParallel(seq.SwitchPosition())
+        self.addSequential(TurnAnglePID(-90))
+        self.addSequential(DriveStraightDistancePID(20/12.0))
+        self.addSequential(seq.SwitchShoot())
+
+class DriveStraight(CommandGroup):
+    def __init__(self):
+        super().__init__('DriveStraight')
+        self.addSequential(DriveStraightDistancePID(154/12.0))
+        self.addParallel(seq.SwitchPosition())
+
+class LeftSwitchMiddle(CommandGroup):
+    def __init__(self):
+        super().__init__('LeftSwitchMiddle')
+        self.addSequential(DriveStraightDistancePID(10/12.0))
+        self.addParallel(seq.SwitchPosition())
+        self.addSequential(TurnAnglePID(-50))
+        self.addSequential(DriveStraightDistancePID(130/12.0))
+        self.addSequential(TurnAnglePID(0))
+        self.addSequential(DriveStraightDistancePID(10/12.0))
+        self.addSequential(seq.SwitchShoot())
+
+class RightSwitchMiddle(CommandGroup):
+    def __init__(self):
+        super().__init__('RightSwitchMiddle')
+        self.addSequential(DriveStraightDistancePID(112/12.0))
+        self.addParallel(seq.SwitchPosition())
+        self.addSequential(seq.SwitchShoot())

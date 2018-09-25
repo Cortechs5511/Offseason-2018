@@ -28,6 +28,12 @@ from commands.DriveStraightDistancePID import DriveStraightDistancePID
 
 from commands.Zero import Zero
 
+from commands.autonomous import LeftSwitchSide
+from commands.autonomous import RightSwitchSide
+from commands.autonomous import DriveStraight
+from commands.autonomous import LeftSwitchMiddle
+from commands.autonomous import RightSwitchMiddle
+
 
 from commands import Sequences
 
@@ -75,31 +81,46 @@ class MyRobot(CommandBasedRobot):
         self.joystick1 = oi.getJoystick(1)
         self.xbox = oi.getJoystick(2)
 
-        oi.commands()
-
         self.updateDashboardInit()
+
+        self.DriveStraight = DriveStraight()
+        self.LeftSwitchSide = LeftSwitchSide()
+        self.RightSwitchSide = RightSwitchSide()
+        self.LeftSwitchMiddle = LeftSwitchMiddle()
+        self.RightSwitchMiddle = RightSwitchMiddle()
 
     def robotPeriodic(self):
         self.updateDashboardPeriodic()
 
     def autonomousInit(self):
+        oi.commands()
         self.autoMode = "Nothing"
 
     def autonomousPeriodic(self):
         if self.autoMode == "Nothing":
-            gameData = "LRL"
-            position = "L"
+            gameData = wpilib.DriverStation.getGameSpecificMessage()
+            position = "M"
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight":
-                auto.DriveStraight().start()
+                #auto.DriveStraight().start()
+                self.DriveStraight.start()
             elif self.autoMode == "LeftSwitchSide":
-                auto.LeftSwitchSide().start()
+                #auto.LeftSwitchSide().start()
+                self.LeftSwitchSide.start()
             elif self.autoMode == "LeftSwitchMiddle":
-                auto.LeftSwitchMiddle().start()
+                #auto.LeftSwitchMiddle().start()
+                self.LeftSwitchMiddle.start()
             elif self.autoMode == "RightSwitchSide":
-                auto.RightSwitchSide().start()
+                #auto.RightSwitchSide().start()
+                self.RightSwitchSide.start()
             elif self.autoMode == "RightSwitchMiddle":
-                auto.RightSwitchMiddle().start()
+                #auto.RightSwitchMiddle().start()
+                self.RightSwitchMiddle.start()
+
+            print(self.autoMode)
+
+    def teleopInit(self):
+        pass
 
     def updateDashboardInit(self):
         '''Subsystems'''

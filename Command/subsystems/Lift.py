@@ -79,6 +79,6 @@ class Lift(Subsystem):
         self.setDefaultCommand(setFixedLift(0))
 
     def UpdateDashboard(self):
-        SmartDashboard.putNumber("Lift_Volts", self.lift.getMotorOutputVoltage())
+        #SmartDashboard.putNumber("Lift_Volts", self.lift.getMotorOutputVoltage())
         SmartDashboard.putNumber("Lift_Speed", self.lift.get())
         SmartDashboard.putNumber("liftHeight",self.getHeight())
