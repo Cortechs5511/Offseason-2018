@@ -3,6 +3,7 @@
 import wpilib
 import math
 import autoSelector
+from navx import AHRS as navx
 
 from wpilib.command import Command
 from wpilib.drive import DifferentialDrive
@@ -22,6 +23,7 @@ from commands.setSpeedDT import setSpeedDT
 from commands.DriveStraightTime import DriveStraightTime
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.TurnAngle import TurnAngle
+from commands.TurnAnglePID import TurnAnglePID
 from commands.DriveStraightTimePID import DriveStraightTimePID
 from commands.DriveStraightDistancePID import DriveStraightDistancePID
 #from commands.TurnAnglePID import TurnAnglePID
@@ -98,7 +100,8 @@ class MyRobot(CommandBasedRobot):
 
     def autonomousPeriodic(self):
         if self.autoMode == "Nothing":
-            gameData = wpilib.DriverStation.getGameSpecificMessage()
+            #gameData = wpilib.DriverStation.getGameSpecificMessage()
+            gameData = "LRL"
             position = "M"
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight":
@@ -145,6 +148,7 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
         SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
         SmartDashboard.putData("TurnAngle", TurnAngle())
+        SmartDashboard.putData("TurnAnglePID", TurnAnglePID())
 
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistancePID(10,True))
         SmartDashboard.putData("DriveStraightDistanceBack", DriveStraightDistancePID(-10))

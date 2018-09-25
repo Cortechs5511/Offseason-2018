@@ -3,7 +3,7 @@ import wpilib
 from wpilib.command import Command
 from wpilib.command import TimedCommand
 from sensors.DTEncoders import DTEncoders
-#from sensors.navx import NavX
+from sensors.navx import NavX
 
 class DriveStraightTimePID(TimedCommand):
 
@@ -14,12 +14,11 @@ class DriveStraightTimePID(TimedCommand):
         self.speed = speed
 
         self.DT.encoders.enablePID()
-        #self.DT.navx.enablePID()
+        NavX.enablePID(self)
 
     def execute(self):
         ePID = self.DT.encoders.getPID()
-        #nPID = self.DT.navx.getPID()
-        nPID = ePID
+        nPID = self.DT.navx.getPID()
         err = (ePID+nPID)/2.0
 
         LeftSpeed = self.speed + err
@@ -28,7 +27,7 @@ class DriveStraightTimePID(TimedCommand):
 
     def interrupted(self):
         self.DT.encoders.disablePID()
-        #self.DT.navx.disablePID()
+        self.DT.navx.disablePID()
         self.DT.tankDrive(0,0)
 
     def isFinished(self):
@@ -36,5 +35,5 @@ class DriveStraightTimePID(TimedCommand):
 
     def end(self):
         self.DT.encoders.disablePID()
-        #self.DT.navx.disablePID()
+        self.DT.navx.disablePID()
         self.DT.tankDrive(0,0)

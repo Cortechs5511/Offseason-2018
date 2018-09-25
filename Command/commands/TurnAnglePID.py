@@ -1,5 +1,6 @@
 import math
 import wpilib
+from wpilib import SmartDashboard
 from wpilib.command import Command
 from sensors.DTEncoders import DTEncoders
 from sensors.navx import NavX
@@ -33,6 +34,8 @@ class TurnAnglePID(Command):
 
         if abs(self.setpoint-self.DT.getAngle()) < self.TolAngle and abs(self.speed) < 0.1:  self.finished = True
         else: self.finished = False
+
+        SmartDashboard.putNumber("DT_Angle",self.DT.getAngle())
 
     def isFinished(self):
         return self.finished
