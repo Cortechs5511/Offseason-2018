@@ -91,18 +91,41 @@ class MyRobot(CommandBasedRobot):
         self.LeftSwitchMiddle = LeftSwitchMiddle()
         self.RightSwitchMiddle = RightSwitchMiddle()
 
+        oi.commands()
+
     def robotPeriodic(self):
         self.updateDashboardPeriodic()
 
     def autonomousInit(self):
-        oi.commands()
+        self.drive.navx.zero()
         self.autoMode = "Nothing"
-
-    def autonomousPeriodic(self):
         if self.autoMode == "Nothing":
             #gameData = wpilib.DriverStation.getGameSpecificMessage()
             gameData = "LRL"
-            position = "M"
+            position = "L"
+            self.autoMode = autoSelector.calcNum(gameData, position)
+            if self.autoMode == "DriveStraight":
+                #auto.DriveStraight().start()
+                self.DriveStraight.start()
+            elif self.autoMode == "LeftSwitchSide":
+                #auto.LeftSwitchSide().start()
+                self.LeftSwitchSide.start()
+            elif self.autoMode == "LeftSwitchMiddle":
+                #auto.LeftSwitchMiddle().start()
+                self.LeftSwitchMiddle.start()
+            elif self.autoMode == "RightSwitchSide":
+                #auto.RightSwitchSide().start()
+                self.RightSwitchSide.start()
+            elif self.autoMode == "RightSwitchMiddle":
+                #auto.RightSwitchMiddle().start()
+                self.RightSwitchMiddle.start()
+
+    def autonomousPeriodic(self):
+        '''
+        if self.autoMode == "Nothing":
+            #gameData = wpilib.DriverStation.getGameSpecificMessage()
+            gameData = "LRL"
+            position = "L"
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight":
                 #auto.DriveStraight().start()
@@ -121,6 +144,8 @@ class MyRobot(CommandBasedRobot):
                 self.RightSwitchMiddle.start()
 
             print(self.autoMode)
+            '''
+        SmartDashboard.putString("AutoMode", self.autoMode)
 
     def teleopInit(self):
         pass
@@ -148,12 +173,14 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
         SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
         SmartDashboard.putData("TurnAngle", TurnAngle())
-        SmartDashboard.putData("TurnAnglePID", TurnAnglePID())
+        SmartDashboard.putData("TurnAnglePID", TurnAnglePID(0,True))
 
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistancePID(10,True))
         SmartDashboard.putData("DriveStraightDistanceBack", DriveStraightDistancePID(-10))
         SmartDashboard.putData("DriveStraightTime", DriveStraightTimePID())
         #SmartDashboard.putData("TurnAngle", TurnAnglePID())
+
+        SmartDashboard.putData("LeftSwitchSide", LeftSwitchSide())
 
         SmartDashboard.putData("Zero", Zero())
 

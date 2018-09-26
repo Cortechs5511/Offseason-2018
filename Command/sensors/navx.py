@@ -3,6 +3,8 @@ import math
 import wpilib
 from navx import AHRS as navx
 
+from wpilib import SmartDashboard
+
 class NavX():
 
     def __init__(self):
@@ -25,17 +27,24 @@ class NavX():
     def enablePID(self):
         self.turnController.enable()
 
+
     def disablePID(self):
         self.turnController.disable()
+
 
     def setPID(self, setpoint):
         self.turnController.setSetpoint(setpoint)
 
+
     def getPID(self):
         return self.turnController.get()
 
+
     def getAngle(self):
         return self.navx.getYaw()
+
+    def zero(self):
+        self.navx.zeroYaw()
 
     def pidWrite(self, output):
         pass

@@ -34,9 +34,26 @@ class DTEncoders():
     def getDistance(self):
         return [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
 
+    def getAvgDistance(self):
+        return self.getDistance()[1]
+
+    '''
     def getAvgVelocity(self):
-        '''feet per second'''
+        #feet per second
         return (self.leftEncoder.getRate() + self.rightEncoder.getRate())/ 2
+
+    def getAvgAbsVelocity(self):
+        #feet per second
+        return (abs(self.leftEncoder.getRate()) + abs(self.rightEncoder.getRate()))/ 2
+    '''
+
+    def getAvgVelocity(self):
+        #feet per second
+        return self.rightEncoder.getRate()
+
+    def getAvgAbsVelocity(self):
+        #feet per second
+        return self.rightEncoder.getRate()
 
     def updateDiff(self):
         self.diff = self.leftEncoder.getDistance()-self.rightEncoder.getDistance()

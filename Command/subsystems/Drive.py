@@ -93,7 +93,7 @@ class Drive(Subsystem):
         return self.encoders.getDistance()
 
     def getAvgDistance(self):
-        return (self.getDistance()[0]+self.getDistance()[1])/2.0
+        return self.encoders.getAvgDistance()
 
     def getAngle(self):
         return self.navx.getAngle()
@@ -109,3 +109,4 @@ class Drive(Subsystem):
         SmartDashboard.putNumber("DT_PowerRight", self.right.get())
         SmartDashboard.putNumber("DT_EncoderCountsLeft", self.encoders.getDistance()[0])
         SmartDashboard.putNumber("DT_EncoderCountsRight", self.encoders.getDistance()[1])
+        SmartDashboard.putNumber("DT_Angle", self.getAngle())

@@ -32,15 +32,29 @@ def Level3IntakePosition():
 
 def SwitchPosition():
     cg = CommandGroup("SwitchPositon")
-    cg.addParallel(setPositionLift(30))
-    cg.addParallel(setPositionWrist(45))
+    cg.addParallel(setPositionLift(25))
+    cg.addParallel(setPositionWrist(90))
+    cg.addParallel(setFixedIntake(-0.3))
+    return cg
+
+def SwitchPosition2():
+    cg = CommandGroup("SwitchPositon")
+    cg.addParallel(setPositionLift(0))
+    cg.addParallel(setPositionWrist(30))
     cg.addParallel(setFixedIntake(-0.3))
     return cg
 
 def SwitchShoot():
     cg = CommandGroup("SwitchShoot")
-    cg.addParallel(setPositionLift(30))
-    cg.addParallel(setPositionWrist(45))
+    cg.addParallel(setPositionLift(25))
+    cg.addParallel(setPositionWrist(90))
+    cg.addParallel(setFixedIntake(0.6))
+    return cg
+
+def SwitchShoot2():
+    cg = CommandGroup("SwitchShoot")
+    cg.addParallel(setPositionLift(0))
+    cg.addParallel(setPositionWrist(25))
     cg.addParallel(setFixedIntake(0.8))
     return cg
 
@@ -61,7 +75,7 @@ def ExchangePosition():
 def ProtectPosition():
     cg = CommandGroup("ProtectPosition")
     cg.addParallel(setFixedLift(-0.1))
-    
+
     cg.addParallel(setPositionWrist(-20))
     cg.addParallel(setFixedIntake(-0.3))
     return cg

@@ -14,7 +14,7 @@ class DriveStraightTimePID(TimedCommand):
         self.speed = speed
 
         self.DT.encoders.enablePID()
-        NavX.enablePID(self)
+        self.DT.navx.enablePID()
 
     def execute(self):
         ePID = self.DT.encoders.getPID()

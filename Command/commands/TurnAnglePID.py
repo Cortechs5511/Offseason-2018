@@ -7,7 +7,7 @@ from sensors.navx import NavX
 
 class TurnAnglePID(Command):
 
-    def __init__(self, angle = 0):
+    def __init__(self, angle = 0,DEBUG=False):
         super().__init__('TurnAnglePID')
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
@@ -15,7 +15,7 @@ class TurnAnglePID(Command):
         self.setpoint = angle
 
         self.TolAngle = 3
-        [kP,kI,kD,kF] = [0.022, 0.00, 0.20, 0.00] #Tuned for simulation
+        [kP,kI,kD,kF] = [0.012, 0.00, 0.04, 0.00] #Tuned for simulation
         angleController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
         angleController.setInputRange(-180,  180) #degrees
         angleController.setOutputRange(-0.8, 0.8)
@@ -25,20 +25,16 @@ class TurnAnglePID(Command):
         self.setPID(self.setpoint)
         self.angleController.disable()
 
-        self.finished = False
+        if(DEBUG): SmartDashboard.putData("NavXPID",self.angleController)
 
     def execute(self):
         self.enablePID()
-        self.speed = self.getPID()
-        self.DT.tankDrive(self.speed,-self.speed)
-
-        if abs(self.setpoint-self.DT.getAngle()) < self.TolAngle and abs(self.speed) < 0.1:  self.finished = True
-        else: self.finished = False
 
         SmartDashboard.putNumber("DT_Angle",self.DT.getAngle())
 
     def isFinished(self):
-        return self.finished
+        if abs(self.setpoint-self.DT.getAngle()) < self.TolAngle and self.DT.encoders.getAvgAbsVelocity() < .2:  return True
+        else: return False
 
     def interrupted(self):
         self.DT.tankDrive(0,0)
@@ -67,4 +63,10 @@ class TurnAnglePID(Command):
         return self.DT.getAngle()
 
     def pidWrite(self, output):
-        pass
+        nominal = 0.27
+        if output < nominal and output > 0:
+            output = nominal
+        elif output > -nominal and output < 0:
+            output = -nominal
+
+        self.DT.tankDrive(output,-output)
