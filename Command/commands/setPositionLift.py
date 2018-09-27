@@ -6,7 +6,7 @@ from wpilib import SmartDashboard
 
 class setPositionLift(Command):
 
-    def __init__(self, setpoint = 0, Debug = False):
+    def __init__(self, setpoint = 0, Debug = False, maxtime = 300):
         super().__init__('setPositionLift')
         self.setpoint = setpoint
         self.requires(self.getRobot().lift)
@@ -20,8 +20,10 @@ class setPositionLift(Command):
         self.liftController.setAbsoluteTolerance(0.5) #tolerance in inches
         self.liftController.setContinuous(False)
 
-        if Debug:
-            SmartDashboard.putData("LiftPID", self.liftController)
+        if Debug: SmartDashboard.putData("LiftPID", self.liftController)
+
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
 
     def setPIDSourceType(self):
         return 0
@@ -54,6 +56,9 @@ class setPositionLift(Command):
     def initialize(self):
         self.enablePID()
         self.setPID(self.setpoint)
+
+    def isFinished(self):
+        return self.timer.get() > self.maxtime
 
     def interrupted(self):
         self.disablePID()

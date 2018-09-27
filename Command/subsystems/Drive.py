@@ -83,7 +83,7 @@ class Drive(Subsystem):
         #else: right = self.maxSpeed*abs(right)/right*(math.exp(self.k*abs(right))-1) / (math.exp(self.k)-1)
         RightGain = SmartDashboard.getNumber("RightGain", 1.0)
         self.left.set(left)
-        self.right.set(right * RightGain)
+        self.right.set(right) #* RightGain)
 
 
     def getOutputCurrent(self):

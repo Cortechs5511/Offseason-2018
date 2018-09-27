@@ -19,6 +19,13 @@ from commands.setSpeedWrist import setSpeedWrist
 
 import commands.Sequences as seq
 
+from commands.Sequences import SwitchPosition
+from commands.Sequences import SwitchShoot
+from commands.Sequences import IntakePosition
+from commands.Sequences import ProtectPosition
+from commands.Sequences import ExchangePosition
+from commands.Sequences import ExchangeShoot
+
 from commands.crash import Crash
 
 class axisButton(Trigger):
@@ -52,22 +59,22 @@ def commands():
     xbox = getJoystick(2)
 
     button01 = JoystickButton(joystick0, 1)
-    button01.whenPressed(seq.ExchangeShoot())
+    button01.whenPressed(ExchangeShoot())
     button02 = JoystickButton(joystick0, 2)
-    button02.whenPressed(seq.IntakePosition())
+    button02.whenPressed(IntakePosition())
     button03 = JoystickButton(joystick0, 3)
-    button03.whenPressed(seq.ExchangePosition())
+    button03.whenPressed(ExchangePosition())
     button04 = JoystickButton(joystick0, 4)
-    button04.whenPressed(seq.ExchangePosition())
+    button04.whenPressed(ExchangePosition())
 
     button11 = JoystickButton(joystick1, 1)
-    button11.whenPressed(seq.SwitchShoot())
+    button11.whenPressed(SwitchShoot())
     button12 = JoystickButton(joystick1, 2)
-    button12.whenPressed(seq.SwitchPosition())
+    button12.whenPressed(SwitchPosition())
     button13 = JoystickButton(joystick1, 3)
-    button13.whenPressed(seq.ProtectPosition())
+    button13.whenPressed(ProtectPosition())
     button14 = JoystickButton(joystick1, 4)
-    button14.whenPressed(seq.ProtectPosition())
+    button14.whenPressed(ProtectPosition())
 
     x = JoystickButton(xbox, 1)
     x.whenPressed(setPositionWrist(-20))

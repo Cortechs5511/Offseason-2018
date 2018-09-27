@@ -6,11 +6,14 @@ from wpilib import SmartDashboard
 
 class setSpeedWrist(Command):
 
-    def __init__(self):
+    def __init__(self, maxtime = 300):
         super().__init__('setSpeedWrist')
         self.requires(self.getRobot().wrist)
         self.Wrist = self.getRobot().wrist
         SmartDashboard.putNumber("WristJoystickSpeed", 0.3)
+
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
 
     def execute(self):
         wristPos = self.Wrist.getAngle()
@@ -21,6 +24,9 @@ class setSpeedWrist(Command):
         else: self.Wrist.setSpeed(0)
 
         #self.Wrist.setSpeed(Joystick.getY(2) * 1/5)
+
+    def isFinished(self):
+        return self.timer.get() > self.maxtime
 
     def interrupted(self):
         self.Wrist.setSpeed(0)

@@ -9,76 +9,173 @@ from commands.setFixedIntake import setFixedIntake
 
 from wpilib import SmartDashboard
 
-def IntakePosition():
+class IntakePosition(CommandGroup):
+    def __init__(self, maxtime=300):
+        super().__init__('IntakePosition')
+        self.addParallel(setPositionLift(0, maxtime))
+        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setFixedIntake(-0.6, maxtime))
+
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
+
+    def isFinished(self): return self.timer.get() > self.maxtime
+
+'''
+def IntakePosition(maxtime = 300):
     cg = CommandGroup("IntakePositon")
-    cg.addParallel(setPositionLift(0))
-    cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(-0.6))
+    cg.addParallel(setPositionLift(0, maxtime))
+    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setFixedIntake(-0.6, maxtime))
     return cg
+'''
 
-def Level2IntakePosition():
+class Level2IntakePosition(CommandGroup):
+    def __init__(self, maxtime=300):
+        super().__init__('Level2IntakePosition')
+        self.addParallel(setPositionLift(10, maxtime))
+        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setFixedIntake(-0.6, maxtime))
+
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
+
+    def isFinished(self): return self.timer.get() > self.maxtime
+
+'''
+def Level2IntakePosition(maxtime = 300):
     cg = CommandGroup("Level2IntakePositon")
-    cg.addParallel(setPositionLift(10))
-    cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(-0.6))
+    cg.addParallel(setPositionLift(10, maxtime))
+    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setFixedIntake(-0.6, maxtime))
     return cg
+'''
 
-def Level3IntakePosition():
+class Level3IntakePosition(CommandGroup):
+    def __init__(self, maxtime=300):
+        super().__init__('Level3IntakePosition')
+        self.addParallel(setPositionLift(20, maxtime))
+        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setFixedIntake(-0.6, maxtime))
+
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
+
+    def isFinished(self): return self.timer.get() > self.maxtime
+
+'''
+def Level3IntakePosition(maxtime = 300):
     cg = CommandGroup("Level3IntakePositon")
-    cg.addParallel(setPositionLift(20))
-    cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(-0.6))
+    cg.addParallel(setPositionLift(20, maxtime))
+    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setFixedIntake(-0.6, maxtime))
     return cg
+'''
 
-def SwitchPosition():
+class SwitchPosition(CommandGroup):
+    def __init__(self, maxtime=300):
+        super().__init__('SwitchPosition')
+        self.addParallel(setPositionLift(25, maxtime))
+        self.addParallel(setPositionWrist(90, maxtime))
+        self.addParallel(setFixedIntake(-0.3, maxtime))
+
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
+
+    def isFinished(self): return self.timer.get() > self.maxtime
+
+'''
+def SwitchPosition(maxtime = 300):
     cg = CommandGroup("SwitchPositon")
-    cg.addParallel(setPositionLift(25))
-    cg.addParallel(setPositionWrist(90))
-    cg.addParallel(setFixedIntake(-0.3))
+    cg.addParallel(setPositionLift(25, maxtime))
+    cg.addParallel(setPositionWrist(90, maxtime))
+    cg.addParallel(setFixedIntake(-0.3, maxtime))
     return cg
+'''
 
-def SwitchPosition2():
-    cg = CommandGroup("SwitchPositon")
-    cg.addParallel(setPositionLift(0))
-    cg.addParallel(setPositionWrist(30))
-    cg.addParallel(setFixedIntake(-0.3))
-    return cg
+class SwitchShoot(CommandGroup):
+    def __init__(self, maxtime=300):
+        super().__init__('SwitchShoot')
+        self.addParallel(setPositionLift(25, maxtime))
+        self.addParallel(setPositionWrist(90, maxtime))
+        self.addParallel(setFixedIntake(0.6, maxtime))
 
-def SwitchShoot():
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
+
+    def isFinished(self): return self.timer.get() > self.maxtime
+
+'''
+def SwitchShoot(maxtime = 300):
     cg = CommandGroup("SwitchShoot")
-    cg.addParallel(setPositionLift(25))
-    cg.addParallel(setPositionWrist(90))
-    cg.addParallel(setFixedIntake(0.6))
+    cg.addParallel(setPositionLift(25, maxtime))
+    cg.addParallel(setPositionWrist(90, maxtime))
+    cg.addParallel(setFixedIntake(0.6, maxtime))
     return cg
+'''
 
-def SwitchShoot2():
-    cg = CommandGroup("SwitchShoot")
-    cg.addParallel(setPositionLift(0))
-    cg.addParallel(setPositionWrist(25))
-    cg.addParallel(setFixedIntake(0.8))
-    return cg
+class ExchangeShoot(CommandGroup):
+    def __init__(self, maxtime=300):
+        super().__init__('ExchangeShoot')
+        self.addParallel(setPositionLift(0, maxtime))
+        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setFixedIntake(0.8, maxtime))
 
-def ExchangeShoot():
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
+
+    def isFinished(self): return self.timer.get() > self.maxtime
+
+'''
+def ExchangeShoot(maxtime = 300):
     cg = CommandGroup("ExchangeShoot")
-    cg.addParallel(setPositionLift(0))
-    cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(0.8))
+    cg.addParallel(setPositionLift(0, maxtime))
+    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setFixedIntake(0.8, maxtime))
     return cg
+'''
 
-def ExchangePosition():
+class ExchangePosition(CommandGroup):
+    def __init__(self, maxtime=300):
+        super().__init__('ExchangePosition')
+        self.addParallel(setPositionLift(0, maxtime))
+        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setFixedIntake(-0.3, maxtime))
+
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
+
+    def isFinished(self): return self.timer.get() > self.maxtime
+
+'''
+def ExchangePosition(maxtime = 300):
     cg = CommandGroup("ExchangePositon")
-    cg.addParallel(setPositionLift(0))
-    cg.addParallel(setPositionWrist(110))
-    cg.addParallel(setFixedIntake(-0.3))
+    cg.addParallel(setPositionLift(0, maxtime))
+    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setFixedIntake(-0.3, maxtime))
     return cg
+'''
 
-def ProtectPosition():
+class ProtectPosition(CommandGroup):
+    def __init__(self, maxtime=300):
+        super().__init__('ProtectPosition')
+        self.addParallel(setFixedLift(-0.1, maxtime))
+        self.addParallel(setPositionWrist(-20, maxtime))
+        self.addParallel(setFixedIntake(-0.3, maxtime))
+
+        self.timer = self.getRobot().timer
+        self.maxtime = maxtime
+
+    def isFinished(self): return self.timer.get() > self.maxtime
+
+'''
+def ProtectPosition(maxtime = 300):
     cg = CommandGroup("ProtectPosition")
-    cg.addParallel(setFixedLift(-0.1))
-
-    cg.addParallel(setPositionWrist(-20))
-    cg.addParallel(setFixedIntake(-0.3))
+    cg.addParallel(setFixedLift(-0.1, maxtime))
+    cg.addParallel(setPositionWrist(-20, maxtime))
+    cg.addParallel(setFixedIntake(-0.3, maxtime))
     return cg
+'''
 
 def UpdateDashboard():
     SmartDashboard.putData("IntakePosition", IntakePosition())

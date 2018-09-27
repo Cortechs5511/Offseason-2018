@@ -106,57 +106,42 @@ class MyRobot(CommandBasedRobot):
     def autonomousInit(self):
         self.timer.reset()
         self.timer.start()
+
         Scheduler.enable(self)
+
         self.drive.navx.zero()
+
         self.autoMode = "Nothing"
+
         if self.autoMode == "Nothing":
+
             #gameData = wpilib.DriverStation.getGameSpecificMessage()
             gameData = "LRL"
-            position = "L"
+            position = "M"
+
             self.autoMode = autoSelector.calcNum(gameData, position)
-            if self.autoMode == "DriveStraight":
-                #auto.DriveStraight().start()
-                self.DriveStraight.start()
-            elif self.autoMode == "LeftSwitchSide":
-                #auto.LeftSwitchSide().start()
-                self.LeftSwitchSide.start()
-            elif self.autoMode == "LeftSwitchMiddle":
-                #auto.LeftSwitchMiddle().start()
-                self.LeftSwitchMiddle.start()
-            elif self.autoMode == "RightSwitchSide":
-                #auto.RightSwitchSide().start()
-                self.RightSwitchSide.start()
-            elif self.autoMode == "RightSwitchMiddle":
-                #auto.RightSwitchMiddle().start()
-                self.RightSwitchMiddle.start()
+            if self.autoMode == "DriveStraight": self.DriveStraight.start()
+            elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
+            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start()
+            elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
+            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
 
     def autonomousPeriodic(self):
         Scheduler.getInstance().run()
 
-        '''
         if self.autoMode == "Nothing":
+
             #gameData = wpilib.DriverStation.getGameSpecificMessage()
             gameData = "LRL"
-            position = "L"
-            self.autoMode = autoSelector.calcNum(gameData, position)
-            if self.autoMode == "DriveStraight":
-                #auto.DriveStraight().start()
-                self.DriveStraight.start()
-            elif self.autoMode == "LeftSwitchSide":
-                #auto.LeftSwitchSide().start()
-                self.LeftSwitchSide.start()
-            elif self.autoMode == "LeftSwitchMiddle":
-                #auto.LeftSwitchMiddle().start()
-                self.LeftSwitchMiddle.start()
-            elif self.autoMode == "RightSwitchSide":
-                #auto.RightSwitchSide().start()
-                self.RightSwitchSide.start()
-            elif self.autoMode == "RightSwitchMiddle":
-                #auto.RightSwitchMiddle().start()
-                self.RightSwitchMiddle.start()
+            position = "M"
 
-            print(self.autoMode)
-            '''
+            self.autoMode = autoSelector.calcNum(gameData, position)
+            if self.autoMode == "DriveStraight": self.DriveStraight.start()
+            elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
+            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start()
+            elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
+            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
+            
         SmartDashboard.putString("AutoMode", self.autoMode)
 
     def teleopInit(self):
