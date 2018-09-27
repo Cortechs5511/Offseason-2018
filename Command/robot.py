@@ -9,6 +9,7 @@ from wpilib.command import Command
 from wpilib.drive import DifferentialDrive
 
 from commandbased import CommandBasedRobot
+from wpilib.command import Scheduler
 import commands.autonomous as auto
 
 from commands.setPositionWrist import setPositionWrist
@@ -28,7 +29,7 @@ from commands.DriveStraightTimePID import DriveStraightTimePID
 from commands.DriveStraightDistancePID import DriveStraightDistancePID
 #from commands.TurnAnglePID import TurnAnglePID
 
-from commands.Zero import Zero
+
 
 from commands.autonomous import LeftSwitchSide
 from commands.autonomous import RightSwitchSide
@@ -36,7 +37,7 @@ from commands.autonomous import DriveStraight
 from commands.autonomous import LeftSwitchMiddle
 from commands.autonomous import RightSwitchMiddle
 
-
+from commands.Zero import Zero
 from commands import Sequences
 
 from subsystems import Wrist, Intake, Lift, Drive
@@ -93,10 +94,15 @@ class MyRobot(CommandBasedRobot):
 
         oi.commands()
 
+        self.commandTable = [setPositionWrist, setPositionLift, setFixedDT, setFixedIntake,
+        setFixedLift, setFixedWrist, setSpeedDT, DriveStraightTime, DriveStraightDistance,
+        TurnAngle, TurnAnglePID, DriveStraightTimePID, DriveStraightDistancePID]
+
     def robotPeriodic(self):
         self.updateDashboardPeriodic()
 
     def autonomousInit(self):
+        Scheduler.enable(self)
         self.drive.navx.zero()
         self.autoMode = "Nothing"
         if self.autoMode == "Nothing":
@@ -121,6 +127,8 @@ class MyRobot(CommandBasedRobot):
                 self.RightSwitchMiddle.start()
 
     def autonomousPeriodic(self):
+        Scheduler.getInstance().run()
+
         '''
         if self.autoMode == "Nothing":
             #gameData = wpilib.DriverStation.getGameSpecificMessage()
@@ -148,7 +156,13 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putString("AutoMode", self.autoMode)
 
     def teleopInit(self):
+        Scheduler.disable(self)
+        Scheduler.enable(self)
         pass
+
+    def teleopPeriodic(self):
+        Scheduler.getInstance().run()
+
 
     def updateDashboardInit(self):
         '''Subsystems'''

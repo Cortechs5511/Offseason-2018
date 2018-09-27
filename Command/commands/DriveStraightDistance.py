@@ -2,6 +2,7 @@ import math
 import wpilib
 from wpilib.command import Command
 from sensors.DTEncoders import DTEncoders
+from wpilib import Timer
 #from sensors.navx import NavX
 
 class DriveStraightDistance(Command):
@@ -16,6 +17,10 @@ class DriveStraightDistance(Command):
         self.kpAngle = 0.05
         self.TolDist = 0.5 #feet
         self.TolAngle = 10 #degrees
+        # maxtime in seconds
+
+    def initialize(self):
+        Timer.start()
 
 
     def execute(self):

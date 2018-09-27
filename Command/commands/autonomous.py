@@ -17,7 +17,7 @@ from commands.setFixedDT import setFixedDT
 class LeftSwitchSide(CommandGroup):
     def __init__(self):
         super().__init__('LeftSwitchSide')
-        self.addSequential(DriveStraightDistancePID(154/12.0))
+        self.addSequential(DriveStraightDistancePID((154/12.0),True,1))
         self.addParallel(seq.SwitchPosition())
         self.addSequential(TurnAnglePID(90))
         #self.addSequential(DriveStraightDistancePID(20/12.0))

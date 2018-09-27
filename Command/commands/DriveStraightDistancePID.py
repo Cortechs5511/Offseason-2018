@@ -7,13 +7,13 @@ from sensors.DTEncoders import DTEncoders
 
 class DriveStraightDistancePID(Command):
 
-    def __init__(self, distance = 10, Debug = False):
+    def __init__(self, distance = 10, Debug = False, maxtime=300):
         super().__init__('DriveStraightDistancePID')
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
-
+        self.maxtime = maxtime
         self.setpoint = distance
-
+        self.Timer = wpilib.Timer
         self.DT.encoders.enablePID()
         #self.DT.navx.enablePID()
 
