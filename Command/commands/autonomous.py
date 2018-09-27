@@ -19,7 +19,7 @@ class LeftSwitchSide(CommandGroup):
         super().__init__('LeftSwitchSide')
         self.addSequential(DriveStraightDistancePID((154/12.0),True,6))
         self.addParallel(seq.SwitchPosition())
-        self.addSequential(TurnAnglePID(90, True, 2))
+        self.addSequential(TurnAnglePID(90, True, 10))
         #self.addSequential(DriveStraightDistancePID(20/12.0))
         self.addSequential(seq.SwitchShoot())
 
@@ -28,8 +28,8 @@ class RightSwitchSide(CommandGroup):
         super().__init__('RightSwitchSide')
         self.addSequential(DriveStraightDistancePID((154/12.0),True,6))
         self.addParallel(seq.SwitchPosition())
-        self.addSequential(TurnAnglePID(-90, True, 4))
-        self.addSequential(DriveStraightDistancePID((12/12.0),True,3)
+        self.addSequential(TurnAnglePID(-90, True))
+        self.addSequential(DriveStraightDistancePID((12/12.0),True)
         self.addSequential(seq.SwitchShoot())
 
 class DriveStraight(CommandGroup):
