@@ -13,8 +13,8 @@ class DriveStraightDistancePID(Command):
         self.DT = self.getRobot().drive
         self.maxtime = maxtime
         self.setpoint = distance
-        self.Timer = wpilib.Timer
         self.DT.encoders.enablePID()
+        self.timer = self.getRobot().timer
         #self.DT.navx.enablePID()
 
         self.TolDist = 0.2 #feet
@@ -48,7 +48,10 @@ class DriveStraightDistancePID(Command):
     def isFinished(self):
         rate = abs(self.DT.encoders.getAvgVelocity())
         minrate = 0.25
-        return self.distController.onTarget() and rate < minrate
+        if self.distController.onTarget() and rate < minrate or self.timer.get() > self.maxtime:
+            return True
+        else:
+            return False
         '''if abs(self.setpoint-self.DT.getAvgDistance()) < self.TolDist and speed < 0.1:  self.finished = True
         else: self.finished = False
         return self.finished'''

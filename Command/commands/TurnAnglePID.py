@@ -7,10 +7,12 @@ from sensors.navx import NavX
 
 class TurnAnglePID(Command):
 
-    def __init__(self, angle = 0,DEBUG=False):
+    def __init__(self, angle = 0,DEBUG=False, maxtime=300):
         super().__init__('TurnAnglePID')
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
+        self.maxtime = maxtime
+        self.timer = self.getRobot().timer
 
         self.setpoint = angle
 
@@ -33,7 +35,7 @@ class TurnAnglePID(Command):
         SmartDashboard.putNumber("DT_Angle",self.DT.getAngle())
 
     def isFinished(self):
-        if abs(self.setpoint-self.DT.getAngle()) < self.TolAngle and self.DT.encoders.getAvgAbsVelocity() < .2:  return True
+        if abs(self.setpoint-self.DT.getAngle()) < self.TolAngle and self.DT.encoders.getAvgAbsVelocity() < .2 or self.timer.get() > self.maxtime:  return True
         else: return False
 
     def interrupted(self):

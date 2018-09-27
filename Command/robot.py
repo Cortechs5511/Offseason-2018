@@ -74,6 +74,8 @@ class MyRobot(CommandBasedRobot):
         self.wrist = Wrist.Wrist(self)
         self.intake = Intake.Intake(self)
 
+        self.timer = wpilib.Timer()
+
         #self.autonomousProgram = AutonomousProgram()
 
         '''
@@ -102,6 +104,8 @@ class MyRobot(CommandBasedRobot):
         self.updateDashboardPeriodic()
 
     def autonomousInit(self):
+        self.timer.reset()
+        self.timer.start()
         Scheduler.enable(self)
         self.drive.navx.zero()
         self.autoMode = "Nothing"
