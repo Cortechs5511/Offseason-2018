@@ -36,6 +36,8 @@ from commands.autonomous import RightSwitchSide
 from commands.autonomous import DriveStraight
 from commands.autonomous import LeftSwitchMiddle
 from commands.autonomous import RightSwitchMiddle
+from commands.autonomous import LeftSwitchMiddle2Cube
+from commands.autonomous import RightSwitchMiddle2Cube
 
 from commands.Zero import Zero
 from commands import Sequences
@@ -93,6 +95,8 @@ class MyRobot(CommandBasedRobot):
         self.RightSwitchSide = RightSwitchSide()
         self.LeftSwitchMiddle = LeftSwitchMiddle()
         self.RightSwitchMiddle = RightSwitchMiddle()
+        self.LeftSwitchMiddle2Cube = LeftSwitchMiddle2Cube()
+        self.RightSwitchMiddle2Cube = RightSwitchMiddle2Cube()
 
         oi.commands()
 
@@ -114,31 +118,31 @@ class MyRobot(CommandBasedRobot):
 
         if self.autoMode == "Nothing":
 
-            gameData = wpilib.DriverStation.getInstance().getGameSpecificMessage()
-            position = SmartDashboard.getString("position", "L")
+            gameData = "LLL"#wpilib.DriverStation.getInstance().getGameSpecificMessage()
+            position = "M"#SmartDashboard.getString("position", "L")
 
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
             elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start()
+            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle2Cube.start() #self.LeftSwitchMiddle.start()
             elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
+            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start() #self.RightSwitchMiddle.start()
 
 
     def autonomousPeriodic(self):
 
         if self.autoMode == "Nothing":
 
-            #gameData = wpilib.DriverStation.getGameSpecificMessage()
+            gameData = "LLL"#wpilib.DriverStation.getGameSpecificMessage()
             #gameData = "LRL"
             #position = "M"
 
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
             elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start()
+            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle2Cube.start() #self.LeftSwitchMiddle.start()
             elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
+            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start() #self.RightSwitchMiddle.start()
 
         SmartDashboard.putString("AutoMode", self.autoMode)
         super().autonomousPeriodic()
