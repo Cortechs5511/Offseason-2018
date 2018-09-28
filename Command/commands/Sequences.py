@@ -1,6 +1,7 @@
 from wpilib.command import CommandGroup
 
 from commands.setPositionWrist import setPositionWrist
+from commands.setPositionWrist90 import setPositionWrist90
 from commands.setPositionLift import setPositionLift
 
 from commands.setFixedLift import setFixedLift
@@ -13,7 +14,7 @@ class IntakePosition(CommandGroup):
     def __init__(self, maxtime=300):
         super().__init__('IntakePosition')
         self.addParallel(setPositionLift(0, maxtime))
-        self.addParallel(setPositionWrist(97, maxtime))
+        self.addParallel(setPositionWrist90(maxtime))
         self.addParallel(setFixedIntake(-0.6, maxtime))
 
         self.timer = self.getRobot().timer
@@ -25,7 +26,7 @@ class IntakePosition(CommandGroup):
 def IntakePosition(maxtime = 300):
     cg = CommandGroup("IntakePositon")
     cg.addParallel(setPositionLift(0, maxtime))
-    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setPositionWrist90(maxtime))
     cg.addParallel(setFixedIntake(-0.6, maxtime))
     return cg
 '''
@@ -34,7 +35,7 @@ class Level2IntakePosition(CommandGroup):
     def __init__(self, maxtime=300):
         super().__init__('Level2IntakePosition')
         self.addParallel(setPositionLift(10, maxtime))
-        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setPositionWrist90(maxtime))
         self.addParallel(setFixedIntake(-0.6, maxtime))
 
         self.timer = self.getRobot().timer
@@ -46,7 +47,7 @@ class Level2IntakePosition(CommandGroup):
 def Level2IntakePosition(maxtime = 300):
     cg = CommandGroup("Level2IntakePositon")
     cg.addParallel(setPositionLift(10, maxtime))
-    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setPositionWrist90(maxtime))
     cg.addParallel(setFixedIntake(-0.6, maxtime))
     return cg
 '''
@@ -55,7 +56,7 @@ class Level3IntakePosition(CommandGroup):
     def __init__(self, maxtime=300):
         super().__init__('Level3IntakePosition')
         self.addParallel(setPositionLift(20, maxtime))
-        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setPositionWrist90(maxtime))
         self.addParallel(setFixedIntake(-0.6, maxtime))
 
         self.timer = self.getRobot().timer
@@ -67,7 +68,7 @@ class Level3IntakePosition(CommandGroup):
 def Level3IntakePosition(maxtime = 300):
     cg = CommandGroup("Level3IntakePositon")
     cg.addParallel(setPositionLift(20, maxtime))
-    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setPositionWrist90(maxtime))
     cg.addParallel(setFixedIntake(-0.6, maxtime))
     return cg
 '''
@@ -76,7 +77,7 @@ class SwitchPosition(CommandGroup):
     def __init__(self, maxtime=300):
         super().__init__('SwitchPosition')
         self.addParallel(setPositionLift(25, maxtime))
-        self.addParallel(setPositionWrist(90, maxtime))
+        self.addParallel(setPositionWrist90( maxtime))
         self.addParallel(setFixedIntake(-0.3, maxtime))
 
         self.timer = self.getRobot().timer
@@ -88,7 +89,7 @@ class SwitchPosition(CommandGroup):
 def SwitchPosition(maxtime = 300):
     cg = CommandGroup("SwitchPositon")
     cg.addParallel(setPositionLift(25, maxtime))
-    cg.addParallel(setPositionWrist(90, maxtime))
+    cg.addParallel(setPositionWrist90(maxtime))
     cg.addParallel(setFixedIntake(-0.3, maxtime))
     return cg
 '''
@@ -97,7 +98,7 @@ class SwitchShoot(CommandGroup):
     def __init__(self, maxtime=300):
         super().__init__('SwitchShoot')
         self.addParallel(setPositionLift(25, maxtime))
-        self.addParallel(setPositionWrist(90, maxtime))
+        self.addParallel(setPositionWrist90(maxtime))
         self.addParallel(setFixedIntake(0.7, maxtime))
 
         self.timer = self.getRobot().timer
@@ -109,7 +110,7 @@ class SwitchShoot(CommandGroup):
 def SwitchShoot(maxtime = 300):
     cg = CommandGroup("SwitchShoot")
     cg.addParallel(setPositionLift(25, maxtime))
-    cg.addParallel(setPositionWrist(90, maxtime))
+    cg.addParallel(setPositionWrist90(maxtime))
     cg.addParallel(setFixedIntake(0.6, maxtime))
     return cg
 '''
@@ -118,7 +119,7 @@ class ExchangeShoot(CommandGroup):
     def __init__(self, maxtime=300):
         super().__init__('ExchangeShoot')
         self.addParallel(setPositionLift(0, maxtime))
-        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setPositionWrist90(maxtime))
         self.addParallel(setFixedIntake(0.8, maxtime))
 
         self.timer = self.getRobot().timer
@@ -130,7 +131,7 @@ class ExchangeShoot(CommandGroup):
 def ExchangeShoot(maxtime = 300):
     cg = CommandGroup("ExchangeShoot")
     cg.addParallel(setPositionLift(0, maxtime))
-    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setPositionWrist90(maxtime))
     cg.addParallel(setFixedIntake(0.8, maxtime))
     return cg
 '''
@@ -139,7 +140,7 @@ class ExchangePosition(CommandGroup):
     def __init__(self, maxtime=300):
         super().__init__('ExchangePosition')
         self.addParallel(setPositionLift(0, maxtime))
-        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setPositionWrist90(maxtime))
         self.addParallel(setFixedIntake(-0.3, maxtime))
 
         self.timer = self.getRobot().timer
@@ -151,7 +152,7 @@ class ExchangePosition(CommandGroup):
 def ExchangePosition(maxtime = 300):
     cg = CommandGroup("ExchangePositon")
     cg.addParallel(setPositionLift(0, maxtime))
-    cg.addParallel(setPositionWrist(110, maxtime))
+    cg.addParallel(setPositionWrist90(maxtime))
     cg.addParallel(setFixedIntake(-0.3, maxtime))
     return cg
 '''

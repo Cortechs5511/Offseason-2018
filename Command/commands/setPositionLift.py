@@ -11,17 +11,6 @@ class setPositionLift(Command):
         self.setpoint = setpoint
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
-
-        [kP,kI,kD,kF] = [0.1 , 0.001, 0.00, 0.00] # These PID parameters are used on a real robot
-
-        self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
-        self.liftController.setInputRange(0, 30) #input range in inches
-        self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
-        self.liftController.setAbsoluteTolerance(0.5) #tolerance in inches
-        self.liftController.setContinuous(False)
-
-        if Debug: SmartDashboard.putData("LiftPID", self.liftController)
-
         self.timer = self.getRobot().timer
         self.maxtime = maxtime
 
@@ -54,16 +43,26 @@ class setPositionLift(Command):
         self.Lift.setSpeed(output)
 
     def initialize(self):
+        [kP,kI,kD,kF] = [0.012 , 0.001, 0.00, 0.00] # These PID parameters are used on a real robot
+
+        self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
+        self.liftController.setInputRange(0, 30) #input range in inches
+        self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
+        self.liftController.setAbsoluteTolerance(0.5) #tolerance in inches
+        self.liftController.setContinuous(False)
+
+        #SmartDashboard.putData("LiftPID", self.liftController)
+
         self.enablePID()
         self.setPID(self.setpoint)
 
     def isFinished(self):
         return self.timer.get() > self.maxtime
 
-    def interrupted(self):
-        self.disablePID()
-        self.Lift.setSpeed(0)
-
     def end(self):
         self.disablePID()
         self.Lift.setSpeed(0)
+        self.liftController = None
+
+    def interrupted(self):
+        self.end()

@@ -50,7 +50,7 @@ class DriveStraight(CommandGroup):
 class LeftSwitchMiddle2Cube(CommandGroup):
     def __init__(self):
         super().__init__('LeftSwitchMiddle2Cube')
-        self.addSequential(ExchangePosition(maxtime=1))
+        self.addSequential(SwitchPosition(maxtime=1))
         self.addSequential(DriveStraightDistancePID(9.5/12.0, maxtime=2))
         self.addParallel(SwitchPosition(maxtime=2))
         self.addSequential(TurnAnglePID(-60, maxtime=3))

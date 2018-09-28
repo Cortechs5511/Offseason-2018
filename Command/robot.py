@@ -104,7 +104,8 @@ class MyRobot(CommandBasedRobot):
 
     def robotPeriodic(self):
         #self.updateDashboardPeriodic()
-        pass
+        self.lift.UpdateDashboard()
+        #self.wrist.UpdateDashboard()
 
     def autonomousInit(self):
         self.timer.reset()
@@ -210,8 +211,8 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putNumber("TotalAmps",total)
 
         '''Additional UpdateDashboard Functions'''
-        self.drive.UpdateDashboard()
-        self.lift.UpdateDashboard()
+        #self.drive.UpdateDashboard()
+        #self.lift.UpdateDashboard()
         #self.wrist.UpdateDashboard()
         #elf.intake.UpdateDashboard()
 

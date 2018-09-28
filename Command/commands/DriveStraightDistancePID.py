@@ -18,7 +18,7 @@ class DriveStraightDistancePID(Command):
         self.setpoint = distance
 
         #self.DT.encoders.enablePID()
-        self.DT.navx.enablePID()
+        #self.DT.navx.enablePID()
 
         self.TolDist = 0.2 #feet
         self.finished = False
