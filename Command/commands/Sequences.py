@@ -13,7 +13,7 @@ class IntakePosition(CommandGroup):
     def __init__(self, maxtime=300):
         super().__init__('IntakePosition')
         self.addParallel(setPositionLift(0, maxtime))
-        self.addParallel(setPositionWrist(110, maxtime))
+        self.addParallel(setPositionWrist(97, maxtime))
         self.addParallel(setFixedIntake(-0.6, maxtime))
 
         self.timer = self.getRobot().timer
@@ -98,7 +98,7 @@ class SwitchShoot(CommandGroup):
         super().__init__('SwitchShoot')
         self.addParallel(setPositionLift(25, maxtime))
         self.addParallel(setPositionWrist(90, maxtime))
-        self.addParallel(setFixedIntake(0.6, maxtime))
+        self.addParallel(setFixedIntake(0.7, maxtime))
 
         self.timer = self.getRobot().timer
         self.maxtime = maxtime

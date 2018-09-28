@@ -9,7 +9,7 @@ from wpilib.command import Command
 from wpilib.drive import DifferentialDrive
 
 from commandbased import CommandBasedRobot
-from wpilib.command import Scheduler
+#from wpilib.command import Scheduler
 import commands.autonomous as auto
 
 from commands.setPositionWrist import setPositionWrist
@@ -96,18 +96,17 @@ class MyRobot(CommandBasedRobot):
 
         oi.commands()
 
-        self.commandTable = [setPositionWrist, setPositionLift, setFixedDT, setFixedIntake,
-        setFixedLift, setFixedWrist, setSpeedDT, DriveStraightTime, DriveStraightDistance,
-        TurnAngle, TurnAnglePID, DriveStraightTimePID, DriveStraightDistancePID]
+        SmartDashboard.putString("position", SmartDashboard.getString("position", "L"))
 
     def robotPeriodic(self):
-        self.updateDashboardPeriodic()
+        #self.updateDashboardPeriodic()
+        pass
 
     def autonomousInit(self):
         self.timer.reset()
         self.timer.start()
 
-        Scheduler.enable(self)
+        #Scheduler.enable(self)
 
         self.drive.navx.zero()
 
@@ -115,9 +114,8 @@ class MyRobot(CommandBasedRobot):
 
         if self.autoMode == "Nothing":
 
-            #gameData = wpilib.DriverStation.getGameSpecificMessage()
-            gameData = "LRL"
-            position = "M"
+            gameData = wpilib.DriverStation.getInstance().getGameSpecificMessage()
+            position = SmartDashboard.getString("position", "L")
 
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
@@ -126,14 +124,14 @@ class MyRobot(CommandBasedRobot):
             elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
             elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
 
+
     def autonomousPeriodic(self):
-        Scheduler.getInstance().run()
 
         if self.autoMode == "Nothing":
 
             #gameData = wpilib.DriverStation.getGameSpecificMessage()
-            gameData = "LRL"
-            position = "M"
+            #gameData = "LRL"
+            #position = "M"
 
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
@@ -141,17 +139,18 @@ class MyRobot(CommandBasedRobot):
             elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start()
             elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
             elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
-            
+
         SmartDashboard.putString("AutoMode", self.autoMode)
+        super().autonomousPeriodic()
 
     def teleopInit(self):
-        Scheduler.disable(self)
-        Scheduler.enable(self)
+        #Scheduler.disable(self)
+        #Scheduler.enable(self)
         pass
 
-    def teleopPeriodic(self):
-        Scheduler.getInstance().run()
-
+    #def teleopPeriodic(self):
+        #Scheduler.getInstance().run()
+    #    super().teleopPeriodic()
 
     def updateDashboardInit(self):
         '''Subsystems'''
@@ -188,7 +187,7 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("Zero", Zero())
 
         '''Additional UpdateDashboard Functions'''
-        Sequences.UpdateDashboard()
+        #Sequences.UpdateDashboard()
 
     def updateDashboardPeriodic(self):
         '''Sensor Output'''
@@ -210,7 +209,7 @@ class MyRobot(CommandBasedRobot):
         self.drive.UpdateDashboard()
         self.lift.UpdateDashboard()
         #self.wrist.UpdateDashboard()
-        #self.intake.UpdateDashboard()
+        #elf.intake.UpdateDashboard()
 
 
 

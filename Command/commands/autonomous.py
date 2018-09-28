@@ -24,7 +24,7 @@ from commands.Sequences import ExchangeShoot
 class LeftSwitchSide(CommandGroup):
     def __init__(self):
         super().__init__('LeftSwitchSide')
-        self.addSequential(ExchangePosition(maxtime=1))
+        self.addSequential(SwitchPosition(maxtime=3))
         self.addSequential(DriveStraightDistancePID((154/12.0), maxtime=6))
         self.addParallel(SwitchPosition())
         self.addSequential(TurnAnglePID(90, maxtime=10))
@@ -34,7 +34,17 @@ class LeftSwitchSide(CommandGroup):
 class RightSwitchSide(CommandGroup):
     def __init__(self):
         super().__init__('RightSwitchSide')
-        self.addSequential(ExchangePosition(maxtime=1))
+        self.addSequential(SwitchPosition(maxtime=3))
+        self.addSequential(DriveStraightDistancePID((154/12.0), maxtime=6))
+        self.addParallel(SwitchPosition())
+        self.addSequential(TurnAnglePID(-90, maxtime=10))
+        self.addSequential(DriveStraightDistancePID(20/12.0, maxtime=12))
+        self.addSequential(SwitchShoot())
+
+class RightSwitchSide2Cube(CommandGroup):
+    def __init__(self):
+        super().__init__('RightSwitchSide')
+        self.addSequential(SwitchPosition(maxtime=3))
         self.addSequential(DriveStraightDistancePID((154/12.0), maxtime=6))
         self.addParallel(SwitchPosition())
         self.addSequential(TurnAnglePID(-90, maxtime=10))
@@ -45,23 +55,24 @@ class DriveStraight(CommandGroup):
     def __init__(self):
         super().__init__('DriveStraight')
         self.addSequential(DriveStraightDistancePID(154/12.0, maxtime=5))
-        self.addParallel(SwitchPosition())
+        self.addParallel(ProtectPosition())
 
 class LeftSwitchMiddle(CommandGroup):
     def __init__(self):
         super().__init__('LeftSwitchMiddle')
         self.addSequential(ExchangePosition(maxtime=1))
-        self.addSequential(DriveStraightDistancePID(10/12.0, maxtime=2))
+        self.addSequential(DriveStraightDistancePID(9.5/12.0, maxtime=2))
         self.addParallel(SwitchPosition())
-        self.addSequential(TurnAnglePID(-50, maxtime=5))
-        self.addSequential(DriveStraightDistancePID(130/12.0, maxtime=9))
+        self.addSequential(TurnAnglePID(-60, maxtime=5))
+        self.addSequential(DriveStraightDistancePID(125/12.0, maxtime=11))
         self.addSequential(TurnAnglePID(0, maxtime=11))
-        self.addSequential(DriveStraightDistancePID(10/12.0, maxtime=13))
+        self.addSequential(DriveStraightDistancePID(36/12.0, maxtime=13))
         self.addSequential(SwitchShoot())
 
 class RightSwitchMiddle(CommandGroup):
     def __init__(self):
         super().__init__('RightSwitchMiddle')
+        self.addSequential(SwitchPosition(maxtime=3))
         self.addSequential(DriveStraightDistancePID(112/12.0))
         self.addParallel(SwitchPosition())
         self.addSequential(SwitchShoot())

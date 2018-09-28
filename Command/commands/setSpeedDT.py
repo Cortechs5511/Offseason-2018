@@ -14,9 +14,10 @@ class setSpeedDT(Command):
         self.maxtime = maxtime
 
     def execute(self):
+        maxspeed = 0.8
         left = self.getRobot().joystick0.getY()
         right = self.getRobot().joystick1.getY()
-        self.DT.tankDrive(-left,-right)
+        self.DT.tankDrive(-left * maxspeed ,-right * maxspeed)
 
     def isFinished(self):
         return self.timer.get() > self.maxtime
