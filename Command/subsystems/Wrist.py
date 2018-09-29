@@ -112,7 +112,7 @@ class Wrist(Subsystem):
         self.wristController.enable()
 
     def zero(self):
-        self.wrist.setQuadraturePosition(0)
+        self.wrist.setQuadraturePosition(0,0)
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setFixedWrist(0,))
