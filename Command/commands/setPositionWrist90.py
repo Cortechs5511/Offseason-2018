@@ -18,7 +18,6 @@ class setPositionWrist90(Command):
         self.timer = self.getRobot().timer
         self.maxtime = maxtime
 
-
     def execute(self):
         angle = self.Wrist.getAngle()
 
@@ -26,7 +25,6 @@ class setPositionWrist90(Command):
             self.Wrist.setSpeedNoG(0)
         else:
             self.Wrist.setSpeedNoG(0.55)
-
 
     def isFinished(self):
         return self.timer.get() > self.maxtime

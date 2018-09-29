@@ -74,16 +74,40 @@ class Drive(Subsystem):
         self.navx.disablePID()
         self.encoders.disablePID()
 
-    def tankDrive(self,left,right):
-        #if(abs(left) < self.dbLimit): left = 0
-        #else: left = self.maxSpeed*abs(left)/left*(math.exp(self.k*abs(left))-1) / (math.exp(self.k)-1)
+        self.TolDist = 0.2 #feet
+        [kP,kI,kD,kF] = [0.07, 0.0, 0.20, 0.00]
+        distController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
+        distController.setInputRange(0,  50) #feet
+        distController.setOutputRange(-0.55, 0.55)
+        distController.setAbsoluteTolerance(self.TolDist)
+        distController.setContinuous(False)
+        self.distController = distController
+        self.distController.disable()
 
-        #if(abs(right) < self.dbLimit): right = 0
-        #else: right = self.maxSpeed*abs(right)/right*(math.exp(self.k*abs(right))-1) / (math.exp(self.k)-1)
+    def pidWrite(self, output):
+        nominal = 0.2
+        if output < nominal and output > 0: output = nominal
+        elif output > -nominal and output < 0: output = -nominal
+        self.__tankDrive__(output,output)
+
+    def getPIDSourceType(self):
+        return self.getAvgDistance()
+
+    def pidGet(self):
+        return self.getAvgDistance()
+
+    def tankDrive(self,left,right):
+        self.distController.disable()
+        self.__tankDrive__(left,right)
+
+    def __tankDrive__(self,left,right):
         RightGain = 0.9
         self.left.set(left)
         self.right.set(right* RightGain)
 
+    def setDistance(self,distance):
+        self.distController.setSetpoint(distance)
+        self.distController.enable()
 
     def getOutputCurrent(self):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
@@ -96,7 +120,6 @@ class Drive(Subsystem):
 
     def getAngle(self):
         return self.navx.getAngle()
-        #return 0
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedDT())
