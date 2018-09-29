@@ -18,7 +18,7 @@ class TurnAnglePID(Command):
 
         self.TolAngle = 3
         #[kP,kI,kD,kF] = [0.012, 0.00, 0.04, 0.00] #Tuned for simulation
-        [kP,kI,kD,kF] = [0.015,0,0.2,0]
+        [kP,kI,kD,kF] = [0.018,0,0.2,0]
         angleController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
         angleController.setInputRange(-180,  180) #degrees
         angleController.setOutputRange(-0.8, 0.8)

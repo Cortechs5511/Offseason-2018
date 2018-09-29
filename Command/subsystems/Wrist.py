@@ -108,7 +108,7 @@ class Wrist(Subsystem):
         self.wrist.set(speed)
 
     def setAngle(self, angle):
-        self.wristController.setSetpoint(self.setpoint)
+        self.wristController.setSetpoint(angle)
         self.wristController.enable()
 
     def zero(self):

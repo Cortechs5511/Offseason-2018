@@ -115,6 +115,7 @@ class MyRobot(CommandBasedRobot):
     def autonomousInit(self):
         self.wrist.zero()
         self.lift.zero()
+        self.drive.zero()
         self.timer.reset()
         self.timer.start()
 
@@ -132,8 +133,6 @@ class MyRobot(CommandBasedRobot):
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
         elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start() #self.RightSwitchMiddle.start()
         #Scheduler.enable(self)
-
-        self.drive.zero()
 
         self.autoMode = "Nothing"
 

@@ -77,7 +77,7 @@ class SwitchPosition(CommandGroup):
     def __init__(self, maxtime=300):
         super().__init__('SwitchPosition')
         self.addParallel(setPositionLift(25, maxtime))
-        self.addParallel(setPositionWrist90( maxtime))
+        self.addParallel(setPositionWrist(90, maxtime))
         self.addParallel(setFixedIntake(-0.3, maxtime))
 
         self.timer = self.getRobot().timer
