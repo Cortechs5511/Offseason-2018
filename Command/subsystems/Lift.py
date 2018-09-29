@@ -105,7 +105,7 @@ class Lift(Subsystem):
         self.liftController.enable()
 
     def zero(self):
-        self.lift.reset()
+        self.lift.setQuadraturePosition(0,0)
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setFixedLift(0))
