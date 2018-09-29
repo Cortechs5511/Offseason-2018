@@ -51,6 +51,30 @@ class Lift(Subsystem):
 
         self.lift = Talon0
 
+        [kP,kI,kD,kF] = [0.012 , 0.001, 0.00, 0.00] # These PID parameters are used on a real robot
+
+        self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
+        self.liftController.setInputRange(0, 30) #input range in inches
+        self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
+        self.liftController.setAbsoluteTolerance(0.5) #tolerance in inches
+        self.liftController.setContinuous(False)
+
+    def pidWrite(self, output):
+        SmartDashboard.putNumber("LiftPID_Out", output)
+        SmartDashboard.putNumber("LiftError", self.liftController.getError())
+        self.__setSpeed__(output)
+
+    def pidGet(self):
+       pos =  self.getHeight()
+       SmartDashboard.putNumber("LiftPIDget", pos)
+       return pos
+
+    def setPIDSourceType(self):
+        return 0
+
+    def getPIDSourceType(self):
+        return 0
+
     def getHeight(self):
         pos = self.LiftEncoder.get()*self.posConv
         return pos
@@ -66,11 +90,19 @@ class Lift(Subsystem):
         return self.lift.getOutputCurrent()*2
 
     def setSpeed(self, speed):
+        self.liftController.disable()
+        self.__setSpeed__(speed)
+
+    def __setSpeed__(self, speed):
         SmartDashboard.putBoolean("LiftSafety", (speed > 0 and self.Robot.wrist.getAngle() < math.pi/12))
         if (speed > 0 and self.Robot.wrist.getAngle() < math.pi/12):
             self.lift.set(self.getGravity())
         else:
             self.lift.set(speed + self.getGravity())
+
+    def setHeight(self, height):
+        self.liftController.setSetpoint(height)
+        self.liftController.enable()
 
     def zero(self):
         self.lift.setQuadraturePosition(0,0)
