@@ -65,7 +65,6 @@ class Drive(Subsystem):
 
             motor.configOpenLoopRamp(0.2,timeout) #number of seconds from 0 to 1
 
-
         self.left = TalonLeft
         self.right = TalonRight
 
