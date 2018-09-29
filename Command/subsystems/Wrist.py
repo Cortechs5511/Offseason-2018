@@ -74,7 +74,7 @@ class Wrist(Subsystem):
         power = speed + self.getGravity() * math.sin(self.getAngle())
 
     def zero(self):
-        self.lift.setQuadraturePosition(0)
+        self.wrist.setQuadraturePosition(0,0)
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setFixedWrist(0,))

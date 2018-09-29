@@ -95,6 +95,9 @@ class Drive(Subsystem):
     def getAvgDistance(self):
         return self.encoders.getAvgDistance()
 
+    def zero(self):
+        self.navx.zero()
+
     def getAngle(self):
         return self.navx.getAngle()
         #return 0

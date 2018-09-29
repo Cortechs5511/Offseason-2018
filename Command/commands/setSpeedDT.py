@@ -9,12 +9,14 @@ class setSpeedDT(Command):
         super().__init__('setSpeedDT')
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
+        self.Joystick = self.getRobot().joystick0
+        self.Joystick1 = self.getRobot().joystick1
 
         self.timer = self.getRobot().timer
         self.maxtime = maxtime
 
     def execute(self):
-        maxspeed = 0.8
+        maxspeed = 0.73
         left = self.getRobot().joystick0.getY()
         right = self.getRobot().joystick1.getY()
         self.DT.tankDrive(-left * maxspeed ,-right * maxspeed)
