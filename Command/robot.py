@@ -78,8 +78,6 @@ class MyRobot(CommandBasedRobot):
 
         self.timer = wpilib.Timer()
 
-        #self.autonomousProgram = AutonomousProgram()
-
         '''
         Since OI instantiates commands and commands need access to subsystems,
         OI must be initialized after subsystems.
@@ -102,43 +100,40 @@ class MyRobot(CommandBasedRobot):
 
         SmartDashboard.putString("position", SmartDashboard.getString("position", "L"))
 
+        self.curr = 0
+        self.print = 50
+
     def robotPeriodic(self):
-        #self.updateDashboardPeriodic()
-        self.lift.UpdateDashboard()
-        #self.wrist.UpdateDashboard()
+        if(self.curr%self.print==0):
+            self.updateDashboardPeriodic()
+            self.curr = 0
+
+        self.curr = self.curr + 1
 
     def autonomousInit(self):
         self.timer.reset()
         self.timer.start()
 
-        #Scheduler.enable(self)
-
         self.drive.navx.zero()
 
         self.autoMode = "Nothing"
 
-        if self.autoMode == "Nothing":
+        gameData = "LLL"#wpilib.DriverStation.getInstance().getGameSpecificMessage()
+        position = "M"#SmartDashboard.getString("position", "L")
+        self.autoMode = autoSelector.calcNum(gameData, position)
 
-            gameData = "LLL"#wpilib.DriverStation.getInstance().getGameSpecificMessage()
-            position = "M"#SmartDashboard.getString("position", "L")
-
-            self.autoMode = autoSelector.calcNum(gameData, position)
-            if self.autoMode == "DriveStraight": self.DriveStraight.start()
-            elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle2Cube.start() #self.LeftSwitchMiddle.start()
-            elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start() #self.RightSwitchMiddle.start()
+        if self.autoMode == "DriveStraight": self.DriveStraight.start()
+        elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
+        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle2Cube.start() #self.LeftSwitchMiddle.start()
+        elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
+        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start() #self.RightSwitchMiddle.start()
 
 
     def autonomousPeriodic(self):
-
         if self.autoMode == "Nothing":
-
             gameData = "LLL"#wpilib.DriverStation.getGameSpecificMessage()
-            #gameData = "LRL"
-            #position = "M"
-
             self.autoMode = autoSelector.calcNum(gameData, position)
+
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
             elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
             elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle2Cube.start() #self.LeftSwitchMiddle.start()
@@ -146,16 +141,8 @@ class MyRobot(CommandBasedRobot):
             elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start() #self.RightSwitchMiddle.start()
 
         SmartDashboard.putString("AutoMode", self.autoMode)
+
         super().autonomousPeriodic()
-
-    def teleopInit(self):
-        #Scheduler.disable(self)
-        #Scheduler.enable(self)
-        pass
-
-    #def teleopPeriodic(self):
-        #Scheduler.getInstance().run()
-    #    super().teleopPeriodic()
 
     def updateDashboardInit(self):
         '''Subsystems'''
@@ -211,12 +198,10 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putNumber("TotalAmps",total)
 
         '''Additional UpdateDashboard Functions'''
-        #self.drive.UpdateDashboard()
-        #self.lift.UpdateDashboard()
+        self.drive.UpdateDashboard()
+        self.lift.UpdateDashboard()
         #self.wrist.UpdateDashboard()
-        #elf.intake.UpdateDashboard()
-
-
+        #self.intake.UpdateDashboard()
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)
