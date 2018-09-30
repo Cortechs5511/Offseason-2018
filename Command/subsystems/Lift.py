@@ -51,13 +51,15 @@ class Lift(Subsystem):
 
         self.lift = Talon0
 
-        [kP,kI,kD,kF] = [0.012 , 0.001, 0.00, 0.00] # These PID parameters are used on a real robot
+        [kP,kI,kD,kF] = [0.275 , 0.000, 1, 0.00] # These PID parameters are used on a real robot
 
         self.liftController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
         self.liftController.setInputRange(0, 30) #input range in inches
         self.liftController.setOutputRange(-0.8, 0.8) #output range in percent
         self.liftController.setAbsoluteTolerance(0.5) #tolerance in inches
         self.liftController.setContinuous(False)
+
+        SmartDashboard.putData("LiftPID" , self.liftController)
 
     def pidWrite(self, output):
         SmartDashboard.putNumber("LiftPID_Out", output)
@@ -81,7 +83,7 @@ class Lift(Subsystem):
 
     def getGravity(self):
         #return self.smartDashboard.getNumber("liftGravity", 0.0)
-        return 0.17
+        return 0.14
 
     def getTemp(self):
         return self.lift.getTemperature()

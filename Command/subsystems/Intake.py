@@ -25,8 +25,8 @@ class Intake(Subsystem):
         for motor in [TalonLeft,TalonRight]:
             motor.clearStickyFaults(timeout) #Clears sticky faults
 
-            motor.configContinuousCurrentLimit(10,timeout) #15 Amps per motor
-            motor.configPeakCurrentLimit(10,timeout) #20 Amps during Peak Duration
+            motor.configContinuousCurrentLimit(20,timeout) #15 Amps per motor
+            motor.configPeakCurrentLimit(30,timeout) #20 Amps during Peak Duration
             motor.configPeakCurrentDuration(100,timeout) #Peak Current for max 100 ms
             motor.enableCurrentLimit(True)
 

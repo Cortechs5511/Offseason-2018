@@ -20,12 +20,14 @@ from commands.Sequences import IntakePosition
 from commands.Sequences import ProtectPosition
 from commands.Sequences import ExchangePosition
 from commands.Sequences import ExchangeShoot
+from commands.setFixedWrist import setFixedWrist
+from commands.setPositionWrist import setPositionWrist
 
 class LeftSwitchSide(CommandGroup):
     def __init__(self):
         super().__init__('LeftSwitchSide')
-        self.addSequential(setPositionWrist(100, False, maxtime=2.5))
-        self.addSequential(SwitchPosition(maxtime=3))
+        self.addSequential(setFixedWrist(0.8, maxtime= 1))
+        self.addParallel(SwitchPosition())
         self.addSequential(DriveStraightDistancePID((154/12.0), maxtime=6))
         self.addParallel(SwitchPosition())
         self.addSequential(TurnAnglePID(90, maxtime=10))
@@ -35,6 +37,7 @@ class LeftSwitchSide(CommandGroup):
 class RightSwitchSide(CommandGroup):
     def __init__(self):
         super().__init__('RightSwitchSide')
+        self.addSequential(setFixedWrist(0.8, maxtime= 1))
         self.addSequential(setPositionWrist(100, False, maxtime=2.5))
         self.addSequential(SwitchPosition(maxtime=3))
         self.addSequential(DriveStraightDistancePID((154/12.0), maxtime=6))
@@ -52,7 +55,7 @@ class DriveStraight(CommandGroup):
 class LeftSwitchMiddle2Cube(CommandGroup):
     def __init__(self):
         super().__init__('LeftSwitchMiddle2Cube')
-        self.addSequential(setPositionWrist(100, False, maxtime=2.5))
+        self.addSequential(setFixedWrist(0.8, maxtime= 1))
         self.addSequential(SwitchPosition(maxtime=1))
         self.addSequential(DriveStraightDistancePID(9.5/12.0, maxtime=2))
         self.addParallel(SwitchPosition(maxtime=2))
@@ -76,7 +79,7 @@ class LeftSwitchMiddle2Cube(CommandGroup):
 class LeftSwitchMiddle(CommandGroup):
     def __init__(self):
         super().__init__('LeftSwitchMiddle')
-        self.addSequential(setPositionWrist(100, False, maxtime=2.5))
+        self.addSequential(setFixedWrist(0.8, maxtime= 1))
         self.addSequential(SwitchPosition(maxtime=1))
         self.addSequential(DriveStraightDistancePID(9.5/12.0, maxtime=2))
         self.addParallel(SwitchPosition())
@@ -89,7 +92,7 @@ class LeftSwitchMiddle(CommandGroup):
 class RightSwitchMiddle(CommandGroup):
     def __init__(self):
         super().__init__('RightSwitchMiddle')
-        self.addSequential(setPositionWrist(100, False, maxtime=2.5))
+        self.addSequential(setFixedWrist(0.8, maxtime= 1))
         self.addSequential(SwitchPosition(maxtime=3))
         self.addSequential(DriveStraightDistancePID(112/12.0))
         self.addParallel(SwitchPosition())
@@ -98,7 +101,7 @@ class RightSwitchMiddle(CommandGroup):
 class RightSwitchMiddle2Cube(CommandGroup):
     def __init__(self):
         super().__init__('RightSwitchMiddle2Cube')
-        self.addSequential(setPositionWrist(100, False, maxtime=2.5))
+        self.addSequential(setFixedWrist(0.8, maxtime= 1))
         self.addSequential(SwitchPosition(maxtime=1))
         self.addSequential(DriveStraightDistancePID(112/12.0, maxtime=4))
         self.addParallel(SwitchPosition(maxtime=4))

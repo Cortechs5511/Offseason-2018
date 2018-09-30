@@ -100,7 +100,7 @@ class MyRobot(CommandBasedRobot):
 
         oi.commands()
 
-        SmartDashboard.putString("position", SmartDashboard.getString("position", "L"))
+        SmartDashboard.putString("position", "L")
 
         self.curr = 0
         self.print = 50
@@ -108,6 +108,7 @@ class MyRobot(CommandBasedRobot):
     def robotPeriodic(self):
         if(self.curr%self.print==0):
             self.updateDashboardPeriodic()
+
             self.curr = 0
 
         self.curr = self.curr + 1
@@ -123,8 +124,8 @@ class MyRobot(CommandBasedRobot):
 
         self.autoMode = "Nothing"
 
-        gameData = "LLL"#wpilib.DriverStation.getInstance().getGameSpecificMessage()
-        position = "M"#SmartDashboard.getString("position", "L")
+        gameData = "RLR" #wpilib.DriverStation.getInstance().getGameSpecificMessage()
+        position = "L" #SmartDashboard.getString("position", "M")
         self.autoMode = autoSelector.calcNum(gameData, position)
 
         if self.autoMode == "DriveStraight": self.DriveStraight.start()
@@ -138,8 +139,8 @@ class MyRobot(CommandBasedRobot):
 
         if self.autoMode == "Nothing":
 
-            gameData = wpilib.DriverStation.getInstance().getGameSpecificMessage()
-            position = SmartDashboard.getString("position", "L")
+            gameData = "RLR"#wpilib.DriverStation.getInstance().getGameSpecificMessage()
+            position = "L" #SmartDashboard.getString("position", "M")
 
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
@@ -150,7 +151,7 @@ class MyRobot(CommandBasedRobot):
 
     def autonomousPeriodic(self):
         if self.autoMode == "Nothing":
-            gameData = "LLL"#wpilib.DriverStation.getGameSpecificMessage()
+            gameData = "RLR" #wpilib.DriverStation.getGameSpecificMessage()
             self.autoMode = autoSelector.calcNum(gameData, position)
 
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
