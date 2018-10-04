@@ -4,6 +4,8 @@ import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
+from navx import AHRS as navx
+
 import wpilib
 from wpilib.drive import DifferentialDrive
 from wpilib.command.subsystem import Subsystem
@@ -11,19 +13,13 @@ from wpilib.command.subsystem import Subsystem
 from commands.setSpeedDT import setSpeedDT
 from commands.setFixedDT import setFixedDT
 
-import sensors.navx as navx
-import sensors.DTEncoders as encoders
+from sim import simComms
 
 from wpilib import SmartDashboard
 
 class Drive(Subsystem):
 
-    dbLimit = 0.1
-    k = -1
-    maxSpeed = 0.7
-
-    DistPerPulseL = 4/12 * math.pi / 127
-    DistPerPulseR = 4/12 * math.pi / 255
+    mode = ""
 
     def __init__(self, Robot):
         super().__init__('Drive')
@@ -68,11 +64,15 @@ class Drive(Subsystem):
         self.left = TalonLeft
         self.right = TalonRight
 
-        self.navx = navx.NavX()
-        self.encoders = encoders.DTEncoders()
+        self.navx = navx.create_spi()
 
-        self.navx.disablePID()
-        self.encoders.disablePID()
+        self.leftEncoder = wpilib.Encoder(0,1)
+        self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 255)
+        self.leftEncoder.setSamplesToAverage(10)
+
+        self.rightEncoder = wpilib.Encoder(2,3)
+        self.rightEncoder.setDistancePerPulse(-4/12 * math.pi / 127)
+        self.rightEncoder.setSamplesToAverage(10)
 
         self.TolDist = 0.2 #feet
         [kP,kI,kD,kF] = [0.07, 0.0, 0.20, 0.00]
@@ -84,20 +84,42 @@ class Drive(Subsystem):
         self.distController = distController
         self.distController.disable()
 
+        self.TolAngle = 3 #degrees
+        [kP,kI,kD,kF] = [0.024,0,0.2,0]
+
+        angleController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
+        angleController.setInputRange(-180,  180) #degrees
+        angleController.setOutputRange(-0.8, 0.8)
+        angleController.setAbsoluteTolerance(self.TolAngle)
+        angleController.setContinuous(True)
+        self.angleController = angleController
+        self.angleController.disable()
+
     def pidWrite(self, output):
-        nominal = 0.2
-        if output < nominal and output > 0: output = nominal
-        elif output > -nominal and output < 0: output = -nominal
-        self.__tankDrive__(output,output)
+        if(self.mode == "Distance"):
+            nominal = 0.2
+            if output < nominal and output > 0: output = nominal
+            elif output > -nominal and output < 0: output = -nominal
+            self.__tankDrive__(output,output)
+        elif(self.mode == "Angle"):
+            nominal = 0#nominal = 0.27
+            if output < nominal and output > 0: output = nominal
+            elif output > -nominal and output < 0: output = -nominal
+            self.__tankDrive__(output,-output)
 
     def getPIDSourceType(self):
-        return self.getAvgDistance()
+        if(self.mode == "Distance"): return self.getAvgDistance()
+        elif(self.mode == "Angle"): return self.getAngle()
+        else: return 0
 
     def pidGet(self):
-        return self.getAvgDistance()
+        if(self.mode == "Distance"): return self.getAvgDistance()
+        elif(self.mode == "Angle"): return self.getAngle()
+        else: return 0
 
     def tankDrive(self,left,right):
         self.distController.disable()
+        self.angleController.disable()
         self.__tankDrive__(left,right)
 
     def __tankDrive__(self,left,right):
@@ -107,31 +129,55 @@ class Drive(Subsystem):
 
     def setDistance(self,distance):
         self.distController.setSetpoint(distance)
+        self.angleController.disable()
         self.distController.enable()
+        self.mode = "Distance"
+
+    def setAngle(self,angle):
+        self.angleController.setSetpoint(angle)
+        self.distController.disable()
+        self.angleController.enable()
+        self.mode = "Angle"
 
     def getOutputCurrent(self):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
 
     def getDistance(self):
-        return self.encoders.getDistance()
+        return [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
 
     def getAvgDistance(self):
-        return self.encoders.getAvgDistance()
+        return self.getDistance()[1] #One encoder broken
+
+    def getAvgVelocity(self):
+        return self.rightEncoder.getRate() #feet per second, one encoder broken
+
+    def getAvgAbsVelocity(self):
+        return abs(self.rightEncoder.getRate()) #feet per second, one encoder broken
+
+    def zeroEncoders(self):
+        self.leftEncoder.reset()
+        self.rightEncoder.reset()
+        simComms.resetEncoders()
+
+    def zeroNavx(self):
+        self.navx.zeroYaw()
 
     def zero(self):
-        self.navx.zero()
+        self.zeroEncoders()
+        self.zeroNavx()
 
     def getAngle(self):
-        return self.navx.getAngle()
+        return self.navx.getYaw()
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedDT())
 
     def UpdateDashboard(self):
-        SmartDashboard.putData("DT_DrivePID", self.encoders.PIDController)
+        SmartDashboard.putData("DT_DistPID", self.distController)
+        SmartDashboard.putData("DT_AnglePID", self.angleController)
         SmartDashboard.putNumber("DT_AverageDistance", self.getAvgDistance())
         SmartDashboard.putNumber("DT_PowerLeft", self.left.get())
         SmartDashboard.putNumber("DT_PowerRight", self.right.get())
-        SmartDashboard.putNumber("DT_EncoderCountsLeft", self.encoders.getDistance()[0])
-        SmartDashboard.putNumber("DT_EncoderCountsRight", self.encoders.getDistance()[1])
+        SmartDashboard.putNumber("DT_EncoderCountsLeft", self.getDistance()[0])
+        SmartDashboard.putNumber("DT_EncoderCountsRight", self.getDistance()[1])
         SmartDashboard.putNumber("DT_Angle", self.getAngle())

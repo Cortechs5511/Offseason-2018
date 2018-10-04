@@ -1,9 +1,9 @@
 import math
 import wpilib
+
 from wpilib.command import Command
 from wpilib import SmartDashboard
-from sensors.DTEncoders import DTEncoders
-#from sensors.navx import NavX
+
 
 class DriveStraightDistancePID(Command):
 
@@ -17,11 +17,11 @@ class DriveStraightDistancePID(Command):
         self.finished = False
 
     def initialize(self):
-        setpoint = self.setpoint + self.DT.pidGet()
+        setpoint = self.setpoint + self.DT.getAvgDistance()
         self.DT.setDistance(setpoint)
 
     def isFinished(self):
-        rate = abs(self.DT.encoders.getAvgVelocity())
+        rate = abs(self.DT.getAvgVelocity())
         minrate = 0.25
 
         if self.DT.distController.onTarget() and rate < minrate or self.timer.get() > self.maxtime: return True

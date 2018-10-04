@@ -1,9 +1,8 @@
 import math
 import wpilib
-from wpilib.command import Command
-from sensors.DTEncoders import DTEncoders
 from wpilib import Timer
-#from sensors.navx import NavX
+
+from wpilib.command import Command
 
 class DriveStraightDistance(Command):
 

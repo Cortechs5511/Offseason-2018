@@ -3,8 +3,8 @@
 import wpilib
 import math
 import autoSelector
+
 from navx import AHRS as navx
-from sensors.navx import NavX
 
 from wpilib.command import Command
 from wpilib.drive import DifferentialDrive
@@ -55,12 +55,7 @@ import path.path as path
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-#from robotpy_ext.common_drivers import navx
-#import navx
-
 import wpilib.buttons
-
-from sensors.DTEncoders import DTEncoders
 
 class MyRobot(CommandBasedRobot):
 
@@ -120,7 +115,7 @@ class MyRobot(CommandBasedRobot):
         self.timer.reset()
         self.timer.start()
 
-        self.drive.navx.zero()
+        self.drive.zero()
 
         self.autoMode = "Nothing"
 
@@ -139,8 +134,8 @@ class MyRobot(CommandBasedRobot):
 
         if self.autoMode == "Nothing":
 
-            gameData = "RLR"#wpilib.DriverStation.getInstance().getGameSpecificMessage()
-            position = "L" #SmartDashboard.getString("position", "M")
+            gameData = "LLL"#wpilib.DriverStation.getInstance().getGameSpecificMessage()
+            position = "M" #SmartDashboard.getString("position", "M")
 
             self.autoMode = autoSelector.calcNum(gameData, position)
             if self.autoMode == "DriveStraight": self.DriveStraight.start()

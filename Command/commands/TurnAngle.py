@@ -1,8 +1,7 @@
 import math
 import wpilib
+
 from wpilib.command import Command
-from sensors.DTEncoders import DTEncoders
-#from sensors.navx import NavX
 
 class TurnAngle(Command):
 
