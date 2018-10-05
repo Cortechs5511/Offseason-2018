@@ -110,7 +110,7 @@ class Lift(Subsystem):
         self.lift.setQuadraturePosition(0,0)
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setFixedLift(0))
+        self.setDefaultCommand(setFixedLift(0, timeout = 300))
 
     def UpdateDashboard(self):
         #SmartDashboard.putNumber("Lift_Volts", self.lift.getMotorOutputVoltage())

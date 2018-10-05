@@ -123,7 +123,7 @@ class Drive(Subsystem):
         self.__tankDrive__(left,right)
 
     def __tankDrive__(self,left,right):
-        RightGain = 0.9
+        RightGain = 1#0.9
         self.left.set(left)
         self.right.set(right* RightGain)
 
@@ -170,7 +170,7 @@ class Drive(Subsystem):
         return self.navx.getYaw()
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setSpeedDT())
+        self.setDefaultCommand(setSpeedDT(timeout = 300))
 
     def UpdateDashboard(self):
         SmartDashboard.putData("DT_DistPID", self.distController)

@@ -1,35 +1,30 @@
 import math
 import wpilib
 
+from wpilib import SmartDashboard
 from wpilib.command import Command
+from wpilib.command import TimedCommand
 
-class TurnAngle(Command):
+class TurnAngle(TimedCommand):
 
-    def __init__(self, angle = 0):
-        super().__init__('TurnAngle')
+    def __init__(self, angle = 0, timeout = 0):
+        super().__init__('TurnAnglePID', timeoutInSeconds = timeout)
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
+        self.angle = angle
 
-        self.setpoint = angle
-        self.speed = 0.3
-
-        self.KpAngle = 0.005
-        self.TolAngle = 3
-
-
-    def execute(self):
-        angle = 0
-        self.AngleError = self.setpoint - angle
-        LeftSpeed = self.speed + (self.KpAngle * self.AngleError)
-        RightSpeed = self.speed - (self.KpAngle * self.AngleError)
-        self.DT.tankDrive(LeftSpeed,RightSpeed)
-
-    def interrupted(self):
-        self.DT.tankDrive(0,0)
+    def initialize(self):
+        self.DT.setAngle(self.angle)
 
     def isFinished(self):
-        if abs(self.AngleError) <= self.TolAngle: return True
+        rate = abs(self.DT.getAvgAbsVelocity())
+        minrate = 0.25
+
+        if self.DT.distController.onTarget() and rate < minrate or self.isTimedOut(): return True
         else: return False
+
+    def interrupted(self):
+        self.end()
 
     def end(self):
         self.DT.tankDrive(0,0)

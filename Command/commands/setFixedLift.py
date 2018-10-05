@@ -2,26 +2,24 @@ import math
 
 import wpilib
 from wpilib.command import Command
+from wpilib.command import TimedCommand
 
-class setFixedLift(Command):
+class setFixedLift(TimedCommand):
 
-    def __init__(self, speed = 0, maxtime = 300):
-        super().__init__('setFixedLift')
+    def __init__(self, speed = 0, timeout = 0):
+        super().__init__('setFixedLift', timeoutInSeconds = timeout)
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
         self.speed = speed
-
-        self.timer = self.getRobot().timer
-        self.maxtime = maxtime
 
     def execute(self):
         self.Lift.setSpeed(self.speed)
 
     def isFinished(self):
-        return self.timer.get() > self.maxtime
+        return self.isTimedOut()
 
     def interrupted(self):
-        self.Lift.setSpeed(0)
+        self.end()
 
     def end(self):
         self.Lift.setSpeed(0)

@@ -6,26 +6,14 @@ from wpilib.command import TimedCommand
 
 class DriveStraightTime(TimedCommand):
 
-    def __init__(self,speed = 0, timeout = 0):
+    def __init__(self, speed = 0, timeout = 0):
         super().__init__('DriveStraightTime', timeoutInSeconds = timeout)
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
         self.speed = speed
 
-        self.kpAngle = 0.05
-        self.TolAngle = 10 #degrees
-
     def execute(self):
-        angle = self.DT.getAngle()
-        self.angleError = angle #-0
-
-        LeftSpeed = self.speed
-        RightSpeed = self.speed
-        if abs(self.angleError) > self.TolAngle:
-            LeftSpeed = self.speed - (self.angleError * self.kpAngle)
-            RightSpeed = self.speed + (self.angleError * self.kpAngle)
-
-        self.DT.tankDrive(LeftSpeed,RightSpeed)
+        self.DT.tankDrive(self.speed,self.speed)
 
     def interrupted(self):
         self.DT.tankDrive(0,0)

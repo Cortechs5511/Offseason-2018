@@ -43,4 +43,4 @@ class Intake(Subsystem):
         return self.intake.getOutputCurrent()*2
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setFixedIntake())
+        self.setDefaultCommand(setFixedIntake(speed = 0, timeout = 300))

@@ -1,53 +1,33 @@
 import math
 import wpilib
-from wpilib import Timer
 
 from wpilib.command import Command
+from wpilib.command import TimedCommand
 
-class DriveStraightDistance(Command):
+from wpilib import SmartDashboard
 
-    def __init__(self, distance = 0):
-        super().__init__('DriveStraightDistance')
+class DriveStraightDistance(TimedCommand):
+
+    def __init__(self, distance = 10, timeout = 0):
+        super().__init__('DriveStraightDistance', timeoutInSeconds = timeout)
+
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
         self.setpoint = distance
 
-        self.kpDist = 0.2
-        self.kpAngle = 0.05
-        self.TolDist = 0.5 #feet
-        self.TolAngle = 10 #degrees
-        # maxtime in seconds
-
     def initialize(self):
-        Timer.start()
-
-
-    def execute(self):
-        dist = self.DT.getAvgDistance()
-        angle = self.DT.getAngle()
-
-        self.distError = self.setpoint - dist
-        self.angleError = angle #-0
-
-        # get speed based on how far you travelled
-        speed = 0
-        if abs(dist-self.setpoint)>self.TolDist: speed = self.kpDist * self.distError
-
-
-        LeftSpeed = speed
-        RightSpeed = speed
-        if abs(self.angleError) > self.TolAngle:
-            LeftSpeed = speed - (self.angleError * self.kpAngle)
-            RightSpeed = speed + (self.angleError * self.kpAngle)
-
-        self.DT.tankDrive(LeftSpeed,RightSpeed)
-
-    def interrupted(self):
-        self.DT.tankDrive(0,0)
+        setpoint = self.setpoint + self.DT.getAvgDistance()
+        self.DT.setDistance(setpoint)
 
     def isFinished(self):
-        if abs(self.distError) < self.TolDist and abs(self.angleError) < self.TolAngle: return True
-        return False
+        rate = abs(self.DT.getAvgVelocity())
+        minrate = 0.25
+
+        if self.DT.distController.onTarget() and rate < minrate or self.isTimedOut(): return True
+        else: return False
+
+    def interrupted(self):
+        self.end()
 
     def end(self):
         self.DT.tankDrive(0,0)

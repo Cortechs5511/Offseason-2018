@@ -1,28 +1,28 @@
 import math
-
 import wpilib
+
 from wpilib.command import Command
+from wpilib.command import TimedCommand
 
-class setFixedDT(Command):
+class setFixedDT(TimedCommand):
 
-    def __init__(self, leftSpeed = 0, rightSpeed = 0, maxtime = 300):
-        super().__init__('setFixedDT')
+    def __init__(self, leftSpeed = 0, rightSpeed = 0, timeout = 300):
+        super().__init__('setFixedDT', timeoutInSeconds = timeout)
+
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
+
         self.leftSpeed = leftSpeed
         self.rightSpeed = rightSpeed
-
-        self.timer = self.getRobot().timer
-        self.maxtime = maxtime
 
     def execute(self):
         self.DT.tankDrive(self.leftSpeed,self.rightSpeed)
 
     def isFinished(self):
-        return self.timer.get() > self.maxtime
+        return self.isTimedOut()
 
     def interrupted(self):
-        self.DT.tankDrive(0,0)
+        self.end()
 
     def end(self):
         self.DT.tankDrive(0,0)

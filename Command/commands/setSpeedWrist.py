@@ -1,33 +1,28 @@
 import math
-
 import wpilib
+
 from wpilib.command import Command
+from wpilib.command import TimedCommand
+
 from wpilib import SmartDashboard
 
-class setSpeedWrist(Command):
+class setSpeedWrist(TimedCommand):
 
-    def __init__(self, maxtime = 300):
-        super().__init__('setSpeedWrist')
+    def __init__(self, timeout = 0):
+        super().__init__('setSpeedWrist', timeoutInSeconds = timeout)
         self.requires(self.getRobot().wrist)
         self.Wrist = self.getRobot().wrist
-        SmartDashboard.putNumber("WristJoystickSpeed", 0.3)
-
-        self.timer = self.getRobot().timer
-        self.maxtime = maxtime
 
     def execute(self):
         wristPos = self.Wrist.getAngle()
         Joystick = self.getRobot().xbox
-        speed = SmartDashboard.getNumber("WristJoystickSpeed", 0.3)
-        self.Wrist.setSpeed(Joystick.getX(1))
-
-        #self.Wrist.setSpeed(Joystick.getY(2) * 1/5)
+        self.Wrist.setSpeed(0.4* Joystick.getX(1))
 
     def isFinished(self):
-        return self.timer.get() > self.maxtime
+        return self.isTimedOut()
 
     def interrupted(self):
-        self.Wrist.setSpeed(0)
+        self.Wrist.end()
 
     def end(self):
         self.Wrist.setSpeed(0)

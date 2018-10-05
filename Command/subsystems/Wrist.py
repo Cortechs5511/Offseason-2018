@@ -115,5 +115,4 @@ class Wrist(Subsystem):
         self.wrist.setQuadraturePosition(0,0)
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setFixedWrist(0,))
-        SmartDashboard.putData("WristCommand", self)
+        self.setDefaultCommand(setFixedWrist(0, timeout = 300))

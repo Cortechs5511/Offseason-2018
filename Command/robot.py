@@ -25,12 +25,6 @@ from commands.setSpeedDT import setSpeedDT
 from commands.DriveStraightTime import DriveStraightTime
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.TurnAngle import TurnAngle
-from commands.TurnAnglePID import TurnAnglePID
-from commands.DriveStraightTimePID import DriveStraightTimePID
-from commands.DriveStraightDistancePID import DriveStraightDistancePID
-#from commands.TurnAnglePID import TurnAnglePID
-
-
 
 from commands.autonomous import LeftSwitchSide
 from commands.autonomous import RightSwitchSide
@@ -72,7 +66,6 @@ class MyRobot(CommandBasedRobot):
         self.wrist = Wrist.Wrist(self)
         self.intake = Intake.Intake(self)
 
-
         self.timer = wpilib.Timer()
 
         '''
@@ -103,7 +96,6 @@ class MyRobot(CommandBasedRobot):
     def robotPeriodic(self):
         if(self.curr%self.print==0):
             self.updateDashboardPeriodic()
-
             self.curr = 0
 
         self.curr = self.curr + 1
@@ -182,15 +174,6 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
         SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
         SmartDashboard.putData("TurnAngle", TurnAngle())
-        SmartDashboard.putData("TurnAnglePID", TurnAnglePID(0,True))
-
-        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistancePID(10,True))
-        SmartDashboard.putData("DriveStraightDistanceBack", DriveStraightDistancePID(-10))
-        SmartDashboard.putData("DriveStraightTime", DriveStraightTimePID())
-        #SmartDashboard.putData("TurnAngle", TurnAnglePID())
-
-        SmartDashboard.putData("LeftSwitchSide", LeftSwitchSide())
-
         SmartDashboard.putData("Zero", Zero())
 
         '''Additional UpdateDashboard Functions'''

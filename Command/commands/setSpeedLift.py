@@ -1,17 +1,15 @@
 import math
-
 import wpilib
+
 from wpilib.command import Command
+from wpilib.command import TimedCommand
 
-class setSpeedLift(Command):
+class setSpeedLift(TimedCommand):
 
-    def __init__(self, maxtime = 300):
-        super().__init__('setSpeedLift')
+    def __init__(self, timeout = 0):
+        super().__init__('setSpeedLift', timeoutInSeconds = timeout)
         self.requires(self.getRobot().lift)
         self.Lift = self.getRobot().lift
-
-        self.timer = self.getRobot().timer
-        self.maxtime = maxtime
 
     def execute(self):
         liftPos = self.Lift.getHeight()
@@ -21,10 +19,10 @@ class setSpeedLift(Command):
         else: self.Lift.setSpeed(0)
 
     def isFinished(self):
-        return self.timer.get() > self.maxtime
+        return self.isTimedOut()
 
     def interrupted(self):
-        self.Lift.setSpeed(0)
+        self.end()
 
     def end(self):
         self.Lift.setSpeed(0)
