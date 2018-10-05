@@ -44,3 +44,7 @@ class Intake(Subsystem):
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setFixedIntake(speed = 0, timeout = 300))
+
+    def UpdateDashboard(self):
+        SmartDashboard.putNumber("Intake_Power", self.intake.get())
+        SmartDashboard.putNumber("Intake_Amps", self.getOutputCurrent())

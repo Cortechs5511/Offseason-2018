@@ -1,17 +1,12 @@
-#!/usr/bin/env python3
-
-import wpilib
 import math
-import autoSelector
+import wpilib
+import oi
 
-from navx import AHRS as navx
+from wpilib import SmartDashboard
+import wpilib.buttons
 
 from wpilib.command import Command
-from wpilib.drive import DifferentialDrive
-
 from commandbased import CommandBasedRobot
-#from wpilib.command import Scheduler
-import commands.autonomous as auto
 
 from commands.setPositionWrist import setPositionWrist
 from commands.setPositionLift import setPositionLift
@@ -22,10 +17,18 @@ from commands.setFixedLift import setFixedLift
 from commands.setFixedWrist import setFixedWrist
 
 from commands.setSpeedDT import setSpeedDT
+from commands.setSpeedLift import setSpeedLift
+from commands.setSpeedWrist import setSpeedWrist
+
 from commands.DriveStraightTime import DriveStraightTime
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.TurnAngle import TurnAngle
 
+from commands.Zero import Zero
+
+from commands import Sequences
+
+from commands import autonomous
 from commands.autonomous import LeftSwitchSide
 from commands.autonomous import RightSwitchSide
 from commands.autonomous import DriveStraight
@@ -34,22 +37,15 @@ from commands.autonomous import RightSwitchMiddle
 from commands.autonomous import LeftSwitchMiddle2Cube
 from commands.autonomous import RightSwitchMiddle2Cube
 
-from commands.Zero import Zero
-from commands import Sequences
-
 from subsystems import Wrist, Intake, Lift, Drive
-import oi
-import wpilib
 
-from wpilib import SmartDashboard
-
+import autoSelector
 import pathfinder as pf
 import path.path as path
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
-
-import wpilib.buttons
+from navx import AHRS as navx
 
 class MyRobot(CommandBasedRobot):
 
@@ -94,22 +90,18 @@ class MyRobot(CommandBasedRobot):
         self.print = 50
 
     def robotPeriodic(self):
+        self.curr = self.curr + 1
         if(self.curr%self.print==0):
             self.updateDashboardPeriodic()
             self.curr = 0
-
-        self.curr = self.curr + 1
 
     def autonomousInit(self):
         self.wrist.zero()
         self.lift.zero()
         self.drive.zero()
+
         self.timer.reset()
         self.timer.start()
-
-        self.drive.zero()
-
-        self.autoMode = "Nothing"
 
         gameData = "RLR" #wpilib.DriverStation.getInstance().getGameSpecificMessage()
         position = "L" #SmartDashboard.getString("position", "M")
@@ -117,28 +109,15 @@ class MyRobot(CommandBasedRobot):
 
         if self.autoMode == "DriveStraight": self.DriveStraight.start()
         elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start() #self.LeftSwitchMiddle.start()
+        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start() #self.RightSwitchMiddle.start()
-        #Scheduler.enable(self)
-
+        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
         self.autoMode = "Nothing"
-
-        if self.autoMode == "Nothing":
-
-            gameData = "LLL"#wpilib.DriverStation.getInstance().getGameSpecificMessage()
-            position = "M" #SmartDashboard.getString("position", "M")
-
-            self.autoMode = autoSelector.calcNum(gameData, position)
-            if self.autoMode == "DriveStraight": self.DriveStraight.start()
-            elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start() #self.LeftSwitchMiddle.start()
-            elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start() #self.RightSwitchMiddle.start()
 
     def autonomousPeriodic(self):
         if self.autoMode == "Nothing":
             gameData = "RLR" #wpilib.DriverStation.getGameSpecificMessage()
+            position = "L" #SmartDashboard.getString("position", "M")
             self.autoMode = autoSelector.calcNum(gameData, position)
 
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
@@ -168,38 +147,30 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("setFixedWrist", setFixedWrist())
 
         SmartDashboard.putData("setSpeedDT", setSpeedDT())
-        SmartDashboard.putData("setSpeedLift", setSpeedDT())
-        SmartDashboard.putData("setSpeedWrist", setSpeedDT())
+        SmartDashboard.putData("setSpeedLift", setSpeedLift())
+        SmartDashboard.putData("setSpeedWrist", setSpeedWrist())
 
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
         SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
         SmartDashboard.putData("TurnAngle", TurnAngle())
+
         SmartDashboard.putData("Zero", Zero())
 
         '''Additional UpdateDashboard Functions'''
-        #Sequences.UpdateDashboard()
+        Sequences.UpdateDashboard()
+        autonomous.UpdateDashboard()
 
     def updateDashboardPeriodic(self):
-        '''Sensor Output'''
-        SmartDashboard.putNumber("WristPosition", math.degrees(self.wrist.getAngle()))
-        SmartDashboard.putNumber("LiftPosition", self.lift.getHeight())
-        SmartDashboard.putNumber("RightDistance", self.drive.getDistance()[0])
-        SmartDashboard.putNumber("LeftDistance", self.drive.getDistance()[1])
+        current = self.drive.getOutputCurrent()+self.intake.getOutputCurrent()+self.wrist.getOutputCurrent()+self.lift.getOutputCurrent()
+        SmartDashboard.putNumber("Total_Amps",current)
 
-        '''Current Logging'''
-        SmartDashboard.putNumber("DriveAmps",self.drive.getOutputCurrent())
-        SmartDashboard.putNumber("IntakeAmps",self.intake.getOutputCurrent())
-        SmartDashboard.putNumber("WristAmps", self.wrist.getOutputCurrent())
-        SmartDashboard.putNumber("LiftAmps",self.lift.getOutputCurrent())
-
-        total = self.drive.getOutputCurrent()+self.intake.getOutputCurrent()+self.wrist.getOutputCurrent()+self.lift.getOutputCurrent()
-        SmartDashboard.putNumber("TotalAmps",total)
+        SmartDashboard.putBoolean("Mech_Safety", (self.lift.lift.get() > 0.2 and self.wrist.getAngle() < math.pi/12))
 
         '''Additional UpdateDashboard Functions'''
         self.drive.UpdateDashboard()
         self.lift.UpdateDashboard()
-        #self.wrist.UpdateDashboard()
-        #self.intake.UpdateDashboard()
+        self.wrist.UpdateDashboard()
+        self.intake.UpdateDashboard()
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)

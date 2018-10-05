@@ -175,9 +175,13 @@ class Drive(Subsystem):
     def UpdateDashboard(self):
         SmartDashboard.putData("DT_DistPID", self.distController)
         SmartDashboard.putData("DT_AnglePID", self.angleController)
-        SmartDashboard.putNumber("DT_AverageDistance", self.getAvgDistance())
+
+        SmartDashboard.putNumber("DT_DistanceAvg", self.getAvgDistance())
+        SmartDashboard.putNumber("DT_DistanceLeft", self.getDistance()[0])
+        SmartDashboard.putNumber("DT_DistanceRight", self.getDistance()[1])
+        SmartDashboard.putNumber("DT_Angle", self.getAngle())
+
         SmartDashboard.putNumber("DT_PowerLeft", self.left.get())
         SmartDashboard.putNumber("DT_PowerRight", self.right.get())
-        SmartDashboard.putNumber("DT_EncoderCountsLeft", self.getDistance()[0])
-        SmartDashboard.putNumber("DT_EncoderCountsRight", self.getDistance()[1])
-        SmartDashboard.putNumber("DT_Angle", self.getAngle())
+
+        SmartDashboard.putNumber("DriveAmps",self.getOutputCurrent())

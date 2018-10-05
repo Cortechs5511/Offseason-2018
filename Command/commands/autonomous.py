@@ -1,15 +1,15 @@
 from wpilib.command.commandgroup import CommandGroup
-
 from wpilib.command.waitcommand import WaitCommand
+
+from wpilib import SmartDashboard
 
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightTime import DriveStraightTime
 from commands.TurnAngle import TurnAngle
 
-import commands.Sequences as seq
-
 from commands.setFixedDT import setFixedDT
 
+import commands.Sequences as seq
 from commands.Sequences import SwitchPosition
 from commands.Sequences import SwitchShoot
 from commands.Sequences import IntakePosition
@@ -45,7 +45,7 @@ class DriveStraight(CommandGroup):
     def __init__(self):
         super().__init__('DriveStraight')
         self.addSequential(DriveStraightDistance(154/12.0, timeout=5))
-        self.addParallel(ProtectPosition())
+        self.addParallel(ProtectPosition(timeout = 5))
 
 class LeftSwitchMiddle2Cube(CommandGroup):
     def __init__(self):
@@ -112,3 +112,12 @@ class RightSwitchMiddle2Cube(CommandGroup):
         self.addParallel(SwitchPosition(timeout=1))
         self.addSequential(DriveStraightDistance(30/12, timeout=1))
         self.addSequential(SwitchShoot(timeout=1))
+
+def UpdateDashboard():
+    SmartDashboard.putData("LeftSwitchSide", LeftSwitchSide())
+    SmartDashboard.putData("RightSwitchSide", RightSwitchSide())
+    SmartDashboard.putData("DriveStraight", DriveStraight())
+    SmartDashboard.putData("LeftSwitchMiddle", LeftSwitchMiddle())
+    SmartDashboard.putData("RightSwitchMiddle", RightSwitchMiddle())
+    SmartDashboard.putData("LeftSwitchMiddle2Cube", LeftSwitchMiddle2Cube())
+    SmartDashboard.putData("RightSwitchMiddle2Cube", RightSwitchMiddle2Cube())

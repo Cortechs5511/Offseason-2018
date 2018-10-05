@@ -59,16 +59,11 @@ class Lift(Subsystem):
         self.liftController.setAbsoluteTolerance(0.5) #tolerance in inches
         self.liftController.setContinuous(False)
 
-        SmartDashboard.putData("LiftPID" , self.liftController)
-
     def pidWrite(self, output):
-        SmartDashboard.putNumber("LiftPID_Out", output)
-        SmartDashboard.putNumber("LiftError", self.liftController.getError())
         self.__setSpeed__(output)
 
     def pidGet(self):
        pos =  self.getHeight()
-       SmartDashboard.putNumber("LiftPIDget", pos)
        return pos
 
     def setPIDSourceType(self):
@@ -82,7 +77,6 @@ class Lift(Subsystem):
         return pos
 
     def getGravity(self):
-        #return self.smartDashboard.getNumber("liftGravity", 0.0)
         return 0.14
 
     def getTemp(self):
@@ -96,11 +90,8 @@ class Lift(Subsystem):
         self.__setSpeed__(speed)
 
     def __setSpeed__(self, speed):
-        SmartDashboard.putBoolean("LiftSafety", (speed > 0 and self.Robot.wrist.getAngle() < math.pi/12))
-        if (speed > 0 and self.Robot.wrist.getAngle() < math.pi/12):
-            self.lift.set(self.getGravity())
-        else:
-            self.lift.set(speed + self.getGravity())
+        if (speed > 0 and self.Robot.wrist.getAngle() < math.pi/12): self.lift.set(self.getGravity())
+        else: self.lift.set(speed + self.getGravity())
 
     def setHeight(self, height):
         self.liftController.setSetpoint(height)
@@ -113,6 +104,7 @@ class Lift(Subsystem):
         self.setDefaultCommand(setFixedLift(0, timeout = 300))
 
     def UpdateDashboard(self):
-        #SmartDashboard.putNumber("Lift_Volts", self.lift.getMotorOutputVoltage())
-        SmartDashboard.putNumber("Lift_Speed", self.lift.get())
-        SmartDashboard.putNumber("liftHeight",self.getHeight())
+        SmartDashboard.putData("Lift_PID", self.liftController)
+        SmartDashboard.putNumber("Lift_Height", self.getHeight())
+        SmartDashboard.putNumber("Lift_Power", self.lift.get())
+        SmartDashboard.putNumber("Lift_Amps", self.getOutputCurrent())
