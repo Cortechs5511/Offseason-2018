@@ -39,7 +39,6 @@ from commands.autonomous import RightSwitchMiddle2Cube
 
 from subsystems import Wrist, Intake, Lift, Drive
 
-import autoSelector
 import pathfinder as pf
 import path.path as path
 
@@ -105,7 +104,7 @@ class MyRobot(CommandBasedRobot):
 
         gameData = "RLR" #wpilib.DriverStation.getInstance().getGameSpecificMessage()
         position = "L" #SmartDashboard.getString("position", "M")
-        self.autoMode = autoSelector.calcNum(gameData, position)
+        self.autoMode = self.autoLogic(gameData, position)
 
         if self.autoMode == "DriveStraight": self.DriveStraight.start()
         elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
@@ -118,7 +117,7 @@ class MyRobot(CommandBasedRobot):
         if self.autoMode == "Nothing":
             gameData = "RLR" #wpilib.DriverStation.getGameSpecificMessage()
             position = "L" #SmartDashboard.getString("position", "M")
-            self.autoMode = autoSelector.calcNum(gameData, position)
+            self.autoMode = self.autoLogic(gameData, position)
 
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
             elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
@@ -129,6 +128,18 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putString("AutoMode", self.autoMode)
 
         super().autonomousPeriodic()
+
+    def autoLogic(self, gameData, auto):
+        if(auto=="L"):
+            if(gameData[0]=='L'): return "LeftSwitchSide"
+            else: return "DriveStraight"
+        elif(auto=="M"):
+            if(gameData[0]=='L'): return "LeftSwitchMiddle"
+            else: return "RightSwitchMiddle"
+        elif(auto=="R"):
+            if(gameData[0]=='L'): return "DriveStraight"
+            else: return "RightSwitchSide"
+        return "Nothing"
 
     def updateDashboardInit(self):
         '''Subsystems'''
