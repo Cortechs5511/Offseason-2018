@@ -24,6 +24,8 @@ from commands.DriveStraightTime import DriveStraightTime
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.TurnAngle import TurnAngle
 
+from commands.getLimelightData import getLimelightData
+
 from commands.Zero import Zero
 
 from commands import Sequences
@@ -36,6 +38,7 @@ from commands.autonomous import LeftSwitchMiddle
 from commands.autonomous import RightSwitchMiddle
 from commands.autonomous import LeftSwitchMiddle2Cube
 from commands.autonomous import RightSwitchMiddle2Cube
+
 
 from subsystems import Wrist, Intake, Lift, Drive
 
@@ -80,6 +83,7 @@ class MyRobot(CommandBasedRobot):
         self.RightSwitchMiddle = RightSwitchMiddle()
         self.LeftSwitchMiddle2Cube = LeftSwitchMiddle2Cube()
         self.RightSwitchMiddle2Cube = RightSwitchMiddle2Cube()
+        self.getLimelightData = getLimelightData()
 
         oi.commands()
 
@@ -95,6 +99,7 @@ class MyRobot(CommandBasedRobot):
             self.curr = 0
 
     def autonomousInit(self):
+        self.getLimelightData.start()
         self.wrist.zero()
         self.lift.zero()
         self.drive.zero()
