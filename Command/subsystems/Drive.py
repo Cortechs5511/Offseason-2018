@@ -123,9 +123,10 @@ class Drive(Subsystem):
         self.__tankDrive__(left,right)
 
     def __tankDrive__(self,left,right):
-        RightGain = 1#0.9
-        self.left.set(left)
-        self.right.set(right* RightGain)
+        RightGain = 0.9
+        maxSpeed = 0.7
+        self.left.set(maxSpeed * left)
+        self.right.set(maxSpeed * right * RightGain)
 
     def setDistance(self,distance):
         self.distController.setSetpoint(distance)

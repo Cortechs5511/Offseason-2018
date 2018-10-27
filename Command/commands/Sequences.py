@@ -21,7 +21,7 @@ class IntakePosition(CommandGroup):
     def isFinished(self): return self.timer.get() > self.timeout
 
 class Level2IntakePosition(CommandGroup):
-    def __init__(self, timeout=300):
+    def __init__(self, timeout = 300):
         super().__init__('Level2IntakePosition')
         self.addParallel(setPositionLift(10, timeout))
         self.addParallel(setPositionWrist90(timeout))
@@ -33,7 +33,7 @@ class Level2IntakePosition(CommandGroup):
     def isFinished(self): return self.timer.get() > self.timeout
 
 class Level3IntakePosition(CommandGroup):
-    def __init__(self, timeout=300):
+    def __init__(self, timeout = 300):
         super().__init__('Level3IntakePosition')
         self.addParallel(setPositionLift(20, timeout))
         self.addParallel(setPositionWrist90(timeout))
@@ -45,7 +45,7 @@ class Level3IntakePosition(CommandGroup):
     def isFinished(self): return self.timer.get() > self.timeout
 
 class SwitchPosition(CommandGroup):
-    def __init__(self, timeout=300):
+    def __init__(self, timeout = 300):
         super().__init__('SwitchPosition')
         self.addParallel(setPositionLift(25, timeout))
         self.addParallel(setPositionWrist(90, timeout))
@@ -57,7 +57,7 @@ class SwitchPosition(CommandGroup):
     def isFinished(self): return self.timer.get() > self.timeout
 
 class SwitchShoot(CommandGroup):
-    def __init__(self, timeout=300):
+    def __init__(self, timeout = 300):
         super().__init__('SwitchShoot')
         self.addParallel(setPositionLift(25, timeout))
         self.addParallel(setPositionWrist90(timeout))
@@ -69,7 +69,7 @@ class SwitchShoot(CommandGroup):
     def isFinished(self): return self.timer.get() > self.timeout
 
 class ExchangeShoot(CommandGroup):
-    def __init__(self, timeout=300):
+    def __init__(self, timeout = 300):
         super().__init__('ExchangeShoot')
         self.addParallel(setPositionLift(0, timeout))
         self.addParallel(setPositionWrist90(timeout))
@@ -81,7 +81,7 @@ class ExchangeShoot(CommandGroup):
     def isFinished(self): return self.timer.get() > self.timeout
 
 class ExchangePosition(CommandGroup):
-    def __init__(self, timeout=300):
+    def __init__(self, timeout = 300):
         super().__init__('ExchangePosition')
         self.addParallel(setPositionLift(0, timeout))
         self.addParallel(setPositionWrist90(timeout))
@@ -93,7 +93,7 @@ class ExchangePosition(CommandGroup):
     def isFinished(self): return self.timer.get() > self.timeout
 
 class ProtectPosition(CommandGroup):
-    def __init__(self, timeout=300):
+    def __init__(self, timeout = 300):
         super().__init__('ProtectPosition')
         self.addParallel(setFixedLift(-0.1, timeout))
         self.addParallel(setPositionWrist(-20, timeout))

@@ -8,7 +8,7 @@ from wpilib import SmartDashboard
 
 class setPositionWrist(TimedCommand):
 
-    def __init__(self, setpoint = 0, timeout = 0):
+    def __init__(self, setpoint = 0, timeout = 300):
         super().__init__('setPositionWrist', timeoutInSeconds = timeout)
         self.requires(self.getRobot().wrist)
         self.Wrist = self.getRobot().wrist

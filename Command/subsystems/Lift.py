@@ -5,7 +5,7 @@ from wpilib.command.subsystem import Subsystem
 import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
-
+from commands.setSpeedLift import setSpeedLift
 from commands.setFixedLift import setFixedLift
 from commands.setPositionLift import setPositionLift
 
@@ -90,18 +90,20 @@ class Lift(Subsystem):
         self.__setSpeed__(speed)
 
     def __setSpeed__(self, speed):
-        if (speed > 0 and self.Robot.wrist.getAngle() < math.pi/12): self.lift.set(self.getGravity())
-        else: self.lift.set(speed + self.getGravity())
+        maxSpeed = 0.7
+        #if (speed > 0 and self.Robot.wrist.getAngle() < 0): self.lift.set(self.getGravity())
+        #else: self.lift.set(maxSpeed*speed + self.getGravity())
+        self.lift.set(maxSpeed*speed+self.getGravity())
 
     def setHeight(self, height):
-        self.liftController.setSetpoint(height)
         self.liftController.enable()
+        self.liftController.setSetpoint(height)
 
     def zero(self):
         self.lift.setQuadraturePosition(0,0)
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setFixedLift(0, timeout = 300))
+        self.setDefaultCommand(setSpeedLift(300))
 
     def UpdateDashboard(self):
         SmartDashboard.putData("Lift_PID", self.liftController)
