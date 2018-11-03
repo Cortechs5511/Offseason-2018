@@ -99,6 +99,7 @@ class MyRobot(CommandBasedRobot):
             self.curr = 0
 
     def autonomousInit(self):
+        '''
         self.getLimelightData.start()
         self.wrist.zero()
         self.lift.zero()
@@ -117,8 +118,10 @@ class MyRobot(CommandBasedRobot):
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
         elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
         self.autoMode = "Nothing"
+        '''
 
     def autonomousPeriodic(self):
+        '''
         if self.autoMode == "Nothing":
             gameData = "RLR" #wpilib.DriverStation.getGameSpecificMessage()
             position = "L" #SmartDashboard.getString("position", "M")
@@ -131,7 +134,8 @@ class MyRobot(CommandBasedRobot):
             elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start() #self.RightSwitchMiddle.start()
 
         SmartDashboard.putString("AutoMode", self.autoMode)
-
+        '''
+        path.pathFinder(self.drive)
         super().autonomousPeriodic()
 
     def autoLogic(self, gameData, auto):

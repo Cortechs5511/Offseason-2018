@@ -100,7 +100,7 @@ def getTraj(num):
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
             dt=0.02, max_velocity=8.0, max_acceleration=6.0, max_jerk=120.0)
 
-        modifier = pf.modifiers.TankModifier(trajectory).modify(self.width/2.4)
+        modifier = pf.modifiers.TankModifier(trajectory).modify(width/2.4)
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
 
@@ -120,9 +120,9 @@ def showPath(left,right,modifier):
         from pyfrc.sim import get_user_renderer
         renderer = get_user_renderer()
         if renderer:
-            renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-self.width/2,0))
+            renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-width/2,0))
             renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
-            renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(self.width/2,0))
+            renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
 
 def initPath(drivetrain):
     global init
@@ -130,17 +130,18 @@ def initPath(drivetrain):
     num = calcNum()
     [left,right,modifier] = getTraj(num)
 
-    gains = [25,0,2,1/8,1/6] #P,I,D,1/V,1/A
+    gains = [25,0,2,1/4,1/6] #P,I,D,1/V,1/A
+    #gains = [2,0,0,0,0]
 
     leftFollower = pf.followers.EncoderFollower(left)
-    leftFollower.configureEncoder(drivetrain.encoders.get()[0], 127, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
+    leftFollower.configureEncoder(drivetrain.getRaw()[0], 255, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
     leftFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
     rightFollower = pf.followers.EncoderFollower(right)
-    rightFollower.configureEncoder(drivetrain.encoders.get()[1], 255, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
+    rightFollower.configureEncoder(-drivetrain.getRaw()[1], 127, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
     rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
-    drivetrain.enablePIDs()
+    #drivetrain.enablePIDs()
 
     showPath(left,right,modifier)
 
@@ -154,17 +155,19 @@ def initPath(drivetrain):
 def followPath(drivetrain, leftFollower, rightFollower):
     global desiredHeading
     if(timer.get()>0.25 and not leftFollower.isFinished()):
-        l = leftFollower.calculate(drivetrain.encoders.get()[0])
-        r = rightFollower.calculate(drivetrain.encoders.get()[1])
+        l = leftFollower.calculate(drivetrain.getRaw()[0])
+        r = rightFollower.calculate(-drivetrain.getRaw()[1])
+        '''
         desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
-        #drivetrain.navx.setPID(desiredHeading)
-        #turn = drivetrain.navx.getPID()
-        drivetrain.tank(l+turn,r-turn)
-    else: drivetrain.stop()
+        turn = #NAVX PID HERE
+        drivetrain.tankDrive(l+turn,r-turn)
+        '''
+        drivetrain.tankDrive(l,r)
+    else: drivetrain.tankDrive(0,0)
 
 def pathFinder(drivetrain):
     global leftFollower
     global rightFollower
 
-    if(init==False and len(self.gameData)>0 and len(self.auto)>0): [leftFollower, rightFollower] = initPath(drivetrain)
+    if(init==False and len(gameData)>0 and len(auto)>0): [leftFollower, rightFollower] = initPath(drivetrain)
     if(init==True): followPath(drivetrain,leftFollower,rightFollower)

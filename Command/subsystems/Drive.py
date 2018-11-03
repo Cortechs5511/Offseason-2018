@@ -106,25 +106,39 @@ class Drive(Subsystem):
             if output < nominal and output > 0: output = nominal
             elif output > -nominal and output < 0: output = -nominal
             self.__tankDrive__(output,-output)
+        elif(self.mode == "Combined"):
+            nominal = 0.2
+            if output < nominal and output > 0: output = nominal
+            elif output > -nominal and output < 0: output = -nominal
+            self.__tankDrive__(output,output)
 
-    def getPIDSourceType(self):
-        if(self.mode == "Distance"): return self.getAvgDistance()
-        elif(self.mode == "Angle"): return self.getAngle()
-        else: return 0
+    def getPIDSourceType(self): self.pidGet()
 
     def pidGet(self):
         if(self.mode == "Distance"): return self.getAvgDistance()
         elif(self.mode == "Angle"): return self.getAngle()
+        elif(self.mode == "Combined"): return self.getAvgDistance() + self.getAngle()
         else: return 0
+
+    def sign(self,num):
+        if(num>0): return 1
+        if(num==0): return 0
+        return -1
 
     def tankDrive(self,left,right):
         self.distController.disable()
         self.angleController.disable()
+        left = min(abs(left),1)*self.sign(left)
+        right = min(abs(right),1)*self.sign(right)
         self.__tankDrive__(left,right)
 
     def __tankDrive__(self,left,right):
         RightGain = 0.9
+        if wpilib.RobotBase.isSimulation():
+            RightGain = 1
+
         maxSpeed = 0.7
+
         self.left.set(maxSpeed * left)
         self.right.set(maxSpeed * right * RightGain)
 
@@ -142,6 +156,9 @@ class Drive(Subsystem):
 
     def getOutputCurrent(self):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
+
+    def getRaw(self):
+        return [self.leftEncoder.get(),self.rightEncoder.get()]
 
     def getDistance(self):
         return [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
@@ -170,8 +187,8 @@ class Drive(Subsystem):
     def getAngle(self):
         return self.navx.getYaw()
 
-    def initDefaultCommand(self):
-        self.setDefaultCommand(setSpeedDT(timeout = 300))
+    #def initDefaultCommand(self):
+    #    self.setDefaultCommand(setSpeedDT(timeout = 300))
 
     def UpdateDashboard(self):
         SmartDashboard.putData("DT_DistPID", self.distController)
