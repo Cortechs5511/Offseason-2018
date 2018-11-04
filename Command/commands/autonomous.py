@@ -3,6 +3,7 @@ from wpilib.command.waitcommand import WaitCommand
 
 from wpilib import SmartDashboard
 
+from commands.DriveStraightCombined import DriveStraightCombined
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightTime import DriveStraightTime
 from commands.TurnAngle import TurnAngle
@@ -24,10 +25,10 @@ class LeftSwitchSide(CommandGroup):
         super().__init__('LeftSwitchSide')
         self.addSequential(setFixedWrist(0.8, timeout= 1))
         self.addParallel(SwitchPosition())
-        self.addSequential(DriveStraightDistance((154/12.0), timeout=5))
+        self.addSequential(DriveStraightCombined(distance=154/12.0, angle=0, timeout=5))
         self.addParallel(SwitchPosition())
         self.addSequential(TurnAngle(90, timeout=4))
-        self.addSequential(DriveStraightDistance(20/12.0, timeout=2))
+        self.addSequential(DriveStraightCombined(distance=20/12.0, angle=90, timeout=2))
         self.addSequential(SwitchShoot(timeout=1))
 
 class RightSwitchSide(CommandGroup):
@@ -35,16 +36,16 @@ class RightSwitchSide(CommandGroup):
         super().__init__('RightSwitchSide')
         self.addSequential(setFixedWrist(0.8, timeout= 1))
         self.addParallel(SwitchPosition())
-        self.addSequential(DriveStraightDistance((154/12.0), timeout=5))
+        self.addSequential(DriveStraightCombined(distance=154/12.0, angle=0, timeout=5))
         self.addParallel(SwitchPosition())
         self.addSequential(TurnAngle(-90, timeout=4))
-        self.addSequential(DriveStraightDistance(20/12.0, timeout=2))
+        self.addSequential(DriveStraightCombined(distance=20/12.0, angle=-90, timeout=2))
         self.addSequential(SwitchShoot(timeout=1))
 
 class DriveStraight(CommandGroup):
     def __init__(self):
         super().__init__('DriveStraight')
-        self.addSequential(DriveStraightDistance(154/12.0, timeout=5))
+        self.addSequential(DriveStraightCombined(distance=154/12.0, angle=0, timeout=5))
         self.addParallel(ProtectPosition(timeout = 5))
 
 class LeftSwitchMiddle2Cube(CommandGroup):

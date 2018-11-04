@@ -204,8 +204,8 @@ class Drive(Subsystem):
     def getAngle(self):
         return self.navx.getYaw()
 
-    #def initDefaultCommand(self):
-    #    self.setDefaultCommand(setSpeedDT(timeout = 300))
+    def initDefaultCommand(self):
+        self.setDefaultCommand(setSpeedDT(timeout = 300))
 
     def UpdateDashboard(self):
         SmartDashboard.putData("DT_DistPID", self.distController)
