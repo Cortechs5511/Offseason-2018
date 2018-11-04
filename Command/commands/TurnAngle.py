@@ -16,6 +16,9 @@ class TurnAngle(TimedCommand):
     def initialize(self):
         self.DT.setAngle(self.angle)
 
+    def execute(self):
+        self.DT.tankDrive()
+
     def isFinished(self):
         rate = abs(self.DT.getAvgAbsVelocity())
         minrate = 0.25

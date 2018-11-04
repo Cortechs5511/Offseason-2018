@@ -19,6 +19,9 @@ class DriveStraightDistance(TimedCommand):
         setpoint = self.setpoint + self.DT.getAvgDistance()
         self.DT.setDistance(setpoint)
 
+    def execute(self):
+        self.DT.tankDrive()
+
     def isFinished(self):
         rate = abs(self.DT.getAvgVelocity())
         minrate = 0.25

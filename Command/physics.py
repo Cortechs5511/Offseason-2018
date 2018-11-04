@@ -30,7 +30,7 @@ class PhysicsEngine(object):
 
         self.controller.add_device_gyro_channel('navxmxp_spi_4_angle')
 
-        self.deadZone=0.40
+        self.deadZone=0.00
 
     def update_sim(self, hal_data, now, timeDiff):
         # Simulate the drivetrain
