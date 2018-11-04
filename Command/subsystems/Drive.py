@@ -80,9 +80,10 @@ class Drive(Subsystem):
 
         self.TolDist = 0.2 #feet
         [kP,kI,kD,kF] = [0.07, 0.00, 0.20, 0.00]
+        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.40, 0.00, 0.80, 0.00]
         distController = wpilib.PIDController(kP, kI, kD, kF, source=self.__getDistance__, output=self.__setDistance__)
         distController.setInputRange(0,  50) #feet
-        distController.setOutputRange(-0.55, 0.55)
+        distController.setOutputRange(-0.9, 0.9)
         distController.setAbsoluteTolerance(self.TolDist)
         distController.setContinuous(False)
         self.distController = distController
@@ -92,7 +93,7 @@ class Drive(Subsystem):
         [kP,kI,kD,kF] = [0.024, 0.00, 0.20, 0.00]
         angleController = wpilib.PIDController(kP, kI, kD, kF, source=self.__getAngle__, output=self.__setAngle__)
         angleController.setInputRange(-180,  180) #degrees
-        angleController.setOutputRange(-0.8, 0.8)
+        angleController.setOutputRange(-0.9, 0.9)
         angleController.setAbsoluteTolerance(self.TolAngle)
         angleController.setContinuous(True)
         self.angleController = angleController
@@ -162,8 +163,7 @@ class Drive(Subsystem):
 
     def __tankDrive__(self,left,right):
         RightGain = 0.9
-        if wpilib.RobotBase.isSimulation():
-            RightGain = 1
+        if wpilib.RobotBase.isSimulation(): RightGain = 1
 
         maxSpeed = 0.7
 

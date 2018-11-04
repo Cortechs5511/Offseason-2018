@@ -13,11 +13,12 @@ class DriveStraightCombined(TimedCommand):
 
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
-        self.distance = distance + self.DT.getAvgDistance()
+
+        self.distance = distance
         self.angle = angle
 
     def initialize(self):
-        self.DT.setCombined(distance=self.distance, angle=self.angle)
+        self.DT.setCombined(distance=self.distance + self.DT.getAvgDistance(), angle=self.angle)
 
     def execute(self):
         self.DT.tankDrive()

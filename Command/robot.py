@@ -120,15 +120,15 @@ class MyRobot(CommandBasedRobot):
 
     def autonomousPeriodic(self):
         if self.autoMode == "Nothing":
-            gameData = "RLR" #wpilib.DriverStation.getGameSpecificMessage()
-            position = "R" #SmartDashboard.getString("position", "M")
+            gameData = "LRL" #wpilib.DriverStation.getGameSpecificMessage()
+            position = "M" #SmartDashboard.getString("position", "M")
             self.autoMode = self.autoLogic(gameData, position)
 
             if self.autoMode == "DriveStraight": self.DriveStraight.start()
             elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start() #self.LeftSwitchMiddle.start()
+            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle2Cube.start()
             elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start() #self.RightSwitchMiddle.start()
+            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start()
 
         SmartDashboard.putString("AutoMode", self.autoMode)
 
