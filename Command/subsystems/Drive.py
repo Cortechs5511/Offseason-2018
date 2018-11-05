@@ -7,21 +7,23 @@ from ctre import WPI_VictorSPX as Victor
 from navx import AHRS as navx
 
 import wpilib
-from wpilib.drive import DifferentialDrive
+from wpilib import SmartDashboard
 from wpilib.command.subsystem import Subsystem
 
 from commands.setSpeedDT import setSpeedDT
 from commands.setFixedDT import setFixedDT
 
-from sim import simComms
+import pathfinder as pf
+from path import path
 
-from wpilib import SmartDashboard
+from sim import simComms
 
 class Drive(Subsystem):
 
     mode = ""
     distPID = 0
     anglePID = 0
+    spline = None
 
     def __init__(self, Robot):
         super().__init__('Drive')
@@ -91,6 +93,7 @@ class Drive(Subsystem):
 
         self.TolAngle = 3 #degrees
         [kP,kI,kD,kF] = [0.024, 0.00, 0.20, 0.00]
+        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.02,0.00,0.20,0.00]
         angleController = wpilib.PIDController(kP, kI, kD, kF, source=self.__getAngle__, output=self.__setAngle__)
         angleController.setInputRange(-180,  180) #degrees
         angleController.setOutputRange(-0.9, 0.9)
@@ -111,7 +114,7 @@ class Drive(Subsystem):
     def __setAngle__(self,output):
         self.anglePID = output
 
-    def setMode(self, mode, distance=0, angle=0):
+    def setMode(self, mode, name=None, distance=0, angle=0):
         self.distPID = 0
         self.anglePID = 0
         if(mode=="Distance"):
@@ -127,6 +130,10 @@ class Drive(Subsystem):
             self.angleController.setSetpoint(angle)
             self.distController.enable()
             self.angleController.enable()
+        elif(mode=="PathFinder"):
+            self.spline = path.initPath(self, name)
+            self.distController.disable()
+            self.angleController.enable()
         elif(mode=="Direct"):
             self.distController.disable()
             self.angleController.disable()
@@ -140,6 +147,9 @@ class Drive(Subsystem):
 
     def setCombined(self,distance,angle):
         self.setMode("Combined",distance=distance,angle=angle)
+
+    def setPathFinder(self,name):
+        self.setMode("PathFinder", name=name)
 
     def setDirect(self):
         self.setMode("Direct")
@@ -156,6 +166,14 @@ class Drive(Subsystem):
             [left,right] = [self.anglePID,-self.anglePID]
         if(self.mode=="Combined"):
             [left,right] = [self.distPID+self.anglePID,self.distPID-self.anglePID]
+        if(self.mode=="PathFinder"):
+            angle = pf.r2d(self.spline[0].getHeading())
+            if(angle>180): angle=360-angle
+            else: angle=-angle
+            self.angleController.setSetpoint(angle)
+            print([angle,self.getAngle()])
+            [left,right] = path.followPath(self,self.spline[0],self.spline[1])
+            [left,right] = [left+self.anglePID,right-self.anglePID]
 
         left = min(abs(left),1)*self.sign(left)
         right = min(abs(right),1)*self.sign(right)
@@ -169,7 +187,6 @@ class Drive(Subsystem):
 
         self.left.set(maxSpeed * left)
         self.right.set(maxSpeed * right * RightGain)
-
 
     def getOutputCurrent(self):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3

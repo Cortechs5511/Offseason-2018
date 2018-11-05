@@ -124,14 +124,13 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
 
-def initPath(drivetrain):
+def initPath(drivetrain, name):
     global init
 
-    num = calcNum()
+    num = getNum(name)
     [left,right,modifier] = getTraj(num)
 
     gains = [25,0,2,1/4,1/6] #P,I,D,1/V,1/A
-    #gains = [2,0,0,0,0]
 
     leftFollower = pf.followers.EncoderFollower(left)
     leftFollower.configureEncoder(drivetrain.getRaw()[0], 255, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
@@ -153,21 +152,19 @@ def initPath(drivetrain):
     return [leftFollower,rightFollower]
 
 def followPath(drivetrain, leftFollower, rightFollower):
-    global desiredHeading
     if(timer.get()>0.25 and not leftFollower.isFinished()):
         l = leftFollower.calculate(drivetrain.getRaw()[0])
         r = rightFollower.calculate(-drivetrain.getRaw()[1])
-        '''
-        desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
-        turn = #NAVX PID HERE
-        drivetrain.tankDrive(l+turn,r-turn)
-        '''
-        drivetrain.tankDrive(l,r)
-    else: drivetrain.tankDrive(0,0)
+        return [l,r]
+    else: return[0,0]
+
+def getDesiredHeading():
+    desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
+    return desiredHeading
 
 def pathFinder(drivetrain):
     global leftFollower
     global rightFollower
 
-    if(init==False and len(gameData)>0 and len(auto)>0): [leftFollower, rightFollower] = initPath(drivetrain)
-    if(init==True): followPath(drivetrain,leftFollower,rightFollower)
+    if(init==False and len(gameData)>0 and len(auto)>0): [leftFollower, rightFollower] = drivetrain.setPathFinder("RightScale")
+    if(init==True): drivetrain.tankDrive()

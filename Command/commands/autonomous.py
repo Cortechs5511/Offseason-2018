@@ -6,6 +6,7 @@ from wpilib import SmartDashboard
 from commands.DriveStraightCombined import DriveStraightCombined
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightTime import DriveStraightTime
+from commands.DrivePathFinder import DrivePathFinder
 from commands.TurnAngle import TurnAngle
 
 from commands.setFixedDT import setFixedDT
@@ -19,6 +20,11 @@ from commands.Sequences import ExchangePosition
 from commands.Sequences import ExchangeShoot
 from commands.setFixedWrist import setFixedWrist
 from commands.setPositionWrist import setPositionWrist
+
+class PathFinderAuto(CommandGroup):
+    def __init__(self):
+        super().__init__('PathFinderAuto')
+        self.addSequential(DrivePathFinder(name="LeftScale", timeout=15))
 
 class LeftSwitchSide(CommandGroup):
     def __init__(self):

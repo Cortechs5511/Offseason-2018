@@ -9,7 +9,7 @@ from wpilib import SmartDashboard
 class DriveStraightCombined(TimedCommand):
 
     def __init__(self, distance = 10, angle = 0, timeout = 0):
-        super().__init__('DriveStraightDistance', timeoutInSeconds = timeout)
+        super().__init__('DriveStraightCombined', timeoutInSeconds = timeout)
 
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
