@@ -16,7 +16,7 @@ class setSpeedWrist(TimedCommand):
     def execute(self):
         wristPos = self.Wrist.getAngle()
         Joystick = self.getRobot().xbox
-        self.Wrist.setSpeed(0.4* Joystick.getX(1))
+        self.Wrist.setSpeed(0.4 * Joystick.getX(1))
 
     def isFinished(self):
         return self.isTimedOut()

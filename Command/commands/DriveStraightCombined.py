@@ -18,17 +18,14 @@ class DriveStraightCombined(TimedCommand):
         self.angle = angle
 
     def initialize(self):
-        self.DT.setCombined(distance=self.distance + self.DT.getAvgDistance(), angle=self.angle)
+        self.distance = self.distance + self.DT.getAvgDistance()
+        self.DT.setCombined(distance=self.distance, angle=self.angle)
 
     def execute(self):
         self.DT.tankDrive()
 
     def isFinished(self):
-        rate = abs(self.DT.getAvgVelocity())
-        minrate = 0.25
-
-        if self.DT.distController.onTarget() and rate < minrate or self.isTimedOut(): return True
-        else: return False
+        return (abs(self.distance-self.DT.getAvgDistance())<0.05 and self.DT.getAvgAbsVelocity()<0.05) or self.isTimedOut()
 
     def interrupted(self):
         self.end()

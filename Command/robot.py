@@ -116,6 +116,7 @@ class MyRobot(CommandBasedRobot):
 
     def autonomousInit(self):
         self.getLimelightData.start()
+
         self.wrist.zero()
         self.lift.zero()
         self.drive.zero()
@@ -123,32 +124,16 @@ class MyRobot(CommandBasedRobot):
         self.timer.reset()
         self.timer.start()
 
-        gameData = "RLR" #wpilib.DriverStation.getInstance().getGameSpecificMessage()
-        position = "L" #SmartDashboard.getString("position", "M")
+        gameData = "LLL" #wpilib.DriverStation.getInstance().getGameSpecificMessage()
+        position = "M" #SmartDashboard.getString("position", "M")
         self.autoMode = self.autoLogic(gameData, position)
-
+        print(self.autoMode)
         if self.autoMode == "DriveStraight": self.DriveStraight.start()
         elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle.start()
+        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle2Cube.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
-        self.autoMode = "Nothing"
-
-    def autonomousPeriodic(self):
-        if self.autoMode == "Nothing":
-            gameData = "LRL" #wpilib.DriverStation.getGameSpecificMessage()
-            position = "M" #SmartDashboard.getString("position", "M")
-            self.autoMode = self.autoLogic(gameData, position)
-
-            if self.autoMode == "DriveStraight": self.DriveStraight.start()
-            elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-            elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle2Cube.start()
-            elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-            elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start()
-
-        SmartDashboard.putString("AutoMode", self.autoMode)
-
-        super().autonomousPeriodic()
+        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start()
+        else: self.autoMode = "Nothing"
 
     def autoLogic(self, gameData, auto):
         if(auto=="L"):

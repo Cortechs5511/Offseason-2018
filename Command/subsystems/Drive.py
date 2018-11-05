@@ -82,9 +82,9 @@ class Drive(Subsystem):
 
         self.TolDist = 0.2 #feet
         [kP,kI,kD,kF] = [0.07, 0.00, 0.20, 0.00]
-        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.40, 0.00, 0.80, 0.00]
+        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.40, 0.00, 1.50, 0.00]
         distController = wpilib.PIDController(kP, kI, kD, kF, source=self.__getDistance__, output=self.__setDistance__)
-        distController.setInputRange(0,  50) #feet
+        distController.setInputRange(0, 50) #feet
         distController.setOutputRange(-0.9, 0.9)
         distController.setAbsoluteTolerance(self.TolDist)
         distController.setContinuous(False)
@@ -172,7 +172,7 @@ class Drive(Subsystem):
             else: angle=-angle
 
             self.angleController.setSetpoint(angle)
-            
+
             [left,right] = path.followPath(self,self.spline[0],self.spline[1])
             [left,right] = [left+self.anglePID,right-self.anglePID]
 

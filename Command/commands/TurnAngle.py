@@ -20,11 +20,7 @@ class TurnAngle(TimedCommand):
         self.DT.tankDrive()
 
     def isFinished(self):
-        rate = abs(self.DT.getAvgAbsVelocity())
-        minrate = 0.25
-
-        if self.DT.distController.onTarget() and rate < minrate or self.isTimedOut(): return True
-        else: return False
+        return (abs(self.angle-self.DT.getAngle())<2 and self.DT.getAvgAbsVelocity()<0.05) or self.isTimedOut()
 
     def interrupted(self):
         self.end()
