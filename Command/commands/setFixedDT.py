@@ -18,9 +18,6 @@ class setFixedDT(TimedCommand):
     def execute(self):
         self.DT.tankDrive(self.leftSpeed,self.rightSpeed)
 
-    def isFinished(self):
-        return self.isTimedOut()
-
     def interrupted(self):
         self.end()
 

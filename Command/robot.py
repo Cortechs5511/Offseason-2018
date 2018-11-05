@@ -130,9 +130,9 @@ class MyRobot(CommandBasedRobot):
         print(self.autoMode)
         if self.autoMode == "DriveStraight": self.DriveStraight.start()
         elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddle2Cube.start()
+        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePF.start() #self.LeftSwitchMiddle2Cube.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start()
+        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePF.start() #self.RightSwitchMiddle2Cube.start()
         else: self.autoMode = "Nothing"
 
     def autoLogic(self, gameData, auto):

@@ -4,8 +4,6 @@ import wpilib
 from wpilib.command import Command
 from wpilib.command import TimedCommand
 
-from wpilib import SmartDashboard
-
 class DrivePathFinder(TimedCommand):
 
     def __init__(self, name=None, timeout = 0):
@@ -23,7 +21,7 @@ class DrivePathFinder(TimedCommand):
         self.DT.tankDrive()
 
     def isFinished(self):
-        return self.DT.spline[0].isFinished() or self.isTimedOut()
+        return (self.DT.spline[0].isFinished() or self.isTimedOut())
 
     def interrupted(self):
         self.end()

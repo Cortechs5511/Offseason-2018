@@ -26,7 +26,24 @@ from commands.setPositionWrist import setPositionWrist
 class LeftSwitchMiddlePF(CommandGroup):
     def __init__(self):
         super().__init__('LeftSwitchMiddlePF')
-        self.addSequential(DrivePathFinder(name="LeftSwitch", timeout=15))
+        self.addSequential(setFixedWrist(0.8, timeout= 1))
+        self.addSequential(SwitchPosition(timeout=1))
+        self.addParallel(SwitchPosition(timeout=5))
+        self.addSequential(DrivePathFinder(name="LeftSwitch", timeout=5))
+        self.addSequential(SwitchShoot(timeout=1))
+        '''
+        self.addSequential(DriveStraightCombined(distance=-30/12, angle=0, timeout=2))
+        self.addSequential(TurnAngle(45, timeout=1))
+        self.addParallel(IntakePosition(timeout=1))
+        self.addSequential(DriveStraightCombined(distance=30/12, angle=45, timeout=2))
+        self.addParallel(IntakePosition(timeout=1))
+        self.addSequential(DriveStraightCombined(distance=-30/12, angle=45, timeout=2))
+        self.addParallel(SwitchPosition(timeout=1))
+        self.addSequential(TurnAngle(0, timeout=1))
+        self.addParallel(SwitchPosition(timeout=1))
+        self.addSequential(DriveStraightCombined(distance=30/12, angle=0, timeout=2))
+        self.addSequential(SwitchShoot(timeout=1))
+        '''
 
 class RightSwitchMiddlePF(CommandGroup):
     def __init__(self):

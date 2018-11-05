@@ -4,8 +4,6 @@ import wpilib
 from wpilib.command import Command
 from wpilib.command import TimedCommand
 
-from wpilib import SmartDashboard
-
 class DriveStraightCombined(TimedCommand):
 
     def __init__(self, distance = 10, angle = 0, timeout = 0):

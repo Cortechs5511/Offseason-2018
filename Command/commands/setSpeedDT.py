@@ -14,15 +14,15 @@ class setSpeedDT(TimedCommand):
         self.Joystick0 = self.getRobot().joystick0
         self.Joystick1 = self.getRobot().joystick1
 
-        self.maxspeed = 0.90
+        self.maxspeed = 1.00 #In addition to normal reducing factor in Drive.py
+
+    def initialize(self):
+        self.DT.setDirect()
 
     def execute(self):
         left = self.Joystick0.getY()
         right = self.Joystick1.getY()
         self.DT.tankDrive(-left * self.maxspeed ,-right * self.maxspeed)
-
-    def isFinished(self):
-        return self.isTimedOut()
 
     def interrupted(self):
         self.end()

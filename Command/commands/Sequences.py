@@ -15,22 +15,12 @@ class IntakePosition(CommandGroup):
         self.addParallel(setPositionWrist90(timeout))
         self.addParallel(setFixedIntake(-0.6, timeout))
 
-        self.timer = self.getRobot().timer
-        self.timeout = timeout
-
-    def isFinished(self): return self.timer.get() > self.timeout
-
 class Level2IntakePosition(CommandGroup):
     def __init__(self, timeout = 300):
         super().__init__('Level2IntakePosition')
         self.addParallel(setPositionLift(10, timeout))
         self.addParallel(setPositionWrist90(timeout))
         self.addParallel(setFixedIntake(-0.6, timeout))
-
-        self.timer = self.getRobot().timer
-        self.timeout = timeout
-
-    def isFinished(self): return self.timer.get() > self.timeout
 
 class Level3IntakePosition(CommandGroup):
     def __init__(self, timeout = 300):
@@ -39,22 +29,12 @@ class Level3IntakePosition(CommandGroup):
         self.addParallel(setPositionWrist90(timeout))
         self.addParallel(setFixedIntake(-0.6, timeout))
 
-        self.timer = self.getRobot().timer
-        self.timeout = timeout
-
-    def isFinished(self): return self.timer.get() > self.timeout
-
 class SwitchPosition(CommandGroup):
     def __init__(self, timeout = 300):
         super().__init__('SwitchPosition')
         self.addParallel(setPositionLift(25, timeout))
         self.addParallel(setPositionWrist(90, timeout))
         self.addParallel(setFixedIntake(-0.3, timeout))
-
-        self.timer = self.getRobot().timer
-        self.timeout = timeout
-
-    def isFinished(self): return self.timer.get() > self.timeout
 
 class SwitchShoot(CommandGroup):
     def __init__(self, timeout = 300):
@@ -63,22 +43,12 @@ class SwitchShoot(CommandGroup):
         self.addParallel(setPositionWrist90(timeout))
         self.addParallel(setFixedIntake(0.7, timeout))
 
-        self.timer = self.getRobot().timer
-        self.timeout = timeout
-
-    def isFinished(self): return self.timer.get() > self.timeout
-
 class ExchangeShoot(CommandGroup):
     def __init__(self, timeout = 300):
         super().__init__('ExchangeShoot')
         self.addParallel(setPositionLift(0, timeout))
         self.addParallel(setPositionWrist90(timeout))
         self.addParallel(setFixedIntake(0.8, timeout))
-
-        self.timer = self.getRobot().timer
-        self.timeout = timeout
-
-    def isFinished(self): return self.timer.get() > self.timeout
 
 class ExchangePosition(CommandGroup):
     def __init__(self, timeout = 300):
@@ -87,22 +57,12 @@ class ExchangePosition(CommandGroup):
         self.addParallel(setPositionWrist90(timeout))
         self.addParallel(setFixedIntake(-0.3, timeout))
 
-        self.timer = self.getRobot().timer
-        self.timeout = timeout
-
-    def isFinished(self): return self.timer.get() > self.timeout
-
 class ProtectPosition(CommandGroup):
     def __init__(self, timeout = 300):
         super().__init__('ProtectPosition')
         self.addParallel(setFixedLift(-0.1, timeout))
         self.addParallel(setPositionWrist(-20, timeout))
         self.addParallel(setFixedIntake(-0.3, timeout))
-
-        self.timer = self.getRobot().timer
-        self.timeout = timeout
-
-    def isFinished(self): return self.timer.get() > self.timeout
 
 def UpdateDashboard():
     SmartDashboard.putData("IntakePosition", IntakePosition())

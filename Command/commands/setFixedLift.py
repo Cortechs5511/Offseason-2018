@@ -1,6 +1,6 @@
 import math
-
 import wpilib
+
 from wpilib.command import Command
 from wpilib.command import TimedCommand
 
@@ -14,9 +14,6 @@ class setFixedLift(TimedCommand):
 
     def execute(self):
         self.Lift.setSpeed(self.speed)
-
-    def isFinished(self):
-        return self.isTimedOut()
 
     def interrupted(self):
         self.end()

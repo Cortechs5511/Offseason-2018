@@ -18,9 +18,6 @@ class setSpeedLift(TimedCommand):
         elif liftSpeed < 0.1 and liftPos > -1: self.Lift.setSpeed(liftSpeed)
         else: self.Lift.setSpeed(0)
 
-    def isFinished(self):
-        return self.isTimedOut()
-
     def interrupted(self):
         self.end()
 
