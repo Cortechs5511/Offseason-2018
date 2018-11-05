@@ -1,70 +1,43 @@
 import wpilib
 import math
-#import numpy as np
 
 import pickle
 import os.path
 import pathfinder as pf
 
-desiredHeading=0
 timer = wpilib.Timer()
-
-init = False
-leftFollower = None
-rightFollower = None
 
 width = 33/12
 
-auto = "Left" #Options are Left, Middle, Right
-gameData = "RRR" #Options are LLL, LRL, RRR, RLR
-
-def getName(num):
-    if(num==0):
-        return "DriveStraight"
-    elif(num==1):
-        return "LeftSwitch"
-    elif(num==2):
-        return "RightScale"
-    elif(num==3):
-        return "LeftScale"
-    elif(num==4):
-        return "RightOppositeScale"
-    elif(num==5):
-        return "LeftOppositeScale"
-
-def getNum(name):
-    for i in range(0,100):
-        if(getName(i)==name): return i
-
-def makeTraj(num):
-    if(num==0): #Drive Straight
+def makeTraj(name):
+    if(name=="DriveStraight"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(9,0,0)
         ]
-    if(num==1): #Left Switch
+    if(name=="LeftSwitch"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(9,10,0),
         ]
-    if(num==2): #Right Scale
+    if(name=="RightScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,2,math.radians(30))
         ]
-    if(num==3): #Left Scale
+    if(name=="LeftScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,-2,math.radians(-30))
         ]
-    if(num==4): #Start Right, Opposite Scale
+    if(name=="RightOppositeScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,3,math.radians(55)),
             pf.Waypoint(19,16,math.radians(90)),
             pf.Waypoint(23,19,math.radians(-30))
         ]
-    if(num==5): #Start Left, Opposite Scale
+    if(name=="LeftOppositeScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,-3,math.radians(-55)),
@@ -73,21 +46,7 @@ def makeTraj(num):
         ]
     return points
 
-def calcNum():
-    if(auto=="Left"):
-        if(gameData[1]=='L'): return getNum("LeftScale")
-        else: return getNum("LeftOppositeScale")
-    elif(auto=="Middle"):
-        if(gameData[0]=='L'): return getNum("LeftSwitch")
-        else: return getNum("DriveStraight")
-    elif(auto=="Right"):
-        if(gameData[1]=='L'): return getNum("RightOppositeScale")
-        else: return getNum("RightScale")
-
-    return num
-
-def getTraj(num):
-    name = getName(num)
+def getTraj(name):
     path = os.path.join(os.path.dirname(__file__),name)
     if(not os.path.exists(path)): os.makedirs(path)
 
@@ -96,7 +55,7 @@ def getTraj(num):
     pickle_file3 = os.path.join(path,"Modifier.pickle")
 
     if wpilib.RobotBase.isSimulation():
-        points = makeTraj(num)
+        points = makeTraj(name)
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
             dt=0.02, max_velocity=8.0, max_acceleration=6.0, max_jerk=120.0)
 
@@ -115,7 +74,6 @@ def getTraj(num):
         return [left,right,modifier]
 
 def showPath(left,right,modifier):
-    # This code renders the followed path on the field in simulation (requires pyfrc 2018.2.0+)
     if wpilib.RobotBase.isSimulation():
         from pyfrc.sim import get_user_renderer
         renderer = get_user_renderer()
@@ -125,10 +83,7 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
 
 def initPath(drivetrain, name):
-    global init
-
-    num = getNum(name)
-    [left,right,modifier] = getTraj(num)
+    [left,right,modifier] = getTraj(name)
 
     gains = [25,0,2,1/4,1/6] #P,I,D,1/V,1/A
 
@@ -140,31 +95,14 @@ def initPath(drivetrain, name):
     rightFollower.configureEncoder(-drivetrain.getRaw()[1], 127, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
     rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
-    #drivetrain.enablePIDs()
-
     showPath(left,right,modifier)
 
     timer.reset()
     timer.start()
 
-    init = True
-
     return [leftFollower,rightFollower]
 
 def followPath(drivetrain, leftFollower, rightFollower):
     if(timer.get()>0.25 and not leftFollower.isFinished()):
-        l = leftFollower.calculate(drivetrain.getRaw()[0])
-        r = rightFollower.calculate(-drivetrain.getRaw()[1])
-        return [l,r]
-    else: return[0,0]
-
-def getDesiredHeading():
-    desiredHeading = pf.r2d(leftFollower.getHeading()) #degrees
-    return desiredHeading
-
-def pathFinder(drivetrain):
-    global leftFollower
-    global rightFollower
-
-    if(init==False and len(gameData)>0 and len(auto)>0): [leftFollower, rightFollower] = drivetrain.setPathFinder("RightScale")
-    if(init==True): drivetrain.tankDrive()
+        return [leftFollower.calculate(drivetrain.getRaw()[0]), rightFollower.calculate(-drivetrain.getRaw()[1])]
+    else: return [0,0]

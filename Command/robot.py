@@ -33,7 +33,14 @@ from commands.Zero import Zero
 from commands import Sequences
 
 from commands import autonomous
-from commands.autonomous import PathFinderAuto
+
+from commands.autonomous import LeftSwitchMiddlePF
+from commands.autonomous import RightSwitchMiddlePF
+from commands.autonomous import LeftScalePF
+from commands.autonomous import RightScalePF
+from commands.autonomous import LeftOppositeScalePF
+from commands.autonomous import RightOppositeScalePF
+
 from commands.autonomous import LeftSwitchSide
 from commands.autonomous import RightSwitchSide
 from commands.autonomous import DriveStraight
@@ -78,7 +85,13 @@ class MyRobot(CommandBasedRobot):
 
         self.updateDashboardInit()
 
-        self.PathFinderAuto = PathFinderAuto()
+        self.LeftSwitchMiddlePF = LeftSwitchMiddlePF()
+        self.RightSwitchMiddlePF = RightSwitchMiddlePF()
+        self.LeftScalePF = LeftScalePF()
+        self.RightScalePF = RightScalePF()
+        self.LeftOppositeScalePF = LeftOppositeScalePF()
+        self.RightOppositeScalePF = RightOppositeScalePF()
+
         self.DriveStraight = DriveStraight()
         self.LeftSwitchSide = LeftSwitchSide()
         self.RightSwitchSide = RightSwitchSide()
@@ -102,7 +115,6 @@ class MyRobot(CommandBasedRobot):
             self.curr = 0
 
     def autonomousInit(self):
-        '''
         self.getLimelightData.start()
         self.wrist.zero()
         self.lift.zero()
@@ -121,11 +133,8 @@ class MyRobot(CommandBasedRobot):
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
         elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle.start()
         self.autoMode = "Nothing"
-        '''
-        self.PathFinderAuto.start()
 
     def autonomousPeriodic(self):
-        '''
         if self.autoMode == "Nothing":
             gameData = "LRL" #wpilib.DriverStation.getGameSpecificMessage()
             position = "M" #SmartDashboard.getString("position", "M")
@@ -138,8 +147,7 @@ class MyRobot(CommandBasedRobot):
             elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddle2Cube.start()
 
         SmartDashboard.putString("AutoMode", self.autoMode)
-        '''
-        
+
         super().autonomousPeriodic()
 
     def autoLogic(self, gameData, auto):
@@ -176,6 +184,8 @@ class MyRobot(CommandBasedRobot):
 
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
         SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
+        SmartDashboard.putData("DriveStraightCombined",DriveStraightCombined())
+        SmartDashboard.putData("DrivePathFinder",DrivePathFinder())
         SmartDashboard.putData("TurnAngle", TurnAngle())
 
         SmartDashboard.putData("Zero", Zero())

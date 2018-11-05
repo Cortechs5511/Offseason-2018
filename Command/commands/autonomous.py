@@ -21,10 +21,39 @@ from commands.Sequences import ExchangeShoot
 from commands.setFixedWrist import setFixedWrist
 from commands.setPositionWrist import setPositionWrist
 
-class PathFinderAuto(CommandGroup):
+#PATHFINDER AUTOS
+
+class LeftSwitchMiddlePF(CommandGroup):
     def __init__(self):
-        super().__init__('PathFinderAuto')
+        super().__init__('LeftSwitchMiddlePF')
+        self.addSequential(DrivePathFinder(name="LeftSwitch", timeout=15))
+
+class RightSwitchMiddlePF(CommandGroup):
+    def __init__(self):
+        super().__init__('RightSwitchMiddlePF')
+        self.addSequential(DrivePathFinder(name="DriveStraight", timeout=15))
+
+class LeftScalePF(CommandGroup):
+    def __init__(self):
+        super().__init__('LeftScalePF')
         self.addSequential(DrivePathFinder(name="LeftScale", timeout=15))
+
+class RightScalePF(CommandGroup):
+    def __init__(self):
+        super().__init__('RightScalePF')
+        self.addSequential(DrivePathFinder(name="RightScale", timeout=15))
+
+class LeftOppositeScalePF(CommandGroup):
+    def __init__(self):
+        super().__init__('LeftOppositeScalePF')
+        self.addSequential(DrivePathFinder(name="LeftOppositeScale", timeout=15))
+
+class RightOppositeScalePF(CommandGroup):
+    def __init__(self):
+        super().__init__('RightOppositeScalePF')
+        self.addSequential(DrivePathFinder(name="RightOppositeScale", timeout=15))
+
+#STANDARD AUTOS
 
 class LeftSwitchSide(CommandGroup):
     def __init__(self):
@@ -123,6 +152,13 @@ class RightSwitchMiddle2Cube(CommandGroup):
         self.addSequential(SwitchShoot(timeout=1))
 
 def UpdateDashboard():
+    SmartDashboard.putData("LeftSwitchMiddlePF", LeftSwitchMiddlePF())
+    SmartDashboard.putData("RightSwitchMiddlePF", RightSwitchMiddlePF())
+    SmartDashboard.putData("LeftScalePF", LeftScalePF())
+    SmartDashboard.putData("RightScalePF", RightScalePF())
+    SmartDashboard.putData("LeftOppositeScalePF", LeftOppositeScalePF())
+    SmartDashboard.putData("RightOppositeScalePF", RightOppositeScalePF())
+
     SmartDashboard.putData("LeftSwitchSide", LeftSwitchSide())
     SmartDashboard.putData("RightSwitchSide", RightSwitchSide())
     SmartDashboard.putData("DriveStraight", DriveStraight())

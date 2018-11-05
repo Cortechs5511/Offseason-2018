@@ -170,8 +170,9 @@ class Drive(Subsystem):
             angle = pf.r2d(self.spline[0].getHeading())
             if(angle>180): angle=360-angle
             else: angle=-angle
+
             self.angleController.setSetpoint(angle)
-            print([angle,self.getAngle()])
+            
             [left,right] = path.followPath(self,self.spline[0],self.spline[1])
             [left,right] = [left+self.anglePID,right-self.anglePID]
 
