@@ -7,24 +7,30 @@ from ctre import WPI_VictorSPX as Victor
 from navx import AHRS as navx
 
 import wpilib
-from wpilib.drive import DifferentialDrive
+from wpilib import SmartDashboard
 from wpilib.command.subsystem import Subsystem
 
 from commands.setSpeedDT import setSpeedDT
 from commands.setFixedDT import setFixedDT
 
-from sim import simComms
+import pathfinder as pf
+from path import path
 
-from wpilib import SmartDashboard
+from sim import simComms
 
 class Drive(Subsystem):
 
     mode = ""
+    distPID = 0
+    anglePID = 0
+    spline = None
 
     def __init__(self, Robot):
         super().__init__('Drive')
         SmartDashboard.putNumber("RightGain", 0.9)
+
         timeout = 0
+
         TalonLeft = Talon(10)
         TalonRight = Talon(20)
         TalonLeft.setSafetyEnabled(False)
@@ -75,73 +81,119 @@ class Drive(Subsystem):
         self.rightEncoder.setSamplesToAverage(10)
 
         self.TolDist = 0.2 #feet
-        [kP,kI,kD,kF] = [0.07, 0.0, 0.20, 0.00]
-        distController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
-        distController.setInputRange(0,  50) #feet
-        distController.setOutputRange(-0.55, 0.55)
+        [kP,kI,kD,kF] = [0.07, 0.00, 0.20, 0.00]
+        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.40, 0.00, 1.50, 0.00]
+        distController = wpilib.PIDController(kP, kI, kD, kF, source=self.__getDistance__, output=self.__setDistance__)
+        distController.setInputRange(0, 50) #feet
+        distController.setOutputRange(-0.9, 0.9)
         distController.setAbsoluteTolerance(self.TolDist)
         distController.setContinuous(False)
         self.distController = distController
         self.distController.disable()
 
         self.TolAngle = 3 #degrees
-        [kP,kI,kD,kF] = [0.024,0,0.2,0]
-
-        angleController = wpilib.PIDController(kP, kI, kD, kF, self, output=self)
+        [kP,kI,kD,kF] = [0.024, 0.00, 0.20, 0.00]
+        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.02,0.00,0.20,0.00]
+        angleController = wpilib.PIDController(kP, kI, kD, kF, source=self.__getAngle__, output=self.__setAngle__)
         angleController.setInputRange(-180,  180) #degrees
-        angleController.setOutputRange(-0.8, 0.8)
+        angleController.setOutputRange(-0.9, 0.9)
         angleController.setAbsoluteTolerance(self.TolAngle)
         angleController.setContinuous(True)
         self.angleController = angleController
         self.angleController.disable()
 
-    def pidWrite(self, output):
-        if(self.mode == "Distance"):
-            nominal = 0.2
-            if output < nominal and output > 0: output = nominal
-            elif output > -nominal and output < 0: output = -nominal
-            self.__tankDrive__(output,output)
-        elif(self.mode == "Angle"):
-            nominal = 0#nominal = 0.27
-            if output < nominal and output > 0: output = nominal
-            elif output > -nominal and output < 0: output = -nominal
-            self.__tankDrive__(output,-output)
+    def __getDistance__(self):
+        return self.getAvgDistance()
 
-    def getPIDSourceType(self):
-        if(self.mode == "Distance"): return self.getAvgDistance()
-        elif(self.mode == "Angle"): return self.getAngle()
-        else: return 0
+    def __setDistance__(self,output):
+        self.distPID = output
 
-    def pidGet(self):
-        if(self.mode == "Distance"): return self.getAvgDistance()
-        elif(self.mode == "Angle"): return self.getAngle()
-        else: return 0
+    def __getAngle__(self):
+        return self.getAngle()
 
-    def tankDrive(self,left,right):
-        self.distController.disable()
-        self.angleController.disable()
+    def __setAngle__(self,output):
+        self.anglePID = output
+
+    def setMode(self, mode, name=None, distance=0, angle=0):
+        self.distPID = 0
+        self.anglePID = 0
+        if(mode=="Distance"):
+            self.distController.setSetpoint(distance)
+            self.angleController.disable()
+            self.distController.enable()
+        elif(mode=="Angle"):
+            self.angleController.setSetpoint(angle)
+            self.distController.disable()
+            self.angleController.enable()
+        elif(mode=="Combined"):
+            self.distController.setSetpoint(distance)
+            self.angleController.setSetpoint(angle)
+            self.distController.enable()
+            self.angleController.enable()
+        elif(mode=="PathFinder"):
+            self.spline = path.initPath(self, name)
+            self.distController.disable()
+            self.angleController.enable()
+        elif(mode=="Direct"):
+            self.distController.disable()
+            self.angleController.disable()
+        self.mode = mode
+
+    def setDistance(self,distance):
+        self.setMode("Distance",distance=distance)
+
+    def setAngle(self,angle):
+        self.setMode("Angle",angle=angle)
+
+    def setCombined(self,distance,angle):
+        self.setMode("Combined",distance=distance,angle=angle)
+
+    def setPathFinder(self,name):
+        self.setMode("PathFinder", name=name)
+
+    def setDirect(self):
+        self.setMode("Direct")
+
+    def sign(self,num):
+        if(num>0): return 1
+        if(num==0): return 0
+        return -1
+
+    def tankDrive(self,left=0,right=0):
+        if(self.mode=="Distance"):
+            [left,right] = [self.distPID,self.distPID]
+        if(self.mode=="Angle"):
+            [left,right] = [self.anglePID,-self.anglePID]
+        if(self.mode=="Combined"):
+            [left,right] = [self.distPID+self.anglePID,self.distPID-self.anglePID]
+        if(self.mode=="PathFinder"):
+            angle = pf.r2d(self.spline[0].getHeading())
+            if(angle>180): angle=360-angle
+            else: angle=-angle
+
+            self.angleController.setSetpoint(angle)
+
+            [left,right] = path.followPath(self,self.spline[0],self.spline[1])
+            [left,right] = [left+self.anglePID,right-self.anglePID]
+
+        left = min(abs(left),1)*self.sign(left)
+        right = min(abs(right),1)*self.sign(right)
         self.__tankDrive__(left,right)
 
     def __tankDrive__(self,left,right):
         RightGain = 0.9
+        if wpilib.RobotBase.isSimulation(): RightGain = 1
+
         maxSpeed = 0.7
+
         self.left.set(maxSpeed * left)
         self.right.set(maxSpeed * right * RightGain)
 
-    def setDistance(self,distance):
-        self.distController.setSetpoint(distance)
-        self.angleController.disable()
-        self.distController.enable()
-        self.mode = "Distance"
-
-    def setAngle(self,angle):
-        self.angleController.setSetpoint(angle)
-        self.distController.disable()
-        self.angleController.enable()
-        self.mode = "Angle"
-
     def getOutputCurrent(self):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
+
+    def getRaw(self):
+        return [self.leftEncoder.get(),self.rightEncoder.get()]
 
     def getDistance(self):
         return [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]

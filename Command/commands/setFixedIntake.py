@@ -15,9 +15,6 @@ class setFixedIntake(TimedCommand):
     def execute(self):
         self.Intake.setSpeed(self.speed)
 
-    def isFinished(self):
-        return self.isTimedOut()
-
     def interrupted(self):
         self.end()
 

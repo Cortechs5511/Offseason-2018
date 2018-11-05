@@ -16,10 +16,7 @@ class DriveStraightTime(TimedCommand):
         self.DT.tankDrive(self.speed,self.speed)
 
     def interrupted(self):
-        self.DT.tankDrive(0,0)
-
-    def isFinished(self):
-         return self.isTimedOut()
+        self.end()
 
     def end(self):
         self.DT.tankDrive(0,0)

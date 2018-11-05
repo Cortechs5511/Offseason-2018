@@ -4,8 +4,6 @@ import wpilib
 from wpilib.command import Command
 from wpilib.command import TimedCommand
 
-from wpilib import SmartDashboard
-
 class DriveStraightDistance(TimedCommand):
 
     def __init__(self, distance = 10, timeout = 0):
@@ -16,15 +14,14 @@ class DriveStraightDistance(TimedCommand):
         self.setpoint = distance
 
     def initialize(self):
-        setpoint = self.setpoint + self.DT.getAvgDistance()
-        self.DT.setDistance(setpoint)
+        self.setpoint = self.setpoint + self.DT.getAvgDistance()
+        self.DT.setDistance(self.setpoint)
+
+    def execute(self):
+        self.DT.tankDrive()
 
     def isFinished(self):
-        rate = abs(self.DT.getAvgVelocity())
-        minrate = 0.25
-
-        if self.DT.distController.onTarget() and rate < minrate or self.isTimedOut(): return True
-        else: return False
+        return (abs(self.setpoint-self.DT.getAvgDistance())<0.05 and self.DT.getAvgAbsVelocity()<0.05) or self.isTimedOut()
 
     def interrupted(self):
         self.end()
