@@ -6,7 +6,7 @@ from wpilib.command import TimedCommand
 
 class DrivePathFinder(TimedCommand):
 
-    def __init__(self, name=None, timeout = 0):
+    def __init__(self, name="DriveStraight", timeout = 10):
         super().__init__('DrivePathFinder', timeoutInSeconds = timeout)
 
         self.requires(self.getRobot().drive)
@@ -21,7 +21,7 @@ class DrivePathFinder(TimedCommand):
         self.DT.tankDrive()
 
     def isFinished(self):
-        return (self.DT.spline[0].isFinished() or self.isTimedOut())
+        return (self.DT.spline[1].isFinished() or self.isTimedOut())
 
     def interrupted(self):
         self.end()

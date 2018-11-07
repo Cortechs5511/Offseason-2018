@@ -106,13 +106,19 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putString("position", "L")
 
         self.curr = 0
-        self.print = 50
+        self.print = 1
+
+        SmartDashboard.putNumber("PF_P",path.gains[0])
+        SmartDashboard.putNumber("PF_D",path.gains[2])
 
     def robotPeriodic(self):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
             self.updateDashboardPeriodic()
             self.curr = 0
+
+        path.gains[0] = SmartDashboard.getNumber("PF_P",0)
+        path.gains[2] = SmartDashboard.getNumber("PF_D",0)
 
     def autonomousInit(self):
         self.getLimelightData.start()

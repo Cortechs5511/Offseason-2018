@@ -167,14 +167,16 @@ class Drive(Subsystem):
         if(self.mode=="Combined"):
             [left,right] = [self.distPID+self.anglePID,self.distPID-self.anglePID]
         if(self.mode=="PathFinder"):
+            '''
             angle = pf.r2d(self.spline[0].getHeading())
             if(angle>180): angle=360-angle
             else: angle=-angle
 
             self.angleController.setSetpoint(angle)
-
+            '''
             [left,right] = path.followPath(self,self.spline[0],self.spline[1])
-            [left,right] = [left+self.anglePID,right-self.anglePID]
+            left=right
+            #[left,right] = [left+self.anglePID,right-self.anglePID]
 
         left = min(abs(left),1)*self.sign(left)
         right = min(abs(right),1)*self.sign(right)

@@ -8,6 +8,7 @@ import pathfinder as pf
 timer = wpilib.Timer()
 
 width = 33/12
+gains = [25,0,2,1/4,1/6] #P,I,D,1/V,1/A
 
 def makeTraj(name):
     if(name=="DriveStraight"):
@@ -84,8 +85,6 @@ def showPath(left,right,modifier):
 
 def initPath(drivetrain, name):
     [left,right,modifier] = getTraj(name)
-
-    gains = [25,0,2,1/4,1/6] #P,I,D,1/V,1/A
 
     leftFollower = pf.followers.EncoderFollower(left)
     leftFollower.configureEncoder(drivetrain.getRaw()[0], 255, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
