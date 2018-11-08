@@ -6,9 +6,9 @@ import ctre
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
-        self.Intake1 = ctre.WPI_TalonSRX(20)
+        self.Intake1 = ctre.WPI_TalonSRX(50)
         self.Intake2 = ctre.WPI_TalonSRX(51)
-        self.Intake2.follow(self.Intake)
+        self.Intake2.follow(self.Intake1)
 
     def teleopInit(self):
         self.count = 0
