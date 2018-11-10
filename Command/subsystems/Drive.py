@@ -4,7 +4,7 @@ import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-from navx import AHRS as navx
+#from navx import AHRS as navx
 
 import wpilib
 from wpilib import SmartDashboard
@@ -70,7 +70,7 @@ class Drive(Subsystem):
         self.left = TalonLeft
         self.right = TalonRight
 
-        self.navx = navx.create_spi()
+#        self.navx = navx.create_spi()
 
         self.leftEncoder = wpilib.Encoder(0,1)
         self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 255)
@@ -227,6 +227,7 @@ class Drive(Subsystem):
 
     def getAngle(self):
         return self.navx.getYaw()
+        return 0
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedDT(timeout = 300))

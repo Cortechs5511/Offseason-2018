@@ -123,11 +123,10 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putNumber("Velocity", self.drive.getVelocity())
 
         path.gains[0] = SmartDashboard.getNumber("PF_P",0)
+        path.gains[1] = SmartDashboard.getNumber("PF_I",0)
         path.gains[2] = SmartDashboard.getNumber("PF_D",0)
         path.gains[3] = SmartDashboard.getNumber("PF_V",0)
         path.gains[4] = SmartDashboard.getNumber("PF_A",0)
-        path.gains[1] = SmartDashboard.getNumber("PF_I",0)
-
 
     def autonomousInit(self):
         self.getLimelightData.start()
