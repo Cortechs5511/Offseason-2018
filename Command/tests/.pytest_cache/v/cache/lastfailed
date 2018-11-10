@@ -1,1 +1,3 @@
-{}
+{
+  "pyfrc_test.py::test_fuzz": true
+}

@@ -110,6 +110,9 @@ class MyRobot(CommandBasedRobot):
 
         SmartDashboard.putNumber("PF_P",path.gains[0])
         SmartDashboard.putNumber("PF_D",path.gains[2])
+        SmartDashboard.putNumber("PF_I",path.gains[1])
+        SmartDashboard.putNumber("PF_V",path.gains[3])
+        SmartDashboard.putNumber("PF_A",path.gains[4])
 
     def robotPeriodic(self):
         self.curr = self.curr + 1
@@ -117,8 +120,14 @@ class MyRobot(CommandBasedRobot):
             self.updateDashboardPeriodic()
             self.curr = 0
 
+        SmartDashboard.putNumber("Velocity", self.drive.getVelocity())
+
         path.gains[0] = SmartDashboard.getNumber("PF_P",0)
         path.gains[2] = SmartDashboard.getNumber("PF_D",0)
+        path.gains[3] = SmartDashboard.getNumber("PF_V",0)
+        path.gains[4] = SmartDashboard.getNumber("PF_A",0)
+        path.gains[1] = SmartDashboard.getNumber("PF_I",0)
+
 
     def autonomousInit(self):
         self.getLimelightData.start()

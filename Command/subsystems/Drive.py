@@ -111,6 +111,9 @@ class Drive(Subsystem):
     def __getAngle__(self):
         return self.getAngle()
 
+    def getVelocity(self):
+        return self.rightEncoder.getRate()
+
     def __setAngle__(self,output):
         self.anglePID = output
 
@@ -133,7 +136,7 @@ class Drive(Subsystem):
         elif(mode=="PathFinder"):
             self.spline = path.initPath(self, name)
             self.distController.disable()
-            self.angleController.enable()
+            self.angleController.disable()
         elif(mode=="Direct"):
             self.distController.disable()
             self.angleController.disable()
@@ -180,6 +183,7 @@ class Drive(Subsystem):
 
         left = min(abs(left),1)*self.sign(left)
         right = min(abs(right),1)*self.sign(right)
+
         self.__tankDrive__(left,right)
 
     def __tankDrive__(self,left,right):
