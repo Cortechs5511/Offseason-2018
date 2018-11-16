@@ -1,5 +1,5 @@
 {
-  "dividerPosition": 0.48736842105263156,
+  "dividerPosition": 0.4874869655891554,
   "tabPane": [
     {
       "title": "Drive",
@@ -132,7 +132,7 @@
               "_title": "SmartDashboard/DT_DistanceRight"
             }
           },
-          "2,5": {
+          "4,2": {
             "size": [
               1,
               1
@@ -143,7 +143,7 @@
               "_title": "SmartDashboard/DT_PowerLeft"
             }
           },
-          "3,5": {
+          "5,2": {
             "size": [
               1,
               1
