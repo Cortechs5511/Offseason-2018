@@ -17,7 +17,7 @@ class setSpeedWrist(TimedCommand):
         self.Wrist.setSpeed(0.4 * Joystick.getX(1))
 
     def interrupted(self):
-        self.Wrist.end()
+        self.end()
 
     def end(self):
         self.Wrist.setSpeed(0)

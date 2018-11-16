@@ -8,13 +8,13 @@ import pathfinder as pf
 timer = wpilib.Timer()
 
 width = 33/12
-gains = [0,0,0,0,0] #P,I,D,1/V,1/A #[25,0,2,1/4,1/6]
+gains = [0,0,0,1/20,0] #P,I,D,1/V,1/A #[25,0,2,1/4,1/6]
 
 def makeTraj(name):
     if(name=="DriveStraight"):
         points = [
             pf.Waypoint(0,0,0),
-            pf.Waypoint(9,0,0)
+            pf.Waypoint(10/5,0,0)
         ]
     if(name=="LeftSwitch"):
         points = [
@@ -58,7 +58,7 @@ def getTraj(name):
     if wpilib.RobotBase.isSimulation():
         points = makeTraj(name)
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
-            dt=0.02, max_velocity=8.0, max_acceleration=6.0, max_jerk=120.0)
+            dt=0.02, max_velocity=20, max_acceleration=6.0, max_jerk=120.0)
 
         modifier = pf.modifiers.TankModifier(trajectory).modify(width/2.4)
         left = modifier.getLeftTrajectory()
@@ -82,6 +82,9 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-width/2,0))
             renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
+
+def ftToM(ft):
+    return ft*12*2.54/100
 
 def initPath(drivetrain, name):
     [left,right,modifier] = getTraj(name)

@@ -56,7 +56,7 @@ import path.path as path
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
-from navx import AHRS as navx
+#from navx import AHRS as navx
 
 class MyRobot(CommandBasedRobot):
 
@@ -142,7 +142,8 @@ class MyRobot(CommandBasedRobot):
         position = "M" #SmartDashboard.getString("position", "M")
         self.autoMode = self.autoLogic(gameData, position)
         print(self.autoMode)
-        if self.autoMode == "DriveStraight": self.DriveStraight.start()
+        #if self.autoMode == "DriveStraight": self.DriveStraight.start()
+        if self.autoMode == "DriveStraight": self.RightSwitchMiddlePF.start()
         elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
         elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePF.start() #self.LeftSwitchMiddle2Cube.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
@@ -150,6 +151,8 @@ class MyRobot(CommandBasedRobot):
         else: self.autoMode = "Nothing"
 
     def autoLogic(self, gameData, auto):
+        return "DriveStraight"
+        '''
         if(auto=="L"):
             if(gameData[0]=='L'): return "LeftSwitchSide"
             else: return "DriveStraight"
@@ -160,6 +163,7 @@ class MyRobot(CommandBasedRobot):
             if(gameData[0]=='L'): return "DriveStraight"
             else: return "RightSwitchSide"
         return "Nothing"
+        '''
 
     def updateDashboardInit(self):
         '''Subsystems'''
