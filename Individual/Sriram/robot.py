@@ -27,7 +27,7 @@ class MyRobot(wpilib.TimedRobot):
 
     def autonomousPeriodic(self):
         self.DriveRight1.set(0.5)
-        AxisPowers = wpilib.Joystick(2)
+
 
     def teleopInit(self):
         self.count = 0
@@ -56,8 +56,6 @@ class MyRobot(wpilib.TimedRobot):
         self.DriveRight1.set(-powerRight)
         self.DriveLeft1.set(-powerLeft)
 
-        west = AxisPowers.getAxis(5)
-        self.Intake1.set(west)
 
 if __name__ == '__main__':
     wpilib.run(MyRobot)
