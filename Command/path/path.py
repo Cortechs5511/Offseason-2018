@@ -14,7 +14,7 @@ def makeTraj(name):
     if(name=="DriveStraight"):
         points = [
             pf.Waypoint(0,0,0),
-            pf.Waypoint(10/5,0,0)
+            pf.Waypoint(12,0,0)
         ]
     if(name=="LeftSwitch"):
         points = [
@@ -86,6 +86,9 @@ def showPath(left,right,modifier):
 def ftToM(ft):
     return ft*12*2.54/100
 
+def mToFt(m):
+    return m*100/2.54/12
+
 def initPath(drivetrain, name):
     [left,right,modifier] = getTraj(name)
 
@@ -105,6 +108,7 @@ def initPath(drivetrain, name):
     return [leftFollower,rightFollower]
 
 def followPath(drivetrain, leftFollower, rightFollower):
-    if(timer.get()>0.25 and not leftFollower.isFinished()):
+    if(not leftFollower.isFinished()):
+        print(drivetrain.getDistance())
         return [leftFollower.calculate(drivetrain.getRaw()[0]), rightFollower.calculate(-drivetrain.getRaw()[1])]
     else: return [0,0]
