@@ -107,7 +107,7 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putString("position", "L")
 
         self.curr = 0
-        self.print = 1
+        self.print = 50
 
         SmartDashboard.putNumber("PF_P",path.gains[0])
         SmartDashboard.putNumber("PF_D",path.gains[2])
@@ -119,6 +119,7 @@ class MyRobot(CommandBasedRobot):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
             self.updateDashboardPeriodic()
+            od.display() #displays odometry results
             self.curr = 0
 
         SmartDashboard.putNumber("Velocity", self.drive.getVelocity()[1])
@@ -128,8 +129,6 @@ class MyRobot(CommandBasedRobot):
         path.gains[2] = SmartDashboard.getNumber("PF_D",0)
         path.gains[3] = SmartDashboard.getNumber("PF_V",0)
         path.gains[4] = SmartDashboard.getNumber("PF_A",0)
-
-        #od.display() #displays odometry results
 
     def autonomousInit(self):
         self.getLimelightData.start()
@@ -154,7 +153,7 @@ class MyRobot(CommandBasedRobot):
         else: self.autoMode = "Nothing"
 
     def autoLogic(self, gameData, auto):
-        return "LeftSwitchMiddle"
+        return "DriveStraight"
         '''
         if(auto=="L"):
             if(gameData[0]=='L'): return "LeftSwitchSide"

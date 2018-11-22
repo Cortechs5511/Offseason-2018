@@ -7,8 +7,12 @@ import pathfinder as pf
 
 timer = wpilib.Timer()
 
+MAXV = 4
+MAXA = 6
+MAXJ = 10
+
 width = 33/12
-gains = [1,0,1,1/20,0] #P,I,D,1/V,1/A #[25,0,2,1/4,1/6]
+gains = [1,0,1,1/MAXV,1/MAXA]
 
 def makeTraj(name):
     if(name=="DriveStraight"):
@@ -58,7 +62,7 @@ def getTraj(name):
     if wpilib.RobotBase.isSimulation():
         points = makeTraj(name)
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
-            dt=0.02, max_velocity=20, max_acceleration=6.0, max_jerk=120.0)
+            dt=0.02, max_velocity=MAXV, max_acceleration=MAXA, max_jerk=MAXJ)
 
         modifier = pf.modifiers.TankModifier(trajectory).modify(width/2.4)
         left = modifier.getLeftTrajectory()

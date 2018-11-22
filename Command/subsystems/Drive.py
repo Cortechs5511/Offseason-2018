@@ -178,7 +178,7 @@ class Drive(Subsystem):
             else: angle=-angle
 
             self.angleController.setSetpoint(angle)
-            print([angle,self.getAngle()])
+            #print([angle,self.getAngle()])
             [left,right] = path.followPath(self,self.spline[0],self.spline[1])
             [left,right] = [left+self.anglePID,right-self.anglePID]
 
