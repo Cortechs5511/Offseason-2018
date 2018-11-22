@@ -96,7 +96,7 @@ class Drive(Subsystem):
 
         self.TolAngle = 3 #degrees
         [kP,kI,kD,kF] = [0.024, 0.00, 0.20, 0.00]
-        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.02,0.00,0.20,0.00]
+        if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.020,0.00,0.00,0.00]
         angleController = wpilib.PIDController(kP, kI, kD, kF, source=self.__getAngle__, output=self.__setAngle__)
         angleController.setInputRange(-180,  180) #degrees
         angleController.setOutputRange(-0.9, 0.9)
@@ -139,7 +139,7 @@ class Drive(Subsystem):
         elif(mode=="PathFinder"):
             self.spline = path.initPath(self, name)
             self.distController.disable()
-            self.angleController.disable()
+            self.angleController.enable()
         elif(mode=="Direct"):
             self.distController.disable()
             self.angleController.disable()
@@ -173,16 +173,14 @@ class Drive(Subsystem):
         if(self.mode=="Combined"):
             [left,right] = [self.distPID+self.anglePID,self.distPID-self.anglePID]
         if(self.mode=="PathFinder"):
-            '''
             angle = pf.r2d(self.spline[0].getHeading())
             if(angle>180): angle=360-angle
             else: angle=-angle
 
             self.angleController.setSetpoint(angle)
-            '''
+            print([angle,self.getAngle()])
             [left,right] = path.followPath(self,self.spline[0],self.spline[1])
-            #left=right
-            #[left,right] = [left+self.anglePID,right-self.anglePID]
+            [left,right] = [left+self.anglePID,right-self.anglePID]
 
         left = min(abs(left),1)*self.sign(left)
         right = min(abs(right),1)*self.sign(right)

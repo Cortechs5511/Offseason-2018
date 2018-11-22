@@ -21,8 +21,8 @@ class MyRobot(wpilib.TimedRobot):
     ENCODER_COUNTS_PER_REV = 360
 
     # Pathfinder constants
-    MAX_VELOCITY = 1 # ft/s
-    MAX_ACCELERATION = 2
+    MAX_VELOCITY = 6 # ft/s
+    MAX_ACCELERATION = 5
 
     def robotInit(self):
         '''Robot-wide initialization code should go here'''
@@ -89,15 +89,15 @@ class MyRobot(wpilib.TimedRobot):
         l = self.leftFollower.calculate(int(self.l_encoder.get()*3))
         r = self.rightFollower.calculate(int(self.r_encoder.get()*3))
 
-        #gyro_heading = -self.gyro.getAngle()    # Assuming the gyro is giving a value in degrees
-        #desired_heading = pf.r2d(self.leftFollower.getHeading())   # Should also be in degrees
+        gyro_heading = -self.gyro.getAngle()    # Assuming the gyro is giving a value in degrees
+        desired_heading = pf.r2d(self.leftFollower.getHeading())   # Should also be in degrees
 
         # This is a poor man's P controller
-        #angleDifference = pf.boundHalfDegrees(desired_heading - gyro_heading)
-        #turn = 5 * (-1.0/80.0) * angleDifference
+        angleDifference = pf.boundHalfDegrees(desired_heading - gyro_heading)
+        turn = 5 * (-1.0/80.0) * angleDifference
 
-        #l = l + turn
-        #r = r - turn
+        l = l + turn
+        r = r - turn
 
         # -1 is forward, so invert both values
         self.robot_drive.tankDrive(-l, -r)

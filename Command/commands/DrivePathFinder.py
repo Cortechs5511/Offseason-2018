@@ -21,7 +21,7 @@ class DrivePathFinder(TimedCommand):
         self.DT.tankDrive()
 
     def isFinished(self):
-        return (self.DT.spline[1].isFinished() or self.isTimedOut())
+        return (self.DT.spline[1].isFinished()  or self.isTimedOut())
 
     def interrupted(self):
         self.end()
