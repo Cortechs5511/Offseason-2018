@@ -53,6 +53,7 @@ from subsystems import Wrist, Intake, Lift, Drive
 
 import pathfinder as pf
 import path.path as path
+import odometry as od
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
@@ -120,13 +121,15 @@ class MyRobot(CommandBasedRobot):
             self.updateDashboardPeriodic()
             self.curr = 0
 
-        SmartDashboard.putNumber("Velocity", self.drive.getVelocity())
+        SmartDashboard.putNumber("Velocity", self.drive.getVelocity()[1])
 
         path.gains[0] = SmartDashboard.getNumber("PF_P",0)
         path.gains[1] = SmartDashboard.getNumber("PF_I",0)
         path.gains[2] = SmartDashboard.getNumber("PF_D",0)
         path.gains[3] = SmartDashboard.getNumber("PF_V",0)
         path.gains[4] = SmartDashboard.getNumber("PF_A",0)
+
+        #od.display() #displays odometry results
 
     def autonomousInit(self):
         self.getLimelightData.start()
@@ -151,7 +154,7 @@ class MyRobot(CommandBasedRobot):
         else: self.autoMode = "Nothing"
 
     def autoLogic(self, gameData, auto):
-        return "DriveStraight"
+        return "LeftSwitchMiddle"
         '''
         if(auto=="L"):
             if(gameData[0]=='L'): return "LeftSwitchSide"

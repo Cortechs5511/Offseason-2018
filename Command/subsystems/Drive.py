@@ -4,7 +4,7 @@ import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-#from navx import AHRS as navx
+from navx import AHRS as navx
 
 import wpilib
 from wpilib import SmartDashboard
@@ -13,6 +13,7 @@ from wpilib.command.subsystem import Subsystem
 from commands.setSpeedDT import setSpeedDT
 from commands.setFixedDT import setFixedDT
 
+import odometry as od
 import pathfinder as pf
 from path import path
 
@@ -24,6 +25,8 @@ class Drive(Subsystem):
     distPID = 0
     anglePID = 0
     spline = None
+
+    prevDist = [0,0]
 
     def __init__(self, Robot):
         super().__init__('Drive')
@@ -70,7 +73,7 @@ class Drive(Subsystem):
         self.left = TalonLeft
         self.right = TalonRight
 
-        #self.navx = navx.create_spi()
+        self.navx = navx.create_spi()
 
         self.leftEncoder = wpilib.Encoder(0,1)
         self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 255)
@@ -111,8 +114,8 @@ class Drive(Subsystem):
     def __getAngle__(self):
         return self.getAngle()
 
-    def getVelocity(self):
-        return self.rightEncoder.getRate()
+    #def getVelocity(self):
+    #    return self.rightEncoder.getRate()
 
     def __setAngle__(self,output):
         self.anglePID = output
@@ -178,7 +181,7 @@ class Drive(Subsystem):
             self.angleController.setSetpoint(angle)
             '''
             [left,right] = path.followPath(self,self.spline[0],self.spline[1])
-            left=right
+            #left=right
             #[left,right] = [left+self.anglePID,right-self.anglePID]
 
         left = min(abs(left),1)*self.sign(left)
@@ -192,8 +195,15 @@ class Drive(Subsystem):
 
         maxSpeed = 0.7
 
-        self.left.set(maxSpeed * left)
-        self.right.set(maxSpeed * right * RightGain)
+        left = maxSpeed * left
+        right = maxSpeed * right * RightGain
+
+        self.left.set(left)
+        self.right.set(right)
+
+        vel = [50*(self.getDistance()[0]-self.prevDist[0]),50*(self.getDistance()[1]-self.prevDist[1])]
+        od.update(vel[0],vel[1],self.getAngle())
+        self.prevDist = self.getDistance()
 
     def getOutputCurrent(self):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
@@ -207,6 +217,9 @@ class Drive(Subsystem):
     def getAvgDistance(self):
         return self.getDistance()[1] #One encoder broken
 
+    def getVelocity(self):
+        return [self.leftEncoder.getRate(), self.rightEncoder.getRate()]
+
     def getAvgVelocity(self):
         return self.rightEncoder.getRate() #feet per second, one encoder broken
 
@@ -219,16 +232,16 @@ class Drive(Subsystem):
         simComms.resetEncoders()
 
     def zeroNavx(self):
-        #self.navx.zeroYaw()
-        pass
+        self.navx.zeroYaw()
+        #pass
 
     def zero(self):
         self.zeroEncoders()
         self.zeroNavx()
 
     def getAngle(self):
-        #return self.navx.getYaw()
-        return 0
+        return self.navx.getYaw()
+        #return 0
 
     def initDefaultCommand(self):
         self.setDefaultCommand(setSpeedDT(timeout = 300))

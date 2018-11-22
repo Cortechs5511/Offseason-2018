@@ -16,14 +16,14 @@ class PhysicsEngine(object):
 
         # Change these parameters to fit your robot!
         self.drivetrain = tankmodel.TankModel.theory(
-            motor_cfgs.MOTOR_CFG_MINI_CIM,           # motor configuration
-            140*units.lbs,                           # robot mass
-            6,                                   # drivetrain gear ratio
-            3,                                       # motors per side
-            (33/12)*units.feet,        # robot wheelbase
-            (40/12)*units.feet,     # robot width
-            (35/12)*units.feet,    # robot length
-            (4/12)*units.feet         # wheel diameter
+            motor_cfgs.MOTOR_CFG_MINI_CIM,  # motor configuration
+            140*units.lbs,                  # robot mass
+            6,                              # drivetrain gear ratio
+            3,                              # motors per side
+            (33/12)*units.feet,             # robot wheelbase
+            (40/12)*units.feet,             # robot width
+            (35/12)*units.feet,             # robot length
+            (4/12)*units.feet               # wheel diameter
         )
 
         self.distance = [0.0,0.0]
@@ -34,8 +34,8 @@ class PhysicsEngine(object):
 
     def update_sim(self, hal_data, now, timeDiff):
         # Simulate the drivetrain
-        left = hal_data['CAN'][10]['value']#*1.01
-        right = hal_data['CAN'][20]['value']#*0.99
+        left = hal_data['CAN'][10]['value']
+        right = hal_data['CAN'][20]['value']
 
         if(abs(left)<self.deadZone): left = 0
         if(abs(right)<self.deadZone): right = 0
