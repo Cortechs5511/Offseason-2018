@@ -191,7 +191,7 @@ class Drive(Subsystem):
         RightGain = 0.9
         if wpilib.RobotBase.isSimulation(): RightGain = 1
 
-        maxSpeed = 0.7
+        maxSpeed = 0.9
 
         left = maxSpeed * left
         right = maxSpeed * right * RightGain

@@ -153,7 +153,7 @@ class MyRobot(CommandBasedRobot):
         else: self.autoMode = "Nothing"
 
     def autoLogic(self, gameData, auto):
-        return "DriveStraight"
+        return "LeftSwitchMiddle"
         '''
         if(auto=="L"):
             if(gameData[0]=='L'): return "LeftSwitchSide"

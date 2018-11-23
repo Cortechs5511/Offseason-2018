@@ -7,12 +7,12 @@ import pathfinder as pf
 
 timer = wpilib.Timer()
 
-MAXV = 4
-MAXA = 6
+MAXV = 17
+MAXA = 12
 MAXJ = 10
 
 width = 33/12
-gains = [1,0,1,1/MAXV,1/MAXA]
+gains = [1,0,1,1/MAXV,0]
 
 def makeTraj(name):
     if(name=="DriveStraight"):
