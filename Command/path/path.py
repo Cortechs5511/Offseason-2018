@@ -23,7 +23,7 @@ def makeTraj(name):
     if(name=="LeftSwitch"):
         points = [
             pf.Waypoint(0,0,0),
-            pf.Waypoint(10,9,0),
+            pf.Waypoint(10,9,0)
         ]
     if(name=="RightScale"):
         points = [
