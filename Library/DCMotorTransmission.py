@@ -14,47 +14,47 @@ class DCMotorTransmission:
         self.__torquePerVolt__ = torquePerVolt
         self.__frictionVoltage__ = frictionVoltage
 
-    def getSpeedPerVolt(self):
+    def speedPerVolt(self):
         return self.__speedPerVolt__
 
-    def getTorquePerVolt(self):
+    def torquePerVolt(self):
         return self.__torquePerVolt__
 
-    def getFrictionVoltage(self):
+    def frictionVoltage(self):
         return self.__frictionVoltage__
 
     def freeSpeedAtV(self, voltage):
         if(voltage>util.kEpsilon):
-            return max(0, voltage - self.getFrictionVoltage()) * self.getSpeedPerVolt()
+            return max(0, voltage - self.frictionVoltage()) * self.speedPerVolt()
         elif(voltage<-util.kEpsilon):
-            return min(0, voltage + self.getFrictionVoltage()) * self.getSpeedPerVolt()
+            return min(0, voltage + self.frictionVoltage()) * self.speedPerVolt()
         else:
             return 0
 
     def getTorqueForVoltage(self, outputSpeed, voltage):
         effVoltage = voltage
         if(outputSpeed>util.kEpsilon):
-            effVoltage -= self.getFrictionVoltage()
+            effVoltage -= self.frictionVoltage()
         elif(outputSpeed<-util.kEpsilon):
-            effVoltage += self.getFrictionVoltage()
+            effVoltage += self.frictionVoltage()
         elif(voltage>util.kEpsilon):
-            effVoltage = max(0, voltage-self.getFrictionVoltage())
+            effVoltage = max(0, voltage-self.frictionVoltage())
         elif(voltage<-util.kEpsilon):
-            effVoltage = min(0, voltage+self.getFrictionVoltage())
+            effVoltage = min(0, voltage+self.frictionVoltage())
         else:
             return 0
-        return self.getTorquePerVolt() * (-outputSpeed/self.getSpeedPerVolt()+effVoltage)
+        return self.torquePerVolt() * (-outputSpeed/self.speedPerVolt()+effVoltage)
 
     def getVoltageForTorque(self, outputSpeed, torque):
         frictionVoltage = 0
         if(outputSpeed>util.kEpsilon):
-            frictionVoltage = self.getFrictionVoltage()
+            frictionVoltage = self.frictionVoltage()
         elif(outputSpeed<-util.kEpsilon):
-            frictionVoltage = -self.getFrictionVoltage()
+            frictionVoltage = -self.frictionVoltage()
         elif(torque>util.kEpsilon):
-            frictionVoltage = self.getFrictionVoltage()
+            frictionVoltage = self.frictionVoltage()
         elif(torque<-util.kEpsilon):
-            frictionVoltage = -self.getFrictionVoltage()
+            frictionVoltage = -self.frictionVoltage()
         else:
             return 0
-        return torque/self.getTorquePerVolt() + outputSpeed/self.getSpeedPerVolt() + frictionVoltage
+        return torque/self.torquePerVolt() + outputSpeed/self.speedPerVolt() + frictionVoltage
