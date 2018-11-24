@@ -1,7 +1,7 @@
 #Dynamic model a differential drive robot
 #Center of mass is coincident with center of rotation assumed
 
-from ..Util import util
+import util
 
 class DifferentialDrive:
     #all units must be in SI!!
@@ -9,38 +9,38 @@ class DifferentialDrive:
     #Equivalent mass when accelerating purely lienarly, in kg
     #equivalent in that it also absorbs effects of drivetrain inertia
     #measured by doing drivetrain acceleration characterization in a straight line
-    __mass__
+    __mass__ = 0
 
     #equivalent moment of inertia when accelerating purely angularly, in kg*m^2
     #this is equivalent in that it also absorbs the effects of drivetrain inertia
     #measure by doing drivetrain acceleration characterization while turning in place
-    __moi__
+    __moi__ = 0
 
     #drag torque proportional to angular velocity that resists turning, in N*m/rad/s
     #Emperical testing of drivebase shows that there was an unexplained loss of torque,
     #proportional to velocity, likely due to scrube of wheelsself.
     #Note this might not be purely linear
-    __angularDrag__
+    __angularDrag__ = 0
 
     #measured by rolling the robot a known distance and counting encoder ticks
-    __wheelRadius__ #in meters
+    __wheelRadius__ = 0 #in meters
 
     #Effective kinematic wheelbase radius. Might be larger than theoretical to compensate for skid steer
     #Measure by turning in place several times and figuring out what the equivalent wheelbase radius is
-    __effWheelbaseRadius__ #in meters
+    __effWheelbaseRadius__ = 0 #in meters
 
     #Transmission for both sides of the drivebase
-    __leftTransmission__
-    __rightTransmission__
+    __leftTransmission__ = None
+    __rightTransmission__ = None
 
-    def __init__(mass, moi, angularDrag, wheelRadius, effWheelbaseRadius, leftTransmission, rightTransmission):
-        __mass__ = mass
-        __moi__ =  moi
-        __angularDrag__ = angularDrag
-        __wheelRadius__ wheelRadius
-        __effWheelbaseRadius__ = effWheelbaseRadius
-        __leftTransmission__ = leftTransmission
-        __rightTransmission__ = rightTransmission
+    def __init__(self,mass, moi, angularDrag, wheelRadius, effWheelbaseRadius, leftTransmission, rightTransmission):
+        self.__mass__ = mass
+        self.__moi__ =  moi
+        self.__angularDrag__ = angularDrag
+        self.__wheelRadius__ = wheelRadius
+        self.__effWheelbaseRadius__ = effWheelbaseRadius
+        self.__leftTransmission__ = leftTransmission
+        self.__rightTransmission__ = rightTransmission
 
     def mass():
         return __mass__
@@ -154,7 +154,7 @@ class DifferentialDrive:
     def solveInverseDynamics(dynamics):
         #determine the necessary torques on the left and right wheels to produce the desired wheel accelerations
         dynamics.wheelTorque.left = wheelRadius()/2 * (dynamics.chassisAcceleration.linear*mass()-dynamics.chassisAcceleration.angular*moi()/effWheelbaseRadius()-dynamics.chassisVelocity.angular*angularDrag()/effWheelbaseRadius())
-        dynamics.wheelTorque.right = wheelRadius()/2 * (dynamics.chassisAcceleration.linear*mass()+dynamics.chassisAcceleration.angular*moi()/effWheelbaseRadius())+dynamics.chassisVelocity.angular*angularDrag()/effWheelbaseRadius())
+        dynamics.wheelTorque.right = wheelRadius()/2 * (dynamics.chassisAcceleration.linear*mass()+dynamics.chassisAcceleration.angular*moi()/effWheelbaseRadius()+dynamics.chassisVelocity.angular*angularDrag()/effWheelbaseRadius())
 
         dynamics.voltage.left = leftTransmission.getVoltageForTorque(dynamics.wheelVelocity.left, dynamics.wheelTorque.left)
         dynamics.voltage.right = leftTransmission.getVoltageForTorque(dynamics.wheelVelocity.right, dynamics.wheelTorque.right)
@@ -175,43 +175,45 @@ class DifferentialDrive:
         return wheelRadius() * (rightSpeedAtMaxVoltage+leftSpeedIfRightMax)/2
 
     #can refer to velocity or acceleration depending on context
-    class ChassisState:
-        linear
-        angular
 
-        def __init__(linearIn, angularIn):
-            linear = linearIn
-            angular = angularIn
+class ChassisState:
+    linear = 0
+    angular = 0
 
-        def __init__():
-            linear = 0
-            angular = 0
+    def __init__(self, linearIn, angularIn):
+        linear = linearIn
+        angular = angularIn
 
-    class WheelState:
-        left
-        right
+    def __init__(self):
+        linear = 0
+        angular = 0
 
-        def __init__(leftIn, rightIn):
-            left = leftIn
-            right = rightIn
+class WheelState:
+    left = 0
+    right = 0
 
-        def __init__():
-            left = 0
-            right = 0
+    def __init__(self, leftIn, rightIn):
+        left = leftIn
+        right = rightIn
 
-        def get(getLeft):
-            return getLeft? left : right
+    def __init__(self):
+        left = 0
+        right = 0
 
-        def set(setLeft, val):
-            if(setLeft): left = val
-            else: right = val
+    def get(getLeft):
+        if(getLeft): return left
+        else: return right
 
-    class DriveDynamics:
-        curvature = 0.0 #1/m
-        dcurvature = 0.0 #1/m^2
-        chassisVelocity = ChassisState() #m/s
-        chassisAcceleration = ChassisState() #m/s^2
-        wheelVelocity = WheelState() #rad/s
-        wheelAcceleration = WheelState() #rad/s^2
-        voltage = WheelState() #V
-        wheelTorque = WheelState() #N m
+    def set(setLeft, val):
+        if(setLeft): left = val
+        else: right = val
+
+class DriveDynamics:
+    curvature = 0.0 #1/m
+    dcurvature = 0.0 #1/m^2
+    chassisVelocity = ChassisState() #m/s
+    chassisAcceleration = ChassisState() #m/s^2
+    wheelVelocity = WheelState() #rad/s
+    wheelAcceleration = WheelState() #rad/s^2
+    voltage = WheelState() #V
+    wheelTorque = WheelState() #N m
