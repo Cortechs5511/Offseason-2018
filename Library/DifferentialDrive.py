@@ -42,60 +42,63 @@ class DifferentialDrive:
         self.__leftTransmission__ = leftTransmission
         self.__rightTransmission__ = rightTransmission
 
-    def mass():
-        return __mass__
+    def mass(self):
+        return self.__mass__
 
-    def moi():
-        return __moi__
+    def moi(self):
+        return self.__moi__
 
-    def wheelRadius():
-        return __wheelRadius__
+    def angularDrag(self):
+        return self.__angularDrag__
 
-    def effWheelbaseRadius():
-        return __effWheelbaseRadius__
+    def wheelRadius(self):
+        return self.__wheelRadius__
 
-    def leftTransmission():
-        return __leftTransmission__
+    def effWheelbaseRadius(self):
+        return self.__effWheelbaseRadius__
 
-    def rightTransmission():
-        return __rightTransmission__
+    def leftTransmission(self):
+        return self.__leftTransmission__
+
+    def rightTransmission(self):
+        return self.__rightTransmission__
 
     #The following two functions can be solved either in velocity or acceleration, the math is the same
-    def solveForwardKinematics(wheelMotion):
+    def solveForwardKinematics(self, wheelMotion):
         chassisMotion = ChassisState()
-        chassisMotion.linear = wheelRadius() * (wheelMotion.right+wheelMotion.left)/2
-        chassisMotion.angular = wheelRadius() * (wheelMotion.right-wheelMotion.left)/(2*effWheelbaseRadius())
+        chassisMotion.linear = self.wheelRadius() * (wheelMotion.right+wheelMotion.left)/2
+        chassisMotion.angular = self.wheelRadius() * (wheelMotion.right-wheelMotion.left)/(2*self.effWheelbaseRadius())
         return chassisMotion
 
-    def solveInverseKinematics(chassisMotion):
+    def solveInverseKinematics(self, chassisMotion):
         wheelMotion = WheelState()
-        wheelMotion.left = (chassisMotion.linear-effWheelbaseRadius()*chassisMotion.angular)/wheelRadius()
-        wheelMotion.right = (chassisMotion.linear+effWheelbaseRadius()*chassisMotion.angular)/wheelRadius()
+        wheelMotion.left = (chassisMotion.linear-self.effWheelbaseRadius()*chassisMotion.angular)/self.wheelRadius()
+        wheelMotion.right = (chassisMotion.linear+self.effWheelbaseRadius()*chassisMotion.angular)/self.wheelRadius()
         return wheelMotion
 
-    def solveForwardDynamics_CS(chassisVelocity, voltage):
-        dyanmics = DriveDynamics()
-        dynamics.wheelVelocity = solveInverseKinematics(chassisVelocity)
+    def solveForwardDynamics_CS(self, chassisVelocity, voltage):
+        dynamics = DriveDynamics()
+        dynamics.wheelVelocity = self.solveInverseKinematics(chassisVelocity)
         dynamics.chassisVelocity = chassisVelocity
-        dynamics.curvature = dynamics.chassisVelocity.angular/dynamics.chassisVelocity.linear
-        if(math.isnan(dynamics.curvature)): dynamics.curvature = 0
+        if(util.epsilonEquals(dynamics.chassisVelocity.linear,0)): dynamics.curvature = 0
+        else: dynamics.curvature = dynamics.chassisVelocity.angular/dynamics.chassisVelocity.linear
         dynamics.voltage = voltage
-        solveForwardDynamics(dynamics)
+        self.solveForwardDynamics(dynamics)
         return dynamics
 
-    def solveForwardDynamics_WS(wheelVelocity, voltage):
+    def solveForwardDynamics_WS(self, wheelVelocity, voltage):
         dynamics = DriveDynamics()
         dynamics.wheelVelocity = wheelVelocity
-        dynamics.chassisVelocity = solveForwardKinematics(wheelVelocity)
-        dynamics.curvature = dynamics.chassisVelocity.angular/dynamics.chassisVelocity.linear
-        if(math.isnan(dynamics.curvature)): dynamics.curvature = 0
+        dynamics.chassisVelocity = self.solveForwardKinematics(wheelVelocity)
+        if(util.epsilonEquals(dynamics.chassisVelocity.linear,0)): dynamics.curvature = 0
+        else: dynamics.curvature = dynamics.chassisVelocity.angular/dynamics.chassisVelocity.linear
         dynamics.voltage = voltage
-        solveForwardDynamics(dynamics)
+        self.solveForwardDynamics(dynamics)
         return dynamics
 
-    def solveForwardDynamics(dynamics):
-        leftStationary = util.epsilonEquals(dynamics.wheelVelocity.left,0) and abs(dynamics.voltage.left) < leftTransmission().frictionVoltage()
-        rightStationary = util.epsilonEquals(dynamics.wheelVelocity.right,0) and abs(dynamics.voltage.right) < rightTransmission().frictionVoltage()
+    def solveForwardDynamics(self, dynamics):
+        leftStationary = util.epsilonEquals(dynamics.wheelVelocity.left,0) and abs(dynamics.voltage.left) < self.leftTransmission().frictionVoltage()
+        rightStationary = util.epsilonEquals(dynamics.wheelVelocity.right,0) and abs(dynamics.voltage.right) < self.rightTransmission().frictionVoltage()
 
         if(leftStationary and rightStationary):
             dynamics.wheelTorque.left = 0
@@ -107,72 +110,72 @@ class DifferentialDrive:
             dynamics.dcurvature = 0
             return
 
-        dynamics.wheelTorque.left = leftTransmission.getTorqueForVoltage(dynamics.wheelVelocity.left, dynamics.voltage.left)
-        dynamics.wheelTorque.right = rightTransmission.getTorqueForVoltage(dynamics.wheelVelocity.right, dynamics.voltage.right)
+        dynamics.wheelTorque.left = self.leftTransmission().getTorqueForVoltage(dynamics.wheelVelocity.left, dynamics.voltage.left)
+        dynamics.wheelTorque.right = self.rightTransmission().getTorqueForVoltage(dynamics.wheelVelocity.right, dynamics.voltage.right)
 
         #add forces and torques about the center of mass
-        dynamics.chassisAcceleration.linear = (dynamics.wheelTorque.right + dynamics.wheelTorque.left) / (wheelRadius()*mass())
+        dynamics.chassisAcceleration.linear = (dynamics.wheelTorque.right + dynamics.wheelTorque.left) / (self.wheelRadius()*self.mass())
 
         #(Tr-Tl)/r_w*r_wb-drag*w=I*angular_accel
-        dynamics.chassisAcceleration.angular = effWheelbaseRadius() * (dynamics.wheelTorque.right-dynamics.wheelTorque.left)/(wheelRadius()*moi())-dynamics.chassisVelocity.angular*angularDrag()/moi()
+        dynamics.chassisAcceleration.angular = self.effWheelbaseRadius() * (dynamics.wheelTorque.right-dynamics.wheelTorque.left)/(self.wheelRadius()*self.moi())-dynamics.chassisVelocity.angular*self.angularDrag()/self.moi()
 
         #solve for change in curvature from angular wheelAcceleration
         #total angular acceleration = linear acceleration * curvature + v^2 * dcurvature
-        dynamics.dcurvature = (dynamics.chassisAcceleration.angular-dynamics.chassisAcceleration.linear*dynamics.curvature)/(dynamics.chassisVelocity.linear**2)
-        if(isnan(dynamics.dcurvature)): dynamics.dcurvature = 0
+        if(util.epsilonEquals(dynamics.chassisVelocity.linear,0)): dynamics.dcurvature = 0
+        else: dynamics.dcurvature = (dynamics.chassisAcceleration.angular-dynamics.chassisAcceleration.linear*dynamics.curvature)/(dynamics.chassisVelocity.linear**2)
 
-        dynamics.wheelAcceleration.left = dynamics.chassisAcceleration.linear - dynamics.chassisAcceleration.angular * effWheelbaseRadius()
-        dynamics.wheelAcceleration.right = dynamics.chassisAcceleration.linear + dynamics.chassisAcceleration.angular * effWheelbaseRadius()
+        dynamics.wheelAcceleration.left = dynamics.chassisAcceleration.linear - dynamics.chassisAcceleration.angular * self.effWheelbaseRadius()
+        dynamics.wheelAcceleration.right = dynamics.chassisAcceleration.linear + dynamics.chassisAcceleration.angular * self.effWheelbaseRadius()
 
-    def solveInverseDynamics_CS(chassisVelocity, chassisState):
+    def solveInverseDynamics_CS(self, chassisVelocity, chassisAcceleration):
         dynamics = DriveDynamics()
         dynamics.chassisVelocity = chassisVelocity
-        dynamics.curvature = dynamics.chassisVelocity.angular/dynamics.chassisVelocity.linear
-        if(isnan(dynamics.curvature)): dynamics.curvature = 0
+        if(util.epsilonEquals(dynamics.chassisVelocity.linear,0)): dynamics.curvature = 0
+        else: dynamics.curvature = dynamics.chassisVelocity.angular/dynamics.chassisVelocity.linear
         dynamics.chassisAcceleration = chassisAcceleration
-        dynamics.dcurvature = (dynamics.chassisAcceleration.angular-dynamics.chassisAcceleration.linear*dynamics.curvature)/(dynamics.chassisVelocity.linear**2)
-        if(isnan(dynamics.dcurvature)): dynamics.dcurvature = 0
-        dynamics.wheelVelocity = solveInverseKinematics(chassisVelocity)
-        dynamics.wheelAcceleration = solveInverseKinematics(chassisAcceleration)
-        solveInverseDynamics(dynamics)
+        if(util.epsilonEquals(dynamics.chassisVelocity.linear,0)): dynamics.dcurvature = 0
+        else: dynamics.dcurvature = (dynamics.chassisAcceleration.angular-dynamics.chassisAcceleration.linear*dynamics.curvature)/(dynamics.chassisVelocity.linear**2)
+        dynamics.wheelVelocity = self.solveInverseKinematics(chassisVelocity)
+        dynamics.wheelAcceleration = self.solveInverseKinematics(chassisAcceleration)
+        self.solveInverseDynamics(dynamics)
         return dynamics
 
-    def solveInverseDynamics_WS(wheelVelocity, wheelState):
+    def solveInverseDynamics_WS(self, wheelVelocity, wheelAcceleration):
         dynamics = DriveDynamics()
-        dynamics.chassisVelocity = solveForwardKinematics(wheelVelocity)
-        dynamics.curvature = dynamics.chassisVelocity.angular/dynamics.chassisVelocity.linear
-        if(isnan(dynamics.curvature)): dynamics.curvature = 0
-        dynamics.chassisAcceleration = solveForwardKinematics(wheelAcceleration)
-        dynamics.dcurvature = (dynamics.chassisAcceleration.angular-dynamics.chassisAcceleration.linear*dynamics.curvature)/(dynamics.chassisVelocity.linear**2)
-        if(isnan(dynamics.dcurvature)): dynamics.dcurvature = 0
+        dynamics.chassisVelocity = self.solveForwardKinematics(wheelVelocity)
+        if(util.epsilonEquals(dynamics.chassisVelocity.linear,0)): dynamics.curvature = 0
+        else: dynamics.curvature = dynamics.chassisVelocity.angular/dynamics.chassisVelocity.linear
+        dynamics.chassisAcceleration = self.solveForwardKinematics(wheelAcceleration)
+        if(util.epsilonEquals(dynamics.chassisVelocity.linear,0)): dynamics.dcurvature = 0
+        else: dynamics.dcurvature = (dynamics.chassisAcceleration.angular-dynamics.chassisAcceleration.linear*dynamics.curvature)/(dynamics.chassisVelocity.linear**2)
         dynamics.wheelVelocity = wheelVelocity
         dynamics.wheelAcceleration = wheelAcceleration
-        solveInverseDynamics(dynamics)
+        self.solveInverseDynamics(dynamics)
         return dynamics
 
     #assumptions about dynamics: velocities and accelerations provided, curvature and dcurvature computed
-    def solveInverseDynamics(dynamics):
+    def solveInverseDynamics(self, dynamics):
         #determine the necessary torques on the left and right wheels to produce the desired wheel accelerations
-        dynamics.wheelTorque.left = wheelRadius()/2 * (dynamics.chassisAcceleration.linear*mass()-dynamics.chassisAcceleration.angular*moi()/effWheelbaseRadius()-dynamics.chassisVelocity.angular*angularDrag()/effWheelbaseRadius())
-        dynamics.wheelTorque.right = wheelRadius()/2 * (dynamics.chassisAcceleration.linear*mass()+dynamics.chassisAcceleration.angular*moi()/effWheelbaseRadius()+dynamics.chassisVelocity.angular*angularDrag()/effWheelbaseRadius())
+        dynamics.wheelTorque.left = self.wheelRadius()/2 * (dynamics.chassisAcceleration.linear*self.mass()-dynamics.chassisAcceleration.angular*self.moi()/self.effWheelbaseRadius()-dynamics.chassisVelocity.angular*self.angularDrag()/self.effWheelbaseRadius())
+        dynamics.wheelTorque.right = self.wheelRadius()/2 * (dynamics.chassisAcceleration.linear*self.mass()+dynamics.chassisAcceleration.angular*self.moi()/self.effWheelbaseRadius()+dynamics.chassisVelocity.angular*self.angularDrag()/self.effWheelbaseRadius())
 
-        dynamics.voltage.left = leftTransmission.getVoltageForTorque(dynamics.wheelVelocity.left, dynamics.wheelTorque.left)
-        dynamics.voltage.right = leftTransmission.getVoltageForTorque(dynamics.wheelVelocity.right, dynamics.wheelTorque.right)
+        dynamics.voltage.left = self.leftTransmission().getVoltageForTorque(dynamics.wheelVelocity.left, dynamics.wheelTorque.left)
+        dynamics.voltage.right = self.leftTransmission().getVoltageForTorque(dynamics.wheelVelocity.right, dynamics.wheelTorque.right)
 
-    def getMaxAbsVelocity(curvature, dcurvature, maxAbsVoltage):
-        leftSpeedAtMaxVoltage = leftTransmission.freeSpeedAtV(maxAbsVoltage)
-        rightSpeedAtMaxVoltage = rightTransmission.freeSpeedAtV(maxAbsVoltage)
+    def getMaxAbsVelocity(self, curvature, dcurvature, maxAbsVoltage):
+        leftSpeedAtMaxVoltage = self.leftTransmission().freeSpeedAtV(maxAbsVoltage)
+        rightSpeedAtMaxVoltage = self.rightTransmission().freeSpeedAtV(maxAbsVoltage)
 
-        if(util.epsilonEquals(curvature, 0)): return wheelRadius()*min(leftSpeedAtMaxVoltage, rightSpeedAtMaxVoltage)
-        if(isnan(curvature)):
+        if(util.epsilonEquals(curvature, 0)): return self.wheelRadius()*min(leftSpeedAtMaxVoltage, rightSpeedAtMaxVoltage)
+        if(abs(curvature)>1/util.kEpsilon):
             wheelSpeed = math.min(leftSpeedAtMaxVoltage, rightSpeedAtMaxVoltage)
-            return util.sign(curvature) * wheelRadius() * wheelSpeed/effWheelbaseRadius()
+            return util.sign(curvature) * self.wheelRadius() * wheelSpeed/self.effWheelbaseRadius()
 
-        rightSpeedIfLeftMax = leftSpeedAtMaxVoltage * (effWheelbaseRadius()*curvature+1)/(1-effWheelbaseRadius()*curvature)
+        rightSpeedIfLeftMax = leftSpeedAtMaxVoltage * (self.effWheelbaseRadius()*curvature+1)/(1-self.effWheelbaseRadius()*curvature)
         if(abs(rightSpeedIfLeftMax)<=rightSpeedAtMaxVoltage+util.kEpsilon):
-            return wheelRadius() * (leftSpeedAtMaxVoltage+rightSpeedIfLeftMax)/2
-        leftSpeedIfRightMax = rightSpeedAtMaxVoltage * (1-effWheelbaseRadius()*curvature)/(1+effWheelbaseRadius()*curvature)
-        return wheelRadius() * (rightSpeedAtMaxVoltage+leftSpeedIfRightMax)/2
+            return self.wheelRadius() * (leftSpeedAtMaxVoltage+rightSpeedIfLeftMax)/2
+        leftSpeedIfRightMax = rightSpeedAtMaxVoltage * (1-self.effWheelbaseRadius()*curvature)/(1+self.effWheelbaseRadius()*curvature)
+        return self.wheelRadius() * (rightSpeedAtMaxVoltage+leftSpeedIfRightMax)/2
 
     #can refer to velocity or acceleration depending on context
 
@@ -180,25 +183,20 @@ class ChassisState:
     linear = 0
     angular = 0
 
-    def __init__(self, linearIn, angularIn):
-        linear = linearIn
-        angular = angularIn
+    def __init__(self, linearIn=0, angularIn=0):
+        self.linear = linearIn
+        self.angular = angularIn
 
-    def __init__(self):
-        linear = 0
-        angular = 0
+    def print(self, name = ""):
+        print(name + " (" + str(self.linear)+","+str(self.angular)+")")
 
 class WheelState:
     left = 0
     right = 0
 
-    def __init__(self, leftIn, rightIn):
-        left = leftIn
-        right = rightIn
-
-    def __init__(self):
-        left = 0
-        right = 0
+    def __init__(self, leftIn=0, rightIn=0):
+        self.left = leftIn
+        self.right = rightIn
 
     def get(getLeft):
         if(getLeft): return left
@@ -207,6 +205,9 @@ class WheelState:
     def set(setLeft, val):
         if(setLeft): left = val
         else: right = val
+
+    def print(self, name = ""):
+        print(name + " (" + str(self.left)+","+str(self.right)+")")
 
 class DriveDynamics:
     curvature = 0.0 #1/m
@@ -217,3 +218,15 @@ class DriveDynamics:
     wheelAcceleration = WheelState() #rad/s^2
     voltage = WheelState() #V
     wheelTorque = WheelState() #N m
+
+    def print(self):
+        print("Drive Dynamics")
+        print("Curvature: " + str(self.curvature))
+        print("DCurvature: " + str(self.dcurvature))
+        self.chassisVelocity.print("ChassisVelocity")
+        self.chassisAcceleration.print("ChassisAcceleration")
+        self.wheelVelocity.print("WheelVelocity")
+        self.wheelAcceleration.print("wheelAcceleration")
+        self.voltage.print("Voltage")
+        self.wheelTorque.print("Wheel Torque")
+        print()

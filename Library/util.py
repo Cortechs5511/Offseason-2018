@@ -15,11 +15,8 @@ def interpolate(a, b, x):
     x = limit(x, 0, 1)
     return a + (b-a) * x
 
-def epsilonEquals(a, b, epsilon):
+def epsilonEquals(a, b, epsilon = kEpsilon):
     return (a-epsilon<= b) and (a+epsilon >=b)
-
-def epsilonEquals(a, b):
-    return epsilonEquals(a, b, kEpsilon)
 
 def sign(x):
     if(epsilonEquals(x,0)): return 0

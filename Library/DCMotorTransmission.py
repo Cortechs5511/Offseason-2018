@@ -14,16 +14,16 @@ class DCMotorTransmission:
         self.__torquePerVolt__ = torquePerVolt
         self.__frictionVoltage__ = frictionVoltage
 
-    def getSpeedPerVolt():
+    def getSpeedPerVolt(self):
         return self.__speedPerVolt__
 
-    def getTorquePerVolt():
+    def getTorquePerVolt(self):
         return self.__torquePerVolt__
 
-    def getFrictionVoltage():
+    def getFrictionVoltage(self):
         return self.__frictionVoltage__
 
-    def freeSpeedAtV(voltage):
+    def freeSpeedAtV(self, voltage):
         if(voltage>util.kEpsilon):
             return max(0, voltage - self.getFrictionVoltage()) * self.getSpeedPerVolt()
         elif(voltage<-util.kEpsilon):
@@ -31,7 +31,7 @@ class DCMotorTransmission:
         else:
             return 0
 
-    def getTorqueForVoltage(outputSpeed, voltage):
+    def getTorqueForVoltage(self, outputSpeed, voltage):
         effVoltage = voltage
         if(outputSpeed>util.kEpsilon):
             effVoltage -= self.getFrictionVoltage()
@@ -45,7 +45,7 @@ class DCMotorTransmission:
             return 0
         return self.getTorquePerVolt() * (-outputSpeed/self.getSpeedPerVolt()+effVoltage)
 
-    def getVoltageForTorque(outputSpeed, torque):
+    def getVoltageForTorque(self, outputSpeed, torque):
         frictionVoltage = 0
         if(outputSpeed>util.kEpsilon):
             frictionVoltage = self.getFrictionVoltage()
