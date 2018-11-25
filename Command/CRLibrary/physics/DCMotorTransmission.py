@@ -2,7 +2,9 @@
 #should already consider gearing and efficiency losses
 #The motor is assumed symmetric forward/reverse
 
-import util
+import CRLibrary
+import CRLibrary.util.util as util
+import CRLibrary.util.units as units
 
 class DCMotorTransmission:
     __speedPerVolt__ = 0 #rad/s per V (no load)

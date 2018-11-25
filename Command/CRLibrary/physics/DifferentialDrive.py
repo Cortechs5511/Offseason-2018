@@ -1,7 +1,10 @@
 #Dynamic model a differential drive robot
 #Center of mass is coincident with center of rotation assumed
 
-import util
+import CRLibrary
+import CRLibrary.util.util as util
+import CRLibrary.util.units as units
+import CRLibrary.physics.DCMotorTransmission as DCMotorTransmission
 
 class DifferentialDrive:
     #all units must be in SI!!
@@ -216,3 +219,6 @@ class DriveDynamics:
         self.voltage.print("Voltage")
         self.wheelTorque.print("Wheel Torque")
         print()
+
+    def getVoltage(self):
+        return [self.voltage.left, self.voltage.right]

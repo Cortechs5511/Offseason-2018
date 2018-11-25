@@ -1,10 +1,10 @@
 import math
 
-import util
-import units
-
-import DCMotorTransmission
-import DifferentialDrive
+import CRLibrary
+import CRLibrary.util.util as util
+import CRLibrary.util.units as units
+import CRLibrary.physics.DCMotorTransmission as DCMotorTransmission
+import CRLibrary.physics.DifferentialDrive as DifferentialDrive
 
 transmission = DCMotorTransmission.DCMotorTransmission(units.rpmToRadsPerSec(65), 0.35, 1.0)
 drive = DifferentialDrive.DifferentialDrive(140.0, 84.0, 0, units.inchesToMeters(2.0), units.inchesToMeters(25.5)/2, transmission, transmission)
