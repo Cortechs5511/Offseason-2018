@@ -20,7 +20,7 @@ class DifferentialDrive:
     #Emperical testing of drivebase shows that there was an unexplained loss of torque,
     #proportional to velocity, likely due to scrube of wheelsself.
     #Note this might not be purely linear
-    __angularDrag__ = 0
+    __angularDrag__ = 0 #initially assume zero until further testing
 
     #measured by rolling the robot a known distance and counting encoder ticks
     __wheelRadius__ = 0 #in meters
@@ -36,32 +36,19 @@ class DifferentialDrive:
     def __init__(self,mass, moi, angularDrag, wheelRadius, effWheelbaseRadius, leftTransmission, rightTransmission):
         self.__mass__ = mass
         self.__moi__ =  moi
-        self.__angularDrag__ = angularDrag
+        self.__angularDrag__ = angularDrag #initially assume zero until further testing
         self.__wheelRadius__ = wheelRadius
         self.__effWheelbaseRadius__ = effWheelbaseRadius
         self.__leftTransmission__ = leftTransmission
         self.__rightTransmission__ = rightTransmission
 
-    def mass(self):
-        return self.__mass__
-
-    def moi(self):
-        return self.__moi__
-
-    def angularDrag(self):
-        return self.__angularDrag__
-
-    def wheelRadius(self):
-        return self.__wheelRadius__
-
-    def effWheelbaseRadius(self):
-        return self.__effWheelbaseRadius__
-
-    def leftTransmission(self):
-        return self.__leftTransmission__
-
-    def rightTransmission(self):
-        return self.__rightTransmission__
+    def mass(self): return self.__mass__
+    def moi(self): return self.__moi__
+    def angularDrag(self): return self.__angularDrag__
+    def wheelRadius(self): return self.__wheelRadius__
+    def effWheelbaseRadius(self): return self.__effWheelbaseRadius__
+    def leftTransmission(self): return self.__leftTransmission__
+    def rightTransmission(self): return self.__rightTransmission__
 
     #The following two functions can be solved either in velocity or acceleration, the math is the same
     def solveForwardKinematics(self, wheelMotion):
@@ -172,13 +159,11 @@ class DifferentialDrive:
             return util.sign(curvature) * self.wheelRadius() * wheelSpeed/self.effWheelbaseRadius()
 
         rightSpeedIfLeftMax = leftSpeedAtMaxVoltage * (self.effWheelbaseRadius()*curvature+1)/(1-self.effWheelbaseRadius()*curvature)
-        if(abs(rightSpeedIfLeftMax)<=rightSpeedAtMaxVoltage+util.kEpsilon):
-            return self.wheelRadius() * (leftSpeedAtMaxVoltage+rightSpeedIfLeftMax)/2
+        if(abs(rightSpeedIfLeftMax)<=rightSpeedAtMaxVoltage+util.kEpsilon): return self.wheelRadius() * (leftSpeedAtMaxVoltage+rightSpeedIfLeftMax)/2
         leftSpeedIfRightMax = rightSpeedAtMaxVoltage * (1-self.effWheelbaseRadius()*curvature)/(1+self.effWheelbaseRadius()*curvature)
         return self.wheelRadius() * (rightSpeedAtMaxVoltage+leftSpeedIfRightMax)/2
 
-    #can refer to velocity or acceleration depending on context
-
+#can refer to velocity or acceleration depending on context
 class ChassisState:
     linear = 0
     angular = 0
@@ -190,6 +175,7 @@ class ChassisState:
     def print(self, name = ""):
         print(name + " (" + str(self.linear)+","+str(self.angular)+")")
 
+#can refer to many things (velocity, acceleration, torque, voltage, etc.) depending on context
 class WheelState:
     left = 0
     right = 0

@@ -10,6 +10,7 @@ import wpilib
 from wpilib import SmartDashboard
 from wpilib.command.subsystem import Subsystem
 
+from commands.diffDrive import diffDrive
 from commands.setSpeedDT import setSpeedDT
 from commands.setFixedDT import setFixedDT
 
@@ -19,6 +20,10 @@ from path import path
 
 from sim import simComms
 
+from CRLibrary.physics import DCMotorTransmission as DCMotor
+from CRLibrary.physics import DifferentialDrive as dDrive
+from CRLibrary.util import units as units
+
 class Drive(Subsystem):
 
     mode = ""
@@ -27,6 +32,8 @@ class Drive(Subsystem):
     spline = None
 
     prevDist = [0,0]
+
+    maxSpeed = 0.9
 
     def __init__(self, Robot):
         super().__init__('Drive')
@@ -105,6 +112,10 @@ class Drive(Subsystem):
         self.angleController = angleController
         self.angleController.disable()
 
+        transmission = DCMotor.DCMotorTransmission(units.rpmToRadsPerSec(76.6), 2.23, 1.0)
+        self.model = dDrive.DifferentialDrive(140, 100, 0, units.inchesToMeters(2.0), units.inchesToMeters(20)/2, transmission, transmission)
+        self.maxVel = self.maxSpeed*self.model.getMaxAbsVelocity(0, 0, 12)
+
     def __getDistance__(self):
         return self.getAvgDistance()
 
@@ -140,6 +151,9 @@ class Drive(Subsystem):
             self.spline = path.initPath(self, name)
             self.distController.disable()
             self.angleController.enable()
+        elif(mode=="DiffDrive"):
+            self.distController.disable()
+            self.angleController.disable()
         elif(mode=="Direct"):
             self.distController.disable()
             self.angleController.disable()
@@ -157,6 +171,9 @@ class Drive(Subsystem):
     def setPathFinder(self,name):
         self.setMode("PathFinder", name=name)
 
+    def setDiffDrive(self):
+        self.setMode("DiffDrive")
+
     def setDirect(self):
         self.setMode("Direct")
 
@@ -168,11 +185,14 @@ class Drive(Subsystem):
     def tankDrive(self,left=0,right=0):
         if(self.mode=="Distance"):
             [left,right] = [self.distPID,self.distPID]
-        if(self.mode=="Angle"):
+
+        elif(self.mode=="Angle"):
             [left,right] = [self.anglePID,-self.anglePID]
-        if(self.mode=="Combined"):
+
+        elif(self.mode=="Combined"):
             [left,right] = [self.distPID+self.anglePID,self.distPID-self.anglePID]
-        if(self.mode=="PathFinder"):
+
+        elif(self.mode=="PathFinder"):
             angle = pf.r2d(self.spline[0].getHeading())
             if(angle>180): angle=360-angle
             else: angle=-angle
@@ -182,19 +202,24 @@ class Drive(Subsystem):
             [left,right] = path.followPath(self,self.spline[0],self.spline[1])
             [left,right] = [left+self.anglePID,right-self.anglePID]
 
-        left = min(abs(left),1)*self.sign(left)
-        right = min(abs(right),1)*self.sign(right)
+        elif(self.mode=="DiffDrive"):
+            wheelVelocity = dDrive.WheelState(left*self.maxVel/self.model.wheelRadius(), right*self.maxVel/self.model.wheelRadius())
+            wheelAcceleration = dDrive.WheelState(0, 0) #Add better math here later
+            voltage = self.model.solveInverseDynamics_WS(wheelVelocity, wheelAcceleration).getVoltage()
+            [left, right] = [voltage[0]/12, voltage[1]/12]
+
+        elif(self.mode=="Direct"):
+            [left, right] = [left, right] #Add advanced logic here
+
+        left = min(abs(left),self.maxSpeed)*self.sign(left)
+        right = min(abs(right),self.maxSpeed)*self.sign(right)
 
         self.__tankDrive__(left,right)
 
     def __tankDrive__(self,left,right):
         RightGain = 0.9
         if wpilib.RobotBase.isSimulation(): RightGain = 1
-
-        maxSpeed = 0.9
-
-        left = maxSpeed * left
-        right = maxSpeed * right * RightGain
+        right = right * RightGain
 
         self.left.set(left)
         self.right.set(right)
@@ -242,7 +267,8 @@ class Drive(Subsystem):
         #return 0
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setSpeedDT(timeout = 300))
+        self.setDefaultCommand(diffDrive(timeout = 300))
+        #self.setDefaultCommand(setSpeedDT(timeout = 300))
 
     def UpdateDashboard(self):
         SmartDashboard.putData("DT_DistPID", self.distController)

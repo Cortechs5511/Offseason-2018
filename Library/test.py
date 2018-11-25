@@ -7,7 +7,7 @@ import DCMotorTransmission
 import DifferentialDrive
 
 transmission = DCMotorTransmission.DCMotorTransmission(units.rpmToRadsPerSec(65), 0.35, 1.0)
-drive = DifferentialDrive.DifferentialDrive(70.0, 84.0, 0, units.inchesToMeters(2.0), units.inchesToMeters(25.5)/2, transmission, transmission)
+drive = DifferentialDrive.DifferentialDrive(140.0, 84.0, 0, units.inchesToMeters(2.0), units.inchesToMeters(25.5)/2, transmission, transmission)
 
 #dynamics = DifferentialDrive.DriveDynamics()
 chassisVelocity = DifferentialDrive.ChassisState(units.feetToMeters(10), units.degreesToRadians(45))
