@@ -52,12 +52,3 @@ class PhysicsEngine(object):
 
         hal_data['encoder'][0]['count'] = int(self.distance[0]/self.DistPerPulseL)
         hal_data['encoder'][1]['count'] = int(self.distance[1]/self.DistPerPulseR)
-
-        #lift = hal_data['CAN'][30]['value']
-        #hal_data['encoder'][2]['count'] += int(lift*100)
-
-        #wrist = hal_data['CAN'][40]['value']
-        #hal_data['encoder'][3]['count'] += int(wrist*100)
-
-        #intake = hal_data['CAN'][50]['value']
-        #hal_data['encoder'][4]['count'] += int(intake*100)

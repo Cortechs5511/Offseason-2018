@@ -125,9 +125,6 @@ class Drive(Subsystem):
     def __getAngle__(self):
         return self.getAngle()
 
-    #def getVelocity(self):
-    #    return self.rightEncoder.getRate()
-
     def __setAngle__(self,output):
         self.anglePID = output
 
@@ -224,7 +221,10 @@ class Drive(Subsystem):
         self.left.set(left)
         self.right.set(right)
 
-        vel = [50*(self.getDistance()[0]-self.prevDist[0]),50*(self.getDistance()[1]-self.prevDist[1])]
+        self.updateOdometry(left, right)
+
+    def updateOdometry(self, left, right):
+        vel = self.getVelocity()
         od.update(vel[0],vel[1],self.getAngle())
         self.prevDist = self.getDistance()
 
@@ -238,16 +238,26 @@ class Drive(Subsystem):
         return [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
 
     def getAvgDistance(self):
-        return self.getDistance()[1] #One encoder broken
+        #return self.getDistance()[1] #One encoder broken
+        return (self.getDistance()[0]+self.getDistance()[1])/2
 
     def getVelocity(self):
-        return [self.leftEncoder.getRate(), self.rightEncoder.getRate()]
+        velocity = [50*(self.getDistance()[0]-self.prevDist[0]),50*(self.getDistance()[1]-self.prevDist[1])]
+        self.prevDist = self.getDistance()
+        return velocity
+
+    '''
+    def getVelocity(self):
+        return [self.leftEncoder.getRate(), self.rightEncoder.getRate()] #Test if this works at meeting, does not work in sim
+    '''
 
     def getAvgVelocity(self):
-        return self.rightEncoder.getRate() #feet per second, one encoder broken
+        #return self.rightEncoder.getRate() #feet per second, one encoder broken
+        return (self.getVelocity()[0]+self.getVelocity()[1])/2
 
     def getAvgAbsVelocity(self):
-        return abs(self.rightEncoder.getRate()) #feet per second, one encoder broken
+        #return abs(self.rightEncoder.getRate()) #feet per second, one encoder broken
+        return (abs(self.getVelocity()[0])+abs(self.getVelocity()[1]))/2
 
     def zeroEncoders(self):
         self.leftEncoder.reset()
