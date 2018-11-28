@@ -42,6 +42,7 @@ class MyRobot(wpilib.TimedRobot):
         '''Robot-wide initialization code should go here'''
 
         self.lstick = wpilib.Joystick(0)
+        self.rstick = wpilib.Joystick(1)
 
         timeout = 0
 
@@ -131,7 +132,7 @@ class MyRobot(wpilib.TimedRobot):
         self.logger.info("Robot in operator control mode")
 
     def teleopPeriodic(self):
-        self.drive.arcadeDrive(-self.lstick.getY(), self.lstick.getX())
+        self.drive.arcadeDrive(-self.lstick.getY(), -self.rstick.getY())
 
     def autonomousInit(self):
         self.logger.info("Robot in autonomous mode")
