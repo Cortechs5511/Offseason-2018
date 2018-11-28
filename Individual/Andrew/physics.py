@@ -34,8 +34,8 @@ class PhysicsEngine(object):
 
     def update_sim(self, hal_data, now, timeDiff):
         # Simulate the drivetrain
-        left = hal_data['CAN'][10]['value']*-1
-        right = hal_data['CAN'][20]['value']*-1
+        left = hal_data['CAN'][10]['value']
+        right = hal_data['CAN'][20]['value']
 
         if(abs(left)<self.deadZone): left = 0
         if(abs(right)<self.deadZone): right = 0
