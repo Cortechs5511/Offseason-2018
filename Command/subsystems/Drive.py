@@ -17,6 +17,7 @@ from commands.setFixedDT import setFixedDT
 import odometry as od
 import pathfinder as pf
 from path import path
+from path import path2
 
 from sim import simComms
 
@@ -34,6 +35,8 @@ class Drive(Subsystem):
     prevDist = [0,0]
 
     maxSpeed = 0.9
+
+    model = None
 
     def __init__(self, Robot):
         super().__init__('Drive')
@@ -113,7 +116,7 @@ class Drive(Subsystem):
         self.angleController.disable()
 
         transmission = DCMotor.DCMotorTransmission(units.rpmToRadsPerSec(76.6), 2.23, 1.0)
-        self.model = dDrive.DifferentialDrive(140, 100, 0, units.inchesToMeters(2.0), units.inchesToMeters(20)/2, transmission, transmission)
+        self.model = dDrive.DifferentialDrive(140, 100, 0, units.inchesToMeters(2.0), units.inchesToMeters(28)/2, transmission, transmission)
         self.maxVel = self.maxSpeed*self.model.getMaxAbsVelocity(0, 0, 12)
 
     def __getDistance__(self):
@@ -145,7 +148,8 @@ class Drive(Subsystem):
             self.distController.enable()
             self.angleController.enable()
         elif(mode=="PathFinder"):
-            self.spline = path.initPath(self, name)
+            #self.spline = path.initPath(self, name)
+            self.spline = path2.initPath(self, name)
             self.distController.disable()
             self.angleController.enable()
         elif(mode=="DiffDrive"):
@@ -196,8 +200,9 @@ class Drive(Subsystem):
 
             self.angleController.setSetpoint(angle)
             #print([angle,self.getAngle()])
-            [left,right] = path.followPath(self,self.spline[0],self.spline[1])
-            [left,right] = [left+self.anglePID,right-self.anglePID]
+            #[left,right] = path.followPath(self,self.spline[0],self.spline[1])
+            [left, right] = path2.followPath(self)
+            #[left,right] = [left+self.anglePID,right-self.anglePID]
 
         elif(self.mode=="DiffDrive"):
             wheelVelocity = dDrive.WheelState(left*self.maxVel/self.model.wheelRadius(), right*self.maxVel/self.model.wheelRadius())

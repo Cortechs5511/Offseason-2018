@@ -1,5 +1,7 @@
 import math
 
+from CRLibrary.util import units
+
 x = 0
 y = 0
 angle = 0
@@ -26,3 +28,16 @@ def display():
     global y
     global angle
     print([x, y, angle])
+
+def get():
+    global x
+    global y
+    global angle
+    return [x,y,angle]
+
+def getSI():
+    [x, y, angle] = get()
+    x = units.feetToMeters(x)
+    y = units.feetToMeters(y)
+    angle = units.degreesToRadians(angle)
+    return [x, y, angle]

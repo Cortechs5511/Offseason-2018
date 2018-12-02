@@ -119,7 +119,7 @@ class MyRobot(CommandBasedRobot):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
             self.updateDashboardPeriodic()
-            od.display() #displays odometry results
+            #od.display() #displays odometry results
             self.curr = 0
 
         SmartDashboard.putNumber("Velocity", self.drive.getVelocity()[1])

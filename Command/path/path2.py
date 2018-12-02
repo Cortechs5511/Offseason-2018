@@ -5,14 +5,23 @@ import pickle
 import os.path
 import pathfinder as pf
 
+from CRLibrary.physics import DifferentialDrive as ddrive
+from CRLibrary.util import units
+import odometry as od
+
 timer = wpilib.Timer()
 
-MAXV = 17
-MAXA = 12
+MAXV = 10
+MAXA = 10
 MAXJ = 10
 
 width = 33/12
 gains = [1,0,1,1/MAXV,0]
+
+left = None
+right = None
+time = 0
+maxTime = 0
 
 def makeTraj(name):
     if(name=="DriveStraight"):
@@ -88,6 +97,8 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
 
 def initPath(drivetrain, name):
+    global left, right, time, maxTime
+
     [left,right,modifier] = getTraj(name)
 
     leftFollower = pf.followers.EncoderFollower(left)
@@ -99,14 +110,53 @@ def initPath(drivetrain, name):
     rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
     showPath(left,right,modifier)
-    
-    timer.reset()
-    timer.start()
+
+    time = 0
+    maxTime = len(left)
 
     return [leftFollower,rightFollower]
 
-def followPath(drivetrain, leftFollower, rightFollower):
-    if(not leftFollower.isFinished()):
-        #print(drivetrain.getDistance())
-        return [leftFollower.calculate(drivetrain.getRaw()[0]), rightFollower.calculate(-drivetrain.getRaw()[1])]
-    else: return [0,0]
+def followPath(DT):
+    global left, right, time, maxTime
+
+    if(time>=maxTime): return [0,0]
+
+    leftSeg = left[time]
+    rightSeg = right[time]
+    time += 1
+
+    xd = units.feetToMeters((leftSeg.x+rightSeg.x)/2)
+    yd = -units.feetToMeters((leftSeg.y+rightSeg.y)/2) #unsure if needs to be negated
+    thetad = -(leftSeg.heading+rightSeg.heading)/2 #unsure if needs to be negated
+
+    leftVel = units.feetToMeters(leftSeg.velocity)
+    rightVel = units.feetToMeters(rightSeg.velocity)
+
+    leftAccel = units.feetToMeters(leftSeg.acceleration)
+    rightAccel = units.feetToMeters(rightSeg.acceleration)
+
+    vd = (rightVel + leftVel)/2
+    wd = (rightVel - leftVel)/(2*DT.model.effWheelbaseRadius()) #unsure if needs to be negated
+
+    [x,y,theta] = od.getSI()
+
+    b = 0 #needs to be tuned
+    v = vd * math.cos(thetad-theta) + k(vd,wd) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
+    w = wd + b * vd * sinc(thetad-theta) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd) * (thetad-theta) #unsure if needs to be negated
+
+    print([w,wd])
+
+    chassisVel = ddrive.ChassisState(v,w)
+    chassisAccel = ddrive.ChassisState(0, 0)
+
+    voltage = DT.model.solveInverseDynamics_CS(chassisVel, chassisAccel).getVoltage()
+    [leftOut, rightOut] = [voltage[0]/12, voltage[1]/12]
+
+    return [leftOut, rightOut] #with b=0, zeta=0, should function like untuned pathfinder, ie inaccurate
+
+def k(vd, wd):
+    zeta = 0 #needs to be tuned
+    return 2 * zeta * math.sqrt(wd**2+vd**2)
+
+def sinc(theta):
+    return math.sin(theta)/theta
