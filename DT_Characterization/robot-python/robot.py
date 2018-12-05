@@ -82,6 +82,11 @@ class MyRobot(wpilib.TimedRobot):
 
             motor.configOpenLoopRamp(0.2,timeout) #number of seconds from 0 to 1
 
+        TalonRight.setInverted(False)
+        if not wpilib.RobotBase.isSimulation():
+            VictorRight1.setInverted(False)
+            VictorRight2.setInverted(False)
+
         self.left = TalonLeft
         self.right = TalonRight
 
