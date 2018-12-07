@@ -49,6 +49,8 @@ class Limelight:
 
     def __init__(self):
         self.table = NetworkTables.getTable("limelight")
+        self.table.putNumber('ledMode',1)
+        print ('it ran')
 
     def ReadLimelightData(self):
         self.ty = self.table.getNumber('ty',None)
@@ -56,6 +58,7 @@ class Limelight:
         self.ts = self.table.getNumber('ts',None)
 
     def Gettx(self):
+        self.table.putNumber('ledMode',1)
         if self.InformationAvailable() == False:
             return 0
         else:

@@ -55,11 +55,15 @@ import odometry as od
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
+
+from commands.Limelight import Limelight
+from commands.turnVision import TurnVision
 #from navx import AHRS as navx
 
 class MyRobot(CommandBasedRobot):
 
     def robotInit(self):
+
         '''
         This is a good place to set up your subsystems and anything else that
         you will need to access later.
@@ -99,7 +103,6 @@ class MyRobot(CommandBasedRobot):
         self.RightSwitchMiddle = RightSwitchMiddle()
         self.LeftSwitchMiddle2Cube = LeftSwitchMiddle2Cube()
         self.RightSwitchMiddle2Cube = RightSwitchMiddle2Cube()
-        self.getLimelightData = getLimelightData()
 
         oi.commands()
 
@@ -114,7 +117,7 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putNumber("PF_V",path.gains[3])
         SmartDashboard.putNumber("PF_A",path.gains[4])
 
-        SmartDashboard.putData("Limelight Turn",commands.turnVision.TurnVision())
+        SmartDashboard.putData("Limelight Turn", TurnVision())
 
     def robotPeriodic(self):
         self.curr = self.curr + 1
