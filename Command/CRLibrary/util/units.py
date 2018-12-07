@@ -23,3 +23,9 @@ def degreesToRadians(degrees):
 
 def radiansToDegrees(radians):
     return radians * 180 / math.pi
+
+def poundsToKg(pounds):
+    return pounds * 0.453592
+
+def kgToPounds(kg):
+    return kg * 2.20462

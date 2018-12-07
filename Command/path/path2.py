@@ -143,7 +143,7 @@ def followPath(DT):
     v = vd * math.cos(thetad-theta) + k(vd,wd) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
     w = wd + b * vd * sinc(thetad-theta) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd) * (thetad-theta) #unsure if needs to be negated
 
-    print([v, vd, w, wd])
+    #print([v, vd, w, wd])
 
     chassisVel = ddrive.ChassisState(v,w)
     chassisAccel = ddrive.ChassisState(0, 0)
