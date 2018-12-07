@@ -26,8 +26,6 @@ from commands.DriveStraightCombined import DriveStraightCombined
 from commands.DrivePathFinder import DrivePathFinder
 from commands.TurnAngle import TurnAngle
 
-from commands.getLimelightData import getLimelightData
-
 from commands.Zero import Zero
 
 from commands import Sequences
@@ -73,6 +71,7 @@ class MyRobot(CommandBasedRobot):
         self.lift = Lift.Lift(self)
         self.wrist = Wrist.Wrist(self)
         self.intake = Intake.Intake(self)
+        self.limelight = Limelight()
 
         self.timer = wpilib.Timer()
 
@@ -115,6 +114,8 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putNumber("PF_V",path.gains[3])
         SmartDashboard.putNumber("PF_A",path.gains[4])
 
+        SmartDashboard.putData("Limelight Turn",commands.turnVision.TurnVision())
+
     def robotPeriodic(self):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
@@ -129,6 +130,7 @@ class MyRobot(CommandBasedRobot):
         path.gains[2] = SmartDashboard.getNumber("PF_D",0)
         path.gains[3] = SmartDashboard.getNumber("PF_V",0)
         path.gains[4] = SmartDashboard.getNumber("PF_A",0)
+
 
     def autonomousInit(self):
         self.getLimelightData.start()
