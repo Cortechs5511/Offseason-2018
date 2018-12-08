@@ -115,6 +115,7 @@ class Drive(Subsystem):
         self.angleController = angleController
         self.angleController.disable()
 
+        '''
         #robot characteristics
         mass = 140 #pounds, approximated
         massSI = units.poundsToKg(mass)
@@ -134,11 +135,12 @@ class Drive(Subsystem):
         kv = 0.67 #volt per (feet per second), measured
         kvFinal=units.feetToMeters(1/kv)/(2*wheelRadiusSI)
         #print("KV FINAL: " + str(kvFinal)) #rad/sec per volt
+        '''
 
-        transmission = DCMotor.DCMotorTransmission(kvFinal, ktFinal, vintercept)
-        self.model = dDrive.DifferentialDrive(massSI, 50, 0, units.inchesToMeters(2.0), units.inchesToMeters(28)/2, transmission, transmission)
+        transmission = DCMotor.DCMotorTransmission(4.50, 7.03, 1.10)
+        self.model = dDrive.DifferentialDrive(64, 50, 0, units.inchesToMeters(2.0), units.inchesToMeters(28)/2, transmission, transmission)
         self.maxVel = self.maxSpeed*self.model.getMaxAbsVelocity(0, 0, 12)
-        #print(self.maxVel)
+        print("Max Velocity: "+ str(self.maxVel))
 
     def __getDistance__(self):
         return self.getAvgDistance()
