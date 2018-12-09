@@ -34,7 +34,7 @@ class Drive(Subsystem):
 
     prevDist = [0,0]
 
-    maxSpeed = 0.9
+    maxSpeed = 1
 
     model = None
 
@@ -115,29 +115,7 @@ class Drive(Subsystem):
         self.angleController = angleController
         self.angleController.disable()
 
-        '''
-        #robot characteristics
-        mass = 140 #pounds, approximated
-        massSI = units.poundsToKg(mass)
-
-        wheelRadius = 2 #inches, known
-        wheelRadiusSI = units.inchesToMeters(wheelRadius)
-
-        gearRatio = 6.35 #unitless, known
-
-        #volts for a specific v, a is kv*v + ka*a + vintercept
-        vintercept = 1.13 #Volts, measured
-
-        ka = 0.055 #volt per (feet per second squared), measured
-        ktFinal = units.feetToMeters(1/ka)/(wheelRadiusSI*massSI)
-        #print("KT FINAL: " + str(ktFinal)) #torque per volt
-
-        kv = 0.67 #volt per (feet per second), measured
-        kvFinal=units.feetToMeters(1/kv)/(2*wheelRadiusSI)
-        #print("KV FINAL: " + str(kvFinal)) #rad/sec per volt
-        '''
-
-        transmission = DCMotor.DCMotorTransmission(4.50, 7.03, 1.10)
+        transmission = DCMotor.DCMotorTransmission(8.02, 2.22, 1.10)
         self.model = dDrive.DifferentialDrive(64, 50, 0, units.inchesToMeters(2.0), units.inchesToMeters(28)/2, transmission, transmission)
         self.maxVel = self.maxSpeed*self.model.getMaxAbsVelocity(0, 0, 12)
         print("Max Velocity: "+ str(self.maxVel))

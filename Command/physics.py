@@ -20,7 +20,7 @@ class PhysicsEngine(object):
             140*units.lbs,                  # robot mass
             6.35,                           # drivetrain gear ratio
             3,                              # motors per side
-            (33/12)*units.feet,             # robot wheelbase
+            (28/12)*units.feet,             # robot wheelbase
             (40/12)*units.feet,             # robot width
             (35/12)*units.feet,             # robot length
             (4/12)*units.feet               # wheel diameter

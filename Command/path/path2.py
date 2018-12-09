@@ -11,9 +11,9 @@ import odometry as od
 
 timer = wpilib.Timer()
 
-MAXV = 10
-MAXA = 10
-MAXJ = 10
+MAXV = 5
+MAXA = 5
+MAXJ = 5
 
 width = 33/12
 gains = [1,0,1,1/MAXV,0]
@@ -32,6 +32,7 @@ def makeTraj(name):
     if(name=="LeftSwitch"):
         points = [
             pf.Waypoint(0,0,0),
+            pf.Waypoint(7,9,0),
             pf.Waypoint(10,9,0)
         ]
     if(name=="RightScale"):
@@ -126,27 +127,33 @@ def followPath(DT):
     time += 1
 
     xd = units.feetToMeters((leftSeg.x+rightSeg.x)/2)
-    yd = -units.feetToMeters((leftSeg.y+rightSeg.y)/2) #unsure if needs to be negated
-    thetad = -(leftSeg.heading+rightSeg.heading)/2 #unsure if needs to be negated
+    yd = units.feetToMeters((leftSeg.y+rightSeg.y)/2) #unsure if needs to be negated
+    thetad = (leftSeg.heading+rightSeg.heading)/2 #unsure if needs to be negated
 
-    leftVel = units.feetToMeters(leftSeg.velocity)
-    rightVel = units.feetToMeters(rightSeg.velocity)
+    #print([xd,yd,thetad])
 
-    leftAccel = units.feetToMeters(leftSeg.acceleration)
-    rightAccel = units.feetToMeters(rightSeg.acceleration)
+    leftVeld = units.feetToMeters(leftSeg.velocity)
+    rightVeld = units.feetToMeters(rightSeg.velocity)
 
-    vd = (rightVel + leftVel)/2
-    wd = (rightVel - leftVel)/(2*DT.model.effWheelbaseRadius()) #unsure if needs to be negated
-    [x,y,theta] = od.getSI()
+    leftAcceld = units.feetToMeters(leftSeg.acceleration)
+    rightAcceld = units.feetToMeters(rightSeg.acceleration)
 
-    b = 0 #needs to be tuned
+    vd = (rightVeld + leftVeld)/2
+    wd = (rightVeld - leftVeld)/(2*DT.model.effWheelbaseRadius()) #unsure if needs to be negated
+
+    ad = (rightAcceld + leftAcceld)/2
+    alphad = (rightAcceld - leftAcceld)/(2*DT.model.effWheelbaseRadius())
+
+    [x, y, theta, rightVel, leftVel] = od.getSI()
+    theta = -theta
+    y = -y
+
+    b = 1.5 #needs to be tuned
     v = vd * math.cos(thetad-theta) + k(vd,wd) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
     w = wd + b * vd * sinc(thetad-theta) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd) * (thetad-theta) #unsure if needs to be negated
 
-    #print([v, vd, w, wd])
-
     chassisVel = ddrive.ChassisState(v,w)
-    chassisAccel = ddrive.ChassisState(0, 0)
+    chassisAccel = ddrive.ChassisState(0,0)
 
     voltage = DT.model.solveInverseDynamics_CS(chassisVel, chassisAccel).getVoltage()
     [leftOut, rightOut] = [voltage[0]/12, voltage[1]/12]
@@ -154,8 +161,9 @@ def followPath(DT):
     return [leftOut, rightOut] #with b=0, zeta=0, should function like untuned pathfinder, ie inaccurate
 
 def k(vd, wd):
-    zeta = 0 #needs to be tuned
+    zeta = 0.2 #needs to be tuned
     return 2 * zeta * math.sqrt(wd**2+vd**2)
 
 def sinc(theta):
+    if(theta==0): return 1
     return math.sin(theta)/theta
