@@ -41,7 +41,7 @@ def display():
     global angle
     global rightVel
     global leftVel
-    print([x,y,angle, rightVel, leftVel])
+    print([x,y,angle, leftVel, rightVel])
 
 def get():
     global x
@@ -49,7 +49,7 @@ def get():
     global angle
     global rightVel
     global leftVel
-    return [x,y,angle, rightVel, leftVel]
+    return [x,y,angle, leftVel, rightVel]
 
 def getSI():
     [x, y, angle, rightVel, leftVel] = get()
@@ -58,4 +58,4 @@ def getSI():
     angle = units.degreesToRadians(angle)
     rightVel = units.feetToMeters(rightVel)
     leftVel = units.feetToMeters(leftVel)
-    return [x, y, angle, rightVel, leftVel]
+    return [x, y, angle, leftVel, rightVel]

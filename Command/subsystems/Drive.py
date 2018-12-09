@@ -116,7 +116,7 @@ class Drive(Subsystem):
         self.angleController.disable()
 
         transmission = DCMotor.DCMotorTransmission(8.02, 2.22, 1.10)
-        self.model = dDrive.DifferentialDrive(64, 50, 0, units.inchesToMeters(2.0), units.inchesToMeters(28)/2, transmission, transmission)
+        self.model = dDrive.DifferentialDrive(64, 50, 0, units.inchesToMeters(2.0), units.inchesToMeters(14), transmission, transmission)
         self.maxVel = self.maxSpeed*self.model.getMaxAbsVelocity(0, 0, 12)
         print("Max Velocity: "+ str(self.maxVel))
 

@@ -11,17 +11,38 @@ import odometry as od
 
 timer = wpilib.Timer()
 
-MAXV = 5
-MAXA = 5
-MAXJ = 5
+MAXV = 8
+MAXA = 8
+MAXJ = 8
 
 width = 33/12
+
 gains = [1,0,1,1/MAXV,0]
 
 left = None
 right = None
 time = 0
 maxTime = 0
+
+rightPrev = 0
+leftPrev = 0
+
+leftVFinal = 0
+rightVFinal = 0
+
+leftVTemp = 0
+rightVTemp = 0
+
+TolVel = 0.2 #feet/second
+
+[kP,kI,kD,kF] = [0.00, 0.00, 0.00, 0.00]
+if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.50, 0.00, 0.00, 0.00]
+
+def getLeftVelocity():
+    return od.get()[3] #feet/second
+
+def getRightVelocity():
+    return od.get()[4] #feet/second
 
 def makeTraj(name):
     if(name=="DriveStraight"):
@@ -74,7 +95,7 @@ def getTraj(name):
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
             dt=0.02, max_velocity=MAXV, max_acceleration=MAXA, max_jerk=MAXJ)
 
-        modifier = pf.modifiers.TankModifier(trajectory).modify(width/2.4)
+        modifier = pf.modifiers.TankModifier(trajectory).modify(14/12)
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
 
@@ -98,7 +119,7 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
 
 def initPath(drivetrain, name):
-    global left, right, time, maxTime
+    global left, right, time, maxTime, leftController, rightController
 
     [left,right,modifier] = getTraj(name)
 
@@ -115,12 +136,21 @@ def initPath(drivetrain, name):
     time = 0
     maxTime = len(left)
 
+    leftController.enable()
+    rightController.enable()
+
+    leftController.setSetpoint(0)
+    rightController.setSetpoint(0)
+
     return [leftFollower,rightFollower]
 
 def followPath(DT):
-    global left, right, time, maxTime
+    global left, right, time, maxTime, leftPrev, rightPrev, leftVTemp, rightVTemp, leftVFinal, rightVFinal, leftController, rightController
 
-    if(time>=maxTime): return [0,0]
+    if(time>=maxTime):
+        leftController.disable()
+        rightController.disable()
+        return [0,0]
 
     leftSeg = left[time]
     rightSeg = right[time]
@@ -145,25 +175,73 @@ def followPath(DT):
     alphad = (rightAcceld - leftAcceld)/(2*DT.model.effWheelbaseRadius())
 
     [x, y, theta, rightVel, leftVel] = od.getSI()
-    theta = -theta
-    y = -y
+    [y, theta] = [-y, -theta]
 
-    b = 1.5 #needs to be tuned
-    v = vd * math.cos(thetad-theta) + k(vd,wd) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
-    w = wd + b * vd * sinc(thetad-theta) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd) * (thetad-theta) #unsure if needs to be negated
+    b = 2 #needs to be tuned
+    v = vd * math.cos(thetad-theta) + k(vd,wd,b) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
+    w = wd + b * vd * sinc(thetad-theta) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd,b) * (thetad-theta) #unsure if needs to be negated
+
+    leftOut = v - DT.model.effWheelbaseRadius() * w
+    rightOut = v + DT.model.effWheelbaseRadius() * w
+
+    leftVPrev = leftPrev
+    rightVPrev = rightPrev
+
+    leftAccel = (leftOut-leftVPrev)*50
+    rightAccel = (rightOut-rightVPrev)*50
+
+    leftPrev = leftOut
+    rightPrev = rightOut
+
+    v = (leftOut + rightOut)/2
+    w = (rightOut - leftOut)/(2*DT.model.effWheelbaseRadius()) #unsure if needs to be negated
+
+    a = (leftAccel + rightAccel)/2
+    alpha = (rightAccel - leftAccel)/(2*DT.model.effWheelbaseRadius())
 
     chassisVel = ddrive.ChassisState(v,w)
-    chassisAccel = ddrive.ChassisState(0,0)
+    chassisAccel = ddrive.ChassisState(a,alpha)
 
     voltage = DT.model.solveInverseDynamics_CS(chassisVel, chassisAccel).getVoltage()
-    [leftOut, rightOut] = [voltage[0]/12, voltage[1]/12]
+    [leftV, rightV] = [voltage[0]/12, voltage[1]/12]
 
-    return [leftOut, rightOut] #with b=0, zeta=0, should function like untuned pathfinder, ie inaccurate
+    leftVTemp = leftV
+    rightVTemp = rightV
 
-def k(vd, wd):
-    zeta = 0.2 #needs to be tuned
-    return 2 * zeta * math.sqrt(wd**2+vd**2)
+    leftController.setSetpoint(units.metersToFeet(leftOut))
+    rightController.setSetpoint(units.metersToFeet(rightOut))
+
+    return [leftVFinal, rightVFinal] #with b=0, zeta=0, should function like untuned pathfinder, ie inaccurate
+
+def k(vd, wd, b):
+    zeta = 0.4 #needs to be tuned
+    return 2 * zeta * math.sqrt(wd**2+b*vd**2)
 
 def sinc(theta):
     if(theta==0): return 1
     return math.sin(theta)/theta
+
+def setLeftVelocity(output):
+    global leftVTemp, leftVFinal
+    ff = leftVTemp
+    leftVFinal = output + ff
+
+def setRightVelocity(output):
+    global rightVTemp, rightVFinal
+    ff = rightVTemp
+    rightVFinal = output + ff
+
+
+leftController = wpilib.PIDController(kP, kI, kD, kF, source=getLeftVelocity, output=setLeftVelocity)
+leftController.setInputRange(-MAXV, MAXV) #feet/second
+leftController.setOutputRange(-1, 1) #percent
+leftController.setAbsoluteTolerance(TolVel)
+leftController.setContinuous(False)
+leftController.disable()
+
+rightController = wpilib.PIDController(kP, kI, kD, kF, source=getRightVelocity, output=setRightVelocity)
+rightController.setInputRange(-MAXV, MAXV) #feet/second
+rightController.setOutputRange(-1, 1) #percent
+rightController.setAbsoluteTolerance(TolVel)
+rightController.setContinuous(False)
+rightController.disable()
