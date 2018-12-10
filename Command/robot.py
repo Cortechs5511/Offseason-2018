@@ -149,7 +149,7 @@ class MyRobot(CommandBasedRobot):
         elif self.autoMode == "TestRamsetes": self.TestRamsetes.start()
 
     def autoLogic(self, gameData, auto):
-        return "TestPF"
+        return "TestRamsetes"
 
         '''
         if(auto=="L"):
