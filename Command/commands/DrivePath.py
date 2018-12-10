@@ -18,6 +18,9 @@ class DrivePath(TimedCommand):
         self.name = name
         self.follower = follower
 
+        self.Ramsetes = self.DT.Ramsetes
+        self.PathFinder = self.DT.PathFinder
+
     def initialize(self):
         self.DT.setPath(name=self.name, follower=self.follower)
 
@@ -25,8 +28,8 @@ class DrivePath(TimedCommand):
         self.DT.tankDrive()
 
     def isFinished(self):
-        if(self.follower=="PathFinder"): return (PathFinder.isFinished()  or self.isTimedOut())
-        elif(self.follower=="Ramsetes"): return (Ramsetes.isFinished()  or self.isTimedOut())
+        if(self.follower=="PathFinder"): return (self.PathFinder.isFinished()  or self.isTimedOut())
+        elif(self.follower=="Ramsetes"): return (self.Ramsetes.isFinished()  or self.isTimedOut())
         else: return True
 
     def interrupted(self):
@@ -34,5 +37,5 @@ class DrivePath(TimedCommand):
 
     def end(self):
         self.DT.tankDrive(0,0)
-        if(self.follower=="PathFinder"): PathFinder.disablePID()
-        elif(self.follower=="Ramsetes"): Ramsetes.disablePID()
+        if(self.follower=="PathFinder"): self.PathFinder.disablePID()
+        elif(self.follower=="Ramsetes"): self.Ramsetes.disablePID()

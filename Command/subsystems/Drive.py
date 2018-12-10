@@ -14,7 +14,7 @@ from commands.diffDrive import diffDrive
 from commands.setSpeedDT import setSpeedDT
 from commands.setFixedDT import setFixedDT
 
-import odometry as od
+import path.odometry as od
 import pathfinder as pf
 
 from path import PathFinder
@@ -122,6 +122,10 @@ class Drive(Subsystem):
         self.maxVel = self.maxSpeed*self.model.getMaxAbsVelocity(0, 0, 12)
         #print("Max Velocity: "+ str(self.maxVel))
 
+        self.PathFinder = PathFinder.PathFinder(self, self.getDistance)
+        self.Ramsetes = Ramsetes.Ramsetes(self, self.model)
+
+
     def __getDistance__(self):
         return self.getAvgDistance()
 
@@ -153,8 +157,8 @@ class Drive(Subsystem):
         elif(mode=="Path"):
             self.distController.disable()
             self.angleController.disable()
-            if(self.follower=="PathFinder"): PathFinder.initPath(self, name)
-            elif(self.follower=="Ramsetes"): Ramsetes.initPath(self, name)
+            if(self.follower=="PathFinder"): self.PathFinder.initPath(name)
+            elif(self.follower=="Ramsetes"): self.Ramsetes.initPath(name)
         elif(mode=="DiffDrive"):
             self.distController.disable()
             self.angleController.disable()
@@ -195,8 +199,8 @@ class Drive(Subsystem):
         elif(self.mode=="Combined"):
             [left,right] = [self.distPID+self.anglePID,self.distPID-self.anglePID]
         elif(self.mode=="Path"):
-            if(self.follower=="PathFinder"): [left, right] = PathFinder.followPath(self)
-            elif(self.follower=="Ramsetes"): [left, right] = Ramsetes.followPath(self)
+            if(self.follower=="PathFinder"): [left, right] = self. PathFinder.followPath()
+            elif(self.follower=="Ramsetes"): [left, right] = self.Ramsetes.followPath()
         elif(self.mode=="DiffDrive"):
             wheelVelocity = dDrive.WheelState(left*self.maxVel/self.model.wheelRadius(), right*self.maxVel/self.model.wheelRadius())
             wheelAcceleration = dDrive.WheelState(0, 0) #Add better math here later
@@ -206,7 +210,7 @@ class Drive(Subsystem):
             [left, right] = [left, right] #Add advanced logic here
         else:
             [left, right] = [0,0]
-            
+
         left = min(abs(left),self.maxSpeed)*self.sign(left)
         right = min(abs(right),self.maxSpeed)*self.sign(right)
 

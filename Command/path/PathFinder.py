@@ -6,72 +6,61 @@ import os.path
 import pathfinder as pf
 
 from path import paths
+from path import odometry as od
 
-gains = [1,0,1,1/paths.getLimits()[0],0]
+class PathFinder():
 
-DT = None
-globalLeft = None
-globalRight = None
+    def __init__(self, DT, getDistances):
 
-def enablePID():
-    global angleController
-    angleController.enable()
-    angleController.setSetpoint(0)
+        '''Variables'''
+        self.DT = DT
+        self.getDistances = getDistances
+        self.leftFollower = None
+        self.rightFollower = None
+        self.PID = 0
 
-def disablePID():
-    global angleController
-    angleController.disable()
+        '''Gains'''
+        kA = [0.020,0.00,0.00,0.00]
+        self.gains = [1,0,1,1/paths.getLimits()[0],0]
+        TolAngle = 3 #degrees
 
-def initPath(drivetrain, name):
-    global DT, globalLeft, globalRight
+        '''PID Controllers'''
+        self.angleController = wpilib.PIDController(kA[0], kA[1], kA[2], kA[3], source=od.getAngle, output=self.setAngle)
+        self.angleController.setInputRange(-180,  180) #degrees
+        self.angleController.setOutputRange(-0.9, 0.9)
+        self.angleController.setAbsoluteTolerance(TolAngle)
+        self.angleController.setContinuous(True)
+        self.angleController.disable()
 
-    [left,right,modifier] = paths.getTraj(name)
-    paths.showPath(left,right,modifier)
+    def setAngle(self, output): self.PID = output
 
-    leftFollower = pf.followers.EncoderFollower(left)
-    leftFollower.configureEncoder(drivetrain.getRaw()[0], 255, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
-    leftFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
+    def enablePID(self):
+        self.angleController.enable()
+        self.angleController.setSetpoint(0)
 
-    rightFollower = pf.followers.EncoderFollower(right)
-    rightFollower.configureEncoder(-drivetrain.getRaw()[1], 127, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
-    rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
+    def disablePID(self): self.angleController.disable()
 
-    DT = drivetrain
-    globalLeft = leftFollower
-    globalRight = rightFollower
+    def initPath(self, name):
+        [left,right,modifier] = paths.getTraj(name)
+        paths.showPath(left,right,modifier)
 
-    enablePID()
+        self.leftFollower = pf.followers.EncoderFollower(left)
+        self.leftFollower.configureEncoder(int(self.getDistances()[0]*1000), 1000, 1/math.pi) #Pulse Initial, pulsePerRev, WheelDiam
+        self.leftFollower.configurePIDVA(self.gains[0],self.gains[1],self.gains[2],self.gains[3],self.gains[4])
 
-def followPath(DT):
-    global globalLeft, globalRight, angleController, navx
+        self.rightFollower = pf.followers.EncoderFollower(right)
+        self.rightFollower.configureEncoder(int(self.getDistances()[0]*1000), 1000, 1/math.pi) #Pulse Initial, pulsePerRev, WheelDiam
+        self.rightFollower.configurePIDVA(self.gains[0],self.gains[1],self.gains[2],self.gains[3],self.gains[4])
 
-    angle = pf.r2d(globalLeft.getHeading())
-    angle = 360-angle if angle>180 else -angle
-    angleController.setSetpoint(angle)
+        self.enablePID()
 
-    if(not globalLeft.isFinished()):
-        return [globalLeft.calculate(DT.getRaw()[0])+navx, globalRight.calculate(-DT.getRaw()[1])-navx]
-    else: return [0,0]
+    def followPath(self):
+        angle = pf.r2d(self.leftFollower.getHeading())
+        angle = 360-angle if angle>180 else -angle
+        self.angleController.setSetpoint(angle)
 
-def isFinished():
-    global globalLeft
-    return globalLeft.isFinished()
+        if(not self.leftFollower.isFinished()):
+            return [self.leftFollower.calculate(int(self.getDistances()[0]*1000))+self.PID, self.rightFollower.calculate(int(self.getDistances()[1]*1000))-self.PID]
+        else: return [0,0]
 
-def getAngle():
-    global DT
-    return DT.getAngle()
-
-def setAngle(output):
-    global navx
-    navx = output
-
-navx = 0
-TolAngle = 3 #degrees
-[kP,kI,kD,kF] = [0.024, 0.00, 0.20, 0.00]
-if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.020,0.00,0.00,0.00]
-angleController = wpilib.PIDController(kP, kI, kD, kF, source=getAngle, output=setAngle)
-angleController.setInputRange(-180,  180) #degrees
-angleController.setOutputRange(-0.9, 0.9)
-angleController.setAbsoluteTolerance(TolAngle)
-angleController.setContinuous(True)
-angleController.disable()
+    def isFinished(self): return self.leftFollower.isFinished()

@@ -9,183 +9,149 @@ from CRLibrary.physics import DifferentialDrive as ddrive
 from CRLibrary.util import units
 from CRLibrary.util import util
 
-import odometry as od
-
 from path import paths
+from path import odometry as od
 
-time = 0
-maxTime = 0
+class Ramsetes():
 
-navx = 0
+    def __init__(self, drivetrain, model):
 
-prevV = 0
-prevW = 0
+        '''Variables'''
+        self.DT = drivetrain
+        self.model = model
 
-leftVFinal = 0
-rightVFinal = 0
+        self.time = 0
+        self.maxTime = 0
 
-leftVTemp = 0
-rightVTemp = 0
+        self.prev = [0, 0]
+        self.PID = [0, 0, 0] #left, right, angle
 
-DT = None
+        self.DT = None
+        self.finished = False
 
-finished = False
+        '''Gains'''
+        kV = [0.40, 0.0, 0.1, 0.0]
+        kA = [0.03, 0.0, 0.0, 0.0]
 
-'''Gains'''
-kV = [0.4, 0.0, 0.1, 0.0]
-kA = [0.03, 0.0, 0.0, 0.0]
-kB = 1.5
-kZeta = 0.4
+        self.kB = 1.5
+        self.kZeta = 0.4
 
-TolVel = 0.2
-TolAngle = 3
+        TolVel = 0.2
+        TolAngle = 3
 
-def enablePID():
-    global leftController, rightController, angleController
+        '''PID Controllers'''
+        self.MaxV = paths.getLimits()[0]
+        self.leftController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=od.getLeftVelocity, output=self.setLeft)
+        self.leftController.setInputRange(-self.MaxV-3, self.MaxV+3) #feet/second
+        self.leftController.setOutputRange(-1, 1) #percent
+        self.leftController.setAbsoluteTolerance(TolVel)
+        self.leftController.setContinuous(False)
+        self.leftController.disable()
 
-    leftController.enable()
-    rightController.enable()
-    angleController.enable()
+        #TolVel, gains same as for left controller so unchanged
+        self.rightController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=od.getRightVelocity, output=self.setRight)
+        self.rightController.setInputRange(-self.MaxV-3, self.MaxV+3) #feet/second
+        self.rightController.setOutputRange(-1, 1) #percent
+        self.rightController.setAbsoluteTolerance(TolVel)
+        self.rightController.setContinuous(False)
+        self.rightController.disable()
 
-    leftController.setSetpoint(0)
-    rightController.setSetpoint(0)
-    angleController.setSetpoint(0)
+        self.angleController = wpilib.PIDController(kA[0], kA[1], kA[2], kA[3], source=od.getAngle, output=self.setAngle)
+        self.angleController.setInputRange(-180,  180) #degrees
+        self.angleController.setOutputRange(-0.9, 0.9)
+        self.angleController.setAbsoluteTolerance(TolAngle)
+        self.angleController.setContinuous(True)
+        self.angleController.disable()
 
-def disablePID():
-    global leftController, rightController, angleController
+    def setLeft(self, output):
+        self.PID[0] = output
 
-    leftController.disable()
-    rightController.disable()
-    angleController.disable()
+    def setRight(self, output):
+        self.PID[1] = output
 
-def initPath(drivetrain, name):
-    global DT, left, right, time, maxTime
+    def setAngle(self, output):
+        self.PID[2] = output
 
-    DT = drivetrain
-    finished = False
+    def enablePID(self):
+        self.leftController.enable()
+        self.rightController.enable()
+        self.angleController.enable()
 
-    [left,right,modifier] = paths.getTraj(name)
-    paths.showPath(left,right,modifier)
+        self.leftController.setSetpoint(0)
+        self.rightController.setSetpoint(0)
+        self.angleController.setSetpoint(0)
 
-    time = 0
-    maxTime = len(left)
+    def disablePID(self):
+        self.leftController.disable()
+        self.rightController.disable()
+        self.angleController.disable()
 
-    enablePID()
+    '''The Algorithm!'''
 
-def followPath(DT):
-    global left, right, time, maxTime, prevV, prevW, leftVTemp, rightVTemp
-    global leftVFinal, rightVFinal, leftController, rightController, finished
-    global kB, kZeta
+    def initPath(self, name):
+        self.finished = False
 
-    if(time>=maxTime):
-        leftController.disable()
-        rightController.disable()
-        finished = True
-        return [0,0]
+        [self.left,self.right,modifier] = paths.getTraj(name)
+        paths.showPath(self.left,self.right,modifier)
 
-    leftSeg = left[time]
-    rightSeg = right[time]
-    time += 1
+        self.time = 0
+        self.maxTime = len(self.left)
 
-    xd = units.feetToMeters((leftSeg.x+rightSeg.x)/2)
-    yd = units.feetToMeters((leftSeg.y+rightSeg.y)/2)
-    thetad = (leftSeg.heading+rightSeg.heading)/2
+        self.enablePID()
 
-    leftVeld = units.feetToMeters(leftSeg.velocity)
-    rightVeld = units.feetToMeters(rightSeg.velocity)
+    def followPath(self):
+        if(self.time>=self.maxTime): return [0,0]
 
-    leftAcceld = units.feetToMeters(leftSeg.acceleration)
-    rightAcceld = units.feetToMeters(rightSeg.acceleration)
+        leftSeg = self.left[self.time]
+        rightSeg = self.right[self.time]
+        self.time += 1
 
-    vd = (rightVeld + leftVeld)/2
-    wd = (rightVeld - leftVeld)/(2*DT.model.effWheelbaseRadius())
+        xd = units.feetToMeters((leftSeg.x+rightSeg.x)/2)
+        yd = units.feetToMeters((leftSeg.y+rightSeg.y)/2)
+        thetad = (leftSeg.heading+rightSeg.heading)/2
 
-    ad = (rightAcceld + leftAcceld)/2
-    alphad = (rightAcceld - leftAcceld)/(2*DT.model.effWheelbaseRadius())
+        leftVeld = units.feetToMeters(leftSeg.velocity)
+        rightVeld = units.feetToMeters(rightSeg.velocity)
 
-    [x, y, theta, rightVel, leftVel] = od.getSI()
-    [y, theta] = [-y, -theta]
+        leftAcceld = units.feetToMeters(leftSeg.acceleration)
+        rightAcceld = units.feetToMeters(rightSeg.acceleration)
 
-    v = vd * math.cos(thetad-theta) + k(vd,wd,kB,kZeta) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
-    w = wd + kB * vd * sinc(util.angleDiffRad(thetad,theta)) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd,kB,kZeta) * util.angleDiffRad(thetad,theta)
+        vd = (rightVeld + leftVeld)/2
+        wd = (rightVeld - leftVeld)/(2*self.model.effWheelbaseRadius())
 
-    leftOut = v - DT.model.effWheelbaseRadius()*w #for velocity PID process variable
-    rightOut = v + DT.model.effWheelbaseRadius()*w
+        ad = (rightAcceld + leftAcceld)/2
+        alphad = (rightAcceld - leftAcceld)/(2*self.model.effWheelbaseRadius())
 
-    a = 50*(v-prevV) #50 iterations per second
-    alpha = 50*(w-prevW)
+        [x, y, theta, rightVel, leftVel] = od.getSI()
+        [y, theta] = [-y, -theta]
 
-    prevV = v #for next acceleration calculations
-    prevW = w
+        #The main calculations based on Ramsetes algorithm
+        v = vd * math.cos(thetad-theta) + self.k(vd,wd,self.kB,self.kZeta) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
+        w = wd + self.kB * vd * self.sinc(util.angleDiffRad(thetad,theta)) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta))
+        + self.k(vd,wd,self.kB,self.kZeta) * util.angleDiffRad(thetad,theta)
 
-    chassisVel = ddrive.ChassisState(v,w)
-    chassisAccel = ddrive.ChassisState(a,alpha)
+        leftOut = v - self.model.effWheelbaseRadius()*w #for velocity PID process variable
+        rightOut = v + self.model.effWheelbaseRadius()*w
 
-    voltage = DT.model.solveInverseDynamics_CS(chassisVel, chassisAccel).getVoltage()
-    [leftV, rightV] = [voltage[0]/12, voltage[1]/12]
+        a = 50*(v-self.prev[0]) #50 iterations per second
+        alpha = 50*(w-self.prev[1])
 
-    leftVTemp = leftV #feed forward for PID
-    rightVTemp = rightV
+        self.prev = [v, w] #for next acceleration calculations
 
-    leftController.setSetpoint(units.metersToFeet(leftOut))
-    rightController.setSetpoint(units.metersToFeet(rightOut))
-    angleController.setSetpoint(util.boundDeg(units.radiansToDegrees(-thetad)))
+        chassisVel = ddrive.ChassisState(v,w)
+        chassisAccel = ddrive.ChassisState(a,alpha)
 
-    return [leftVFinal+navx, rightVFinal-navx]
+        voltage = self.model.solveInverseDynamics_CS(chassisVel, chassisAccel).getVoltage()
+        [leftV, rightV] = [voltage[0]/12, voltage[1]/12]
 
-def k(vd, wd, b, zeta):
-    return 2 * zeta * math.sqrt(wd**2+b*vd**2)
+        self.leftController.setSetpoint(units.metersToFeet(leftOut))
+        self.rightController.setSetpoint(units.metersToFeet(rightOut))
+        self.angleController.setSetpoint(util.boundDeg(units.radiansToDegrees(-thetad)))
 
-def sinc(theta):
-    if(theta==0): return 1
-    return math.sin(theta)/theta
+        return [leftV+self.PID[0]+self.PID[2], rightV+self.PID[1]-self.PID[2]]
 
-'''PID Controllers Below'''
+    def k(self, vd, wd, b, zeta): return 2 * zeta * math.sqrt(wd**2+b*vd**2)
 
-def getLeftVelocity(): return od.get()[3] #feet/second
+    def sinc(self, theta): return (1 if theta==0 else math.sin(theta)/theta)
 
-def setLeftVelocity(output):
-    global leftVTemp, leftVFinal
-    leftVFinal = output + leftVTemp
-
-MaxV = paths.getLimits()[0]
-leftController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=getLeftVelocity, output=setLeftVelocity)
-leftController.setInputRange(-MaxV-3, MaxV+3) #feet/second
-leftController.setOutputRange(-1, 1) #percent
-leftController.setAbsoluteTolerance(TolVel)
-leftController.setContinuous(False)
-leftController.disable()
-
-def getRightVelocity():
-    return od.get()[4] #feet/second
-
-def setRightVelocity(output):
-    global rightVTemp, rightVFinal
-    rightVFinal = output + rightVTemp
-
-#TolVel, gains same as for left controller so unchanged
-rightController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=getRightVelocity, output=setRightVelocity)
-rightController.setInputRange(-MaxV-3, MaxV+3) #feet/second
-rightController.setOutputRange(-1, 1) #percent
-rightController.setAbsoluteTolerance(TolVel)
-rightController.setContinuous(False)
-rightController.disable()
-
-def getAngle():
-    global DT
-    return util.boundDeg(DT.getAngle())
-
-def setAngle(output):
-    global navx
-    navx = output
-
-angleController = wpilib.PIDController(kA[0], kA[1], kA[2], kA[3], source=getAngle, output=setAngle)
-angleController.setInputRange(-180,  180) #degrees
-angleController.setOutputRange(-0.9, 0.9)
-angleController.setAbsoluteTolerance(TolAngle)
-angleController.setContinuous(True)
-angleController.disable()
-
-def isFinished():
-    global finished
-    return finished
+    def isFinished(self): return self.time>self.maxTime

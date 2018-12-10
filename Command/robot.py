@@ -52,7 +52,7 @@ from commands.autonomous import RightSwitchMiddle2Cube
 
 from subsystems import Wrist, Intake, Lift, Drive
 
-import odometry as od
+import path.odometry as od
 import pathfinder as pf
 
 from path import PathFinder

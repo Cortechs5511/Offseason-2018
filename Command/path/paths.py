@@ -9,7 +9,7 @@ from CRLibrary.physics import DifferentialDrive as ddrive
 from CRLibrary.util import units
 from CRLibrary.util import util
 
-import odometry as od
+import path.odometry as od
 
 timer = wpilib.Timer()
 

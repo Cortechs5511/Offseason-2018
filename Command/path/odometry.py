@@ -2,32 +2,14 @@ import math
 
 from CRLibrary.util import units
 
-x = 0
-y = 0
-angle = 0
-
-rightVel = 0
-leftVel = 0
+[x, y, angle, rightVel, leftVel] = [0, 0, 0, 0, 0]
 
 def init():
-    global x
-    global y
-    global angle
-    global rightVel
-    global leftVel
-
-    x = 0
-    y = 0
-    angle = 0
-    rightVel = 0
-    leftVel = 0
+    global x, y, angle, rightVel, leftVel
+    [x, y, angle, rightVel, leftVel] = [0, 0, 0, 0, 0]
 
 def update(leftV, rightV, angleIn):
-    global x
-    global y
-    global angle
-    global rightVel
-    global leftVel
+    global x, y, angle, rightVel, leftVel
     speed = (leftV+rightV)/2
     x += speed * 0.02 * math.cos(math.pi/180*angleIn)
     y += speed * 0.02 * math.sin(math.pi/180*angleIn)
@@ -35,20 +17,12 @@ def update(leftV, rightV, angleIn):
     rightVel = rightV
     leftVel = leftV
 
-def display():
-    global x
-    global y
-    global angle
-    global rightVel
-    global leftVel
-    print([x,y,angle, leftVel, rightVel])
+def getLeftVelocity(): return leftVel
+def getRightVelocity(): return rightVel
+def getAngle(): return angle
 
 def get():
-    global x
-    global y
-    global angle
-    global rightVel
-    global leftVel
+    global x, y, angle, rightVel, leftVel
     return [x,y,angle, leftVel, rightVel]
 
 def getSI():
@@ -59,3 +33,5 @@ def getSI():
     rightVel = units.feetToMeters(rightVel)
     leftVel = units.feetToMeters(leftVel)
     return [x, y, angle, leftVel, rightVel]
+
+def display(): print(get())
