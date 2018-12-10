@@ -15,6 +15,8 @@ class DrivePathFinder(TimedCommand):
         self.name = name
 
     def initialize(self):
+        print("Here44")
+        print(self.name)
         self.DT.setPathFinder(name=self.name)
 
     def execute(self):

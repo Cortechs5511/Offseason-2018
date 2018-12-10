@@ -24,8 +24,10 @@ right = None
 time = 0
 maxTime = 0
 
-rightPrev = 0
-leftPrev = 0
+navx = 0
+
+prevV = 0
+prevW = 0
 
 leftVFinal = 0
 rightVFinal = 0
@@ -34,6 +36,8 @@ leftVTemp = 0
 rightVTemp = 0
 
 TolVel = 0.2 #feet/second
+
+DT = None
 
 [kP,kI,kD,kF] = [0.00, 0.00, 0.00, 0.00]
 if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.50, 0.00, 0.00, 0.00]
@@ -45,40 +49,51 @@ def getRightVelocity():
     return od.get()[4] #feet/second
 
 def makeTraj(name):
+    print("Here")
     if(name=="DriveStraight"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(12,0,0)
         ]
-    if(name=="LeftSwitch"):
+    elif(name=="LeftSwitch"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(7,9,0),
             pf.Waypoint(10,9,0)
         ]
-    if(name=="RightScale"):
+    elif(name=="RightScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,2,math.radians(30))
         ]
-    if(name=="LeftScale"):
+    elif(name=="LeftScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,-2,math.radians(-30))
         ]
-    if(name=="RightOppositeScale"):
+    elif(name=="RightOppositeScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,3,math.radians(55)),
             pf.Waypoint(19,16,math.radians(90)),
             pf.Waypoint(23,19,math.radians(-30))
         ]
-    if(name=="LeftOppositeScale"):
+    elif(name=="LeftOppositeScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,-3,math.radians(-55)),
             pf.Waypoint(19,-16,math.radians(-90)),
             pf.Waypoint(23,-19,math.radians(30))
+        ]
+    elif(name=="CrazyTest"):
+        print("Here2")
+        points = [
+            pf.Waypoint(0,0,0),
+            pf.Waypoint(7,9,0),
+            pf.Waypoint(10,9,0),
+            pf.Waypoint(15,15,0),
+            pf.Waypoint(20,10,0),
+            pf.Waypoint(30,0,0)
         ]
     return points
 
@@ -119,7 +134,9 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
 
 def initPath(drivetrain, name):
-    global left, right, time, maxTime, leftController, rightController
+    global DT, left, right, time, maxTime, leftController, rightController
+
+    DT = drivetrain
 
     [left,right,modifier] = getTraj(name)
 
@@ -138,14 +155,16 @@ def initPath(drivetrain, name):
 
     leftController.enable()
     rightController.enable()
+    angleController.enable()
 
     leftController.setSetpoint(0)
     rightController.setSetpoint(0)
+    angleController.setSetpoint(0)
 
     return [leftFollower,rightFollower]
 
 def followPath(DT):
-    global left, right, time, maxTime, leftPrev, rightPrev, leftVTemp, rightVTemp, leftVFinal, rightVFinal, leftController, rightController
+    global left, right, time, maxTime, prevV, prevW, leftVTemp, rightVTemp, leftVFinal, rightVFinal, leftController, rightController
 
     if(time>=maxTime):
         leftController.disable()
@@ -159,8 +178,6 @@ def followPath(DT):
     xd = units.feetToMeters((leftSeg.x+rightSeg.x)/2)
     yd = units.feetToMeters((leftSeg.y+rightSeg.y)/2) #unsure if needs to be negated
     thetad = (leftSeg.heading+rightSeg.heading)/2 #unsure if needs to be negated
-
-    #print([xd,yd,thetad])
 
     leftVeld = units.feetToMeters(leftSeg.velocity)
     rightVeld = units.feetToMeters(rightSeg.velocity)
@@ -178,29 +195,22 @@ def followPath(DT):
     [y, theta] = [-y, -theta]
 
     b = 2 #needs to be tuned
-    v = vd * math.cos(thetad-theta) + k(vd,wd,b) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
-    w = wd + b * vd * sinc(thetad-theta) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd,b) * (thetad-theta) #unsure if needs to be negated
+    zeta = 0.3 #needs to be tuned
+    v = vd * math.cos(thetad-theta) + k(vd,wd,b,zeta) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
+    w = wd + b * vd * sinc(thetad-theta) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd,b,zeta) * angleDiffRad(thetad,theta) #unsure if needs to be negated
 
-    leftOut = v - DT.model.effWheelbaseRadius() * w
-    rightOut = v + DT.model.effWheelbaseRadius() * w
+    leftOut = v - DT.model.effWheelbaseRadius()*w
+    rightOut = v + DT.model.effWheelbaseRadius()*w
 
-    leftVPrev = leftPrev
-    rightVPrev = rightPrev
+    a = 50*(v-prevV)
+    alpha = 50*(w-prevW)
 
-    leftAccel = (leftOut-leftVPrev)*50
-    rightAccel = (rightOut-rightVPrev)*50
-
-    leftPrev = leftOut
-    rightPrev = rightOut
-
-    v = (leftOut + rightOut)/2
-    w = (rightOut - leftOut)/(2*DT.model.effWheelbaseRadius()) #unsure if needs to be negated
-
-    a = (leftAccel + rightAccel)/2
-    alpha = (rightAccel - leftAccel)/(2*DT.model.effWheelbaseRadius())
+    prevV = v
+    prevW = w
 
     chassisVel = ddrive.ChassisState(v,w)
-    chassisAccel = ddrive.ChassisState(a,alpha)
+    chassisAccel = ddrive.ChassisState(0,0)
+    #chassisAccel = ddrive.ChassisState(a,alpha)
 
     voltage = DT.model.solveInverseDynamics_CS(chassisVel, chassisAccel).getVoltage()
     [leftV, rightV] = [voltage[0]/12, voltage[1]/12]
@@ -210,11 +220,10 @@ def followPath(DT):
 
     leftController.setSetpoint(units.metersToFeet(leftOut))
     rightController.setSetpoint(units.metersToFeet(rightOut))
+    angleController.setSetpoint(boundDeg(units.radiansToDegrees(-thetad)))
+    return [leftVFinal+navx, rightVFinal-navx] #with b=0, zeta=0, should function like untuned pathfinder, ie inaccurate
 
-    return [leftVFinal, rightVFinal] #with b=0, zeta=0, should function like untuned pathfinder, ie inaccurate
-
-def k(vd, wd, b):
-    zeta = 0.4 #needs to be tuned
+def k(vd, wd, b, zeta):
     return 2 * zeta * math.sqrt(wd**2+b*vd**2)
 
 def sinc(theta):
@@ -245,3 +254,37 @@ rightController.setOutputRange(-1, 1) #percent
 rightController.setAbsoluteTolerance(TolVel)
 rightController.setContinuous(False)
 rightController.disable()
+
+def getAngle():
+    global DT
+    return boundDeg(DT.getAngle())
+
+def setAngle(output):
+    global navx
+    navx = output
+
+TolAngle = 3 #degrees
+[kP,kI,kD,kF] = [0.024, 0.00, 0.20, 0.00]
+if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.020,0.00,0.00,0.00]
+angleController = wpilib.PIDController(kP, kI, kD, kF, source=getAngle, output=setAngle)
+angleController.setInputRange(-180,  180) #degrees
+angleController.setOutputRange(-0.9, 0.9)
+angleController.setAbsoluteTolerance(TolAngle)
+angleController.setContinuous(True)
+angleController.disable()
+
+def angleDiffDeg(a, b):
+    return boundDeg(a)-boundDeg(b)
+
+def angleDiffRad(a,b):
+    return boundRad(a)-boundRad(b)
+
+def boundDeg(angle):
+    if(angle<-180): return boundDeg(angle+360)
+    if(angle>180): return boundDeg(angle-360)
+    return angle
+
+def boundRad(angle):
+    if(angle<-math.pi): return boundRad(angle+2*math.pi)
+    if(angle>math.pi): return boundRad(angle-2*math.pi)
+    return angle

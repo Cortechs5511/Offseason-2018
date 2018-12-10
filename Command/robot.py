@@ -40,6 +40,7 @@ from commands.autonomous import LeftScalePF
 from commands.autonomous import RightScalePF
 from commands.autonomous import LeftOppositeScalePF
 from commands.autonomous import RightOppositeScalePF
+from commands.autonomous import CrazyTestPF
 
 from commands.autonomous import LeftSwitchSide
 from commands.autonomous import RightSwitchSide
@@ -92,6 +93,8 @@ class MyRobot(CommandBasedRobot):
         self.RightScalePF = RightScalePF()
         self.LeftOppositeScalePF = LeftOppositeScalePF()
         self.RightOppositeScalePF = RightOppositeScalePF()
+
+        self.CrazyTestPF = CrazyTestPF()
 
         self.DriveStraight = DriveStraight()
         self.LeftSwitchSide = LeftSwitchSide()
@@ -150,19 +153,20 @@ class MyRobot(CommandBasedRobot):
         elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePF.start() #self.LeftSwitchMiddle2Cube.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
         elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePF.start() #self.RightSwitchMiddle2Cube.start()
+        elif self.autoMode == "CrazyTest": self.RightOppositeScalePF.start()
         else: self.autoMode = "Nothing"
 
     def autoLogic(self, gameData, auto):
-        return "LeftSwitchMiddle"
+        return "CrazyTest"
         '''
         if(auto=="L"):
-            if(gameData[0]=='L'): return "LeftSwitchSide"
+            if(gameData[0]=="L"): return "LeftSwitchSide"
             else: return "DriveStraight"
         elif(auto=="M"):
-            if(gameData[0]=='L'): return "LeftSwitchMiddle"
+            if(gameData[0]=="L"): return "LeftSwitchMiddle"
             else: return "RightSwitchMiddle"
         elif(auto=="R"):
-            if(gameData[0]=='L'): return "DriveStraight"
+            if(gameData[0]=="L"): return "DriveStraight"
             else: return "RightSwitchSide"
         return "Nothing"
         '''
@@ -211,5 +215,5 @@ class MyRobot(CommandBasedRobot):
         self.wrist.UpdateDashboard()
         self.intake.UpdateDashboard()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     wpilib.run(MyRobot)
