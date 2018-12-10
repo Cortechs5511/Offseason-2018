@@ -29,6 +29,8 @@ from CRLibrary.util import units as units
 class Drive(Subsystem):
 
     mode = ""
+    follower = ""
+
     distPID = 0
     anglePID = 0
 
@@ -148,14 +150,11 @@ class Drive(Subsystem):
             self.angleController.setSetpoint(angle)
             self.distController.enable()
             self.angleController.enable()
-        elif(mode=="PathFinder"):
-            PathFinder.initPath(self, name)
-            self.distController.disable()
-            self.angleController.enable()
-        elif(mode=="Ramsetes"):
-            Ramsetes.initPath(self, name)
+        elif(mode=="Path"):
             self.distController.disable()
             self.angleController.disable()
+            if(self.follower=="PathFinder"): PathFinder.initPath(self, name)
+            elif(self.follower=="Ramsetes"): Ramsetes.initPath(self, name)
         elif(mode=="DiffDrive"):
             self.distController.disable()
             self.angleController.disable()
@@ -164,20 +163,18 @@ class Drive(Subsystem):
             self.angleController.disable()
         self.mode = mode
 
-    def setDistance(self,distance):
+    def setDistance(self, distance):
         self.setMode("Distance",distance=distance)
 
-    def setAngle(self,angle):
+    def setAngle(self, angle):
         self.setMode("Angle",angle=angle)
 
-    def setCombined(self,distance,angle):
+    def setCombined(self, distance, angle):
         self.setMode("Combined",distance=distance,angle=angle)
 
-    def setPathFinder(self,name):
-        self.setMode("PathFinder", name=name)
-
-    def setRamsetes(self, name):
-        self.setMode("Ramsetes", name=name)
+    def setPath(self, name, follower):
+        self.follower = follower
+        self.setMode("Path", name=name)
 
     def setDiffDrive(self):
         self.setMode("DiffDrive")
@@ -193,28 +190,23 @@ class Drive(Subsystem):
     def tankDrive(self,left=0,right=0):
         if(self.mode=="Distance"):
             [left,right] = [self.distPID,self.distPID]
-
         elif(self.mode=="Angle"):
             [left,right] = [self.anglePID,-self.anglePID]
-
         elif(self.mode=="Combined"):
             [left,right] = [self.distPID+self.anglePID,self.distPID-self.anglePID]
-
-        elif(self.mode=="PathFinder"):
-            [left,right] = PathFinder.followPath(self)
-
-        elif(self.mode=="Ramsetes"):
-            [left, right] = Ramsetes.followPath(self)
-
+        elif(self.mode=="Path"):
+            if(self.follower=="PathFinder"): [left, right] = PathFinder.followPath(self)
+            elif(self.follower=="Ramsetes"): [left, right] = Ramsetes.followPath(self)
         elif(self.mode=="DiffDrive"):
             wheelVelocity = dDrive.WheelState(left*self.maxVel/self.model.wheelRadius(), right*self.maxVel/self.model.wheelRadius())
             wheelAcceleration = dDrive.WheelState(0, 0) #Add better math here later
             voltage = self.model.solveInverseDynamics_WS(wheelVelocity, wheelAcceleration).getVoltage()
             [left, right] = [voltage[0]/12, voltage[1]/12]
-
         elif(self.mode=="Direct"):
             [left, right] = [left, right] #Add advanced logic here
-
+        else:
+            [left, right] = [0,0]
+            
         left = min(abs(left),self.maxSpeed)*self.sign(left)
         right = min(abs(right),self.maxSpeed)*self.sign(right)
 
@@ -269,7 +261,6 @@ class Drive(Subsystem):
 
     def zeroNavx(self):
         self.navx.zeroYaw()
-        #pass
 
     def zero(self):
         self.zeroEncoders()
@@ -277,7 +268,6 @@ class Drive(Subsystem):
 
     def getAngle(self):
         return self.navx.getYaw()
-        #return 0
 
     def initDefaultCommand(self):
         self.setDefaultCommand(diffDrive(timeout = 300))

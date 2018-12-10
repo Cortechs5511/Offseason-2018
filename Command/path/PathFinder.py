@@ -14,7 +14,9 @@ globalLeft = None
 globalRight = None
 
 def initPath(drivetrain, name):
-    global DT, globalLeft, globalRight
+    global DT, globalLeft, globalRight, angleController
+
+    angleController.enable()
 
     [left,right,modifier] = paths.getTraj(name)
     paths.showPath(left,right,modifier)
@@ -32,18 +34,36 @@ def initPath(drivetrain, name):
     globalRight = rightFollower
 
 def followPath(DT):
-    global globalLeft, globalRight
+    global globalLeft, globalRight, angleController, navx
 
     angle = pf.r2d(globalLeft.getHeading())
     if(angle>180): angle=360-angle
     else: angle=-angle
-    DT.angleController.setSetpoint(angle)
-    update = DT.anglePID
+    angleController.setSetpoint(angle)
 
     if(not globalLeft.isFinished()):
-        return [globalLeft.calculate(DT.getRaw()[0])+update, globalRight.calculate(-DT.getRaw()[1])-update]
+        return [globalLeft.calculate(DT.getRaw()[0])+navx, globalRight.calculate(-DT.getRaw()[1])-navx]
     else: return [0,0]
 
 def isFinished():
     global globalLeft
     return globalLeft.isFinished()
+
+def getAngle():
+    global DT
+    return DT.getAngle()
+
+def setAngle(output):
+    global navx
+    navx = output
+
+navx = 0
+TolAngle = 3 #degrees
+[kP,kI,kD,kF] = [0.024, 0.00, 0.20, 0.00]
+if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.020,0.00,0.00,0.00]
+angleController = wpilib.PIDController(kP, kI, kD, kF, source=getAngle, output=setAngle)
+angleController.setInputRange(-180,  180) #degrees
+angleController.setOutputRange(-0.9, 0.9)
+angleController.setAbsoluteTolerance(TolAngle)
+angleController.setContinuous(True)
+angleController.disable()

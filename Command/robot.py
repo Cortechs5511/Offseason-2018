@@ -23,7 +23,7 @@ from commands.setSpeedWrist import setSpeedWrist
 from commands.DriveStraightTime import DriveStraightTime
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightCombined import DriveStraightCombined
-from commands.DrivePathFinder import DrivePathFinder
+from commands.DrivePath import DrivePath
 from commands.TurnAngle import TurnAngle
 
 from commands.getLimelightData import getLimelightData
@@ -34,15 +34,13 @@ from commands import Sequences
 
 from commands import autonomous
 
-from commands.autonomous import LeftSwitchMiddlePF
-from commands.autonomous import RightSwitchMiddlePF
-from commands.autonomous import LeftScalePF
-from commands.autonomous import RightScalePF
-from commands.autonomous import LeftOppositeScalePF
-from commands.autonomous import RightOppositeScalePF
-
-from commands.autonomous import TestPF
-from commands.autonomous import TestRamsetes
+from commands.autonomous import LeftSwitchMiddlePath
+from commands.autonomous import RightSwitchMiddlePath
+from commands.autonomous import LeftScalePath
+from commands.autonomous import RightScalePath
+from commands.autonomous import LeftOppositeScalePath
+from commands.autonomous import RightOppositeScalePath
+from commands.autonomous import TestPath
 
 from commands.autonomous import LeftSwitchSide
 from commands.autonomous import RightSwitchSide
@@ -92,15 +90,15 @@ class MyRobot(CommandBasedRobot):
 
         self.updateDashboardInit()
 
-        self.LeftSwitchMiddlePF = LeftSwitchMiddlePF()
-        self.RightSwitchMiddlePF = RightSwitchMiddlePF()
-        self.LeftScalePF = LeftScalePF()
-        self.RightScalePF = RightScalePF()
-        self.LeftOppositeScalePF = LeftOppositeScalePF()
-        self.RightOppositeScalePF = RightOppositeScalePF()
+        follower = "PathFinder"
 
-        self.TestPF = TestPF()
-        self.TestRamsetes = TestRamsetes()
+        self.LeftSwitchMiddlePath = LeftSwitchMiddlePath(follower)
+        self.RightSwitchMiddlePath = RightSwitchMiddlePath(follower)
+        self.LeftScalePath = LeftScalePath(follower)
+        self.RightScalePath = RightScalePath(follower)
+        self.LeftOppositeScalePath = LeftOppositeScalePath(follower)
+        self.RightOppositeScalePath = RightOppositeScalePath(follower)
+        self.TestPath = TestPath(follower)
 
         self.DriveStraight = DriveStraight()
         self.LeftSwitchSide = LeftSwitchSide()
@@ -140,16 +138,15 @@ class MyRobot(CommandBasedRobot):
 
         self.autoMode = self.autoLogic(gameData, position)
         if self.autoMode == "DriveStraight": self.DriveStraight.start()
-        if self.autoMode == "DriveStraight": self.RightSwitchMiddlePF.start()
+        if self.autoMode == "DriveStraight": self.RightSwitchMiddlePath.start()
         elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePF.start() #self.LeftSwitchMiddle2Cube.start()
+        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePath.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePF.start() #self.RightSwitchMiddle2Cube.start()
-        elif self.autoMode == "TestPF": self.TestPF.start()
-        elif self.autoMode == "TestRamsetes": self.TestRamsetes.start()
+        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePath.start()
+        elif self.autoMode == "TestPath": self.TestPath.start()
 
     def autoLogic(self, gameData, auto):
-        return "TestRamsetes"
+        return "TestPath"
 
         '''
         if(auto=="L"):
@@ -186,8 +183,8 @@ class MyRobot(CommandBasedRobot):
 
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
         SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
-        SmartDashboard.putData("DriveStraightCombined",DriveStraightCombined())
-        SmartDashboard.putData("DrivePathFinder",DrivePathFinder())
+        SmartDashboard.putData("DriveStraightCombined", DriveStraightCombined())
+        SmartDashboard.putData("DrivePath", DrivePath())
         SmartDashboard.putData("TurnAngle", TurnAngle())
 
         SmartDashboard.putData("Zero", Zero())
