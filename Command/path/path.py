@@ -7,9 +7,9 @@ import pathfinder as pf
 
 timer = wpilib.Timer()
 
-MAXV = 17
-MAXA = 12
-MAXJ = 10
+MAXV = 10
+MAXA = 15
+MAXJ = 20
 
 width = 33/12
 gains = [1,0,1,1/MAXV,0]
@@ -20,34 +20,43 @@ def makeTraj(name):
             pf.Waypoint(0,0,0),
             pf.Waypoint(12,0,0)
         ]
-    if(name=="LeftSwitch"):
+    elif(name=="LeftSwitch"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(10,9,0)
         ]
-    if(name=="RightScale"):
+    elif(name=="RightScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,2,math.radians(30))
         ]
-    if(name=="LeftScale"):
+    elif(name=="LeftScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,-2,math.radians(-30))
         ]
-    if(name=="RightOppositeScale"):
+    elif(name=="RightOppositeScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,3,math.radians(55)),
             pf.Waypoint(19,16,math.radians(90)),
             pf.Waypoint(23,19,math.radians(-30))
         ]
-    if(name=="LeftOppositeScale"):
+    elif(name=="LeftOppositeScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,-3,math.radians(-55)),
             pf.Waypoint(19,-16,math.radians(-90)),
             pf.Waypoint(23,-19,math.radians(30))
+        ]
+    elif(name=="CrazyTest"):
+        points = [
+            pf.Waypoint(0,0,0),
+            pf.Waypoint(10,0,0),
+            pf.Waypoint(20,10,math.radians(-90)),
+            pf.Waypoint(10,20,math.radians(180)),
+            pf.Waypoint(0,10,math.radians(90)),
+            pf.Waypoint(10,0,0)
         ]
     return points
 
@@ -99,7 +108,7 @@ def initPath(drivetrain, name):
     rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
 
     showPath(left,right,modifier)
-    
+
     timer.reset()
     timer.start()
 

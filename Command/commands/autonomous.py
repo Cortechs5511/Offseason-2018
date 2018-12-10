@@ -71,7 +71,7 @@ class RightOppositeScalePF(CommandGroup):
         self.addSequential(DrivePathFinder(name="RightOppositeScale", timeout=15))
 
 class CrazyTestPF(CommandGroup):
-    def __init(self):
+    def __init__(self):
         super().__init__("CrazyTestPF")
         self.addSequential(DrivePathFinder(name="CrazyTest", timeout=15))
 

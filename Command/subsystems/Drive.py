@@ -204,7 +204,7 @@ class Drive(Subsystem):
             #[left,right] = path.followPath(self,self.spline[0],self.spline[1])
             [left, right] = path2.followPath(self)
             #[left,right] = [left+self.anglePID,right-self.anglePID]
-            
+
         elif(self.mode=="DiffDrive"):
             wheelVelocity = dDrive.WheelState(left*self.maxVel/self.model.wheelRadius(), right*self.maxVel/self.model.wheelRadius())
             wheelAcceleration = dDrive.WheelState(0, 0) #Add better math here later

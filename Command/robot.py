@@ -153,7 +153,7 @@ class MyRobot(CommandBasedRobot):
         elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePF.start() #self.LeftSwitchMiddle2Cube.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
         elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePF.start() #self.RightSwitchMiddle2Cube.start()
-        elif self.autoMode == "CrazyTest": self.RightOppositeScalePF.start()
+        elif self.autoMode == "CrazyTest": self.CrazyTestPF.start()
         else: self.autoMode = "Nothing"
 
     def autoLogic(self, gameData, auto):
