@@ -56,14 +56,10 @@ import pathfinder as pf
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
-<<<<<<< HEAD
 
 from commands.Limelight import Limelight
 from commands.turnVision import TurnVision
-#from navx import AHRS as navx
-=======
 from navx import AHRS as navx
->>>>>>> Ramsetes
 
 class MyRobot(CommandBasedRobot):
 
@@ -120,17 +116,6 @@ class MyRobot(CommandBasedRobot):
         self.curr = 0
         self.print = 50
 
-<<<<<<< HEAD
-        SmartDashboard.putNumber("PF_P",path.gains[0])
-        SmartDashboard.putNumber("PF_D",path.gains[2])
-        SmartDashboard.putNumber("PF_I",path.gains[1])
-        SmartDashboard.putNumber("PF_V",path.gains[3])
-        SmartDashboard.putNumber("PF_A",path.gains[4])
-
-        SmartDashboard.putData("Limelight Turn", TurnVision())
-
-=======
->>>>>>> Ramsetes
     def robotPeriodic(self):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
@@ -138,18 +123,6 @@ class MyRobot(CommandBasedRobot):
             #od.display() #displays odometry results
             self.curr = 0
 
-<<<<<<< HEAD
-        SmartDashboard.putNumber("Velocity", self.drive.getVelocity()[1])
-
-        path.gains[0] = SmartDashboard.getNumber("PF_P",0)
-        path.gains[1] = SmartDashboard.getNumber("PF_I",0)
-        path.gains[2] = SmartDashboard.getNumber("PF_D",0)
-        path.gains[3] = SmartDashboard.getNumber("PF_V",0)
-        path.gains[4] = SmartDashboard.getNumber("PF_A",0)
-
-
-=======
->>>>>>> Ramsetes
     def autonomousInit(self):
         self.getLimelightData.start()
 
