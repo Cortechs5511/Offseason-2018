@@ -6,7 +6,7 @@ from wpilib import SmartDashboard
 from commands.DriveStraightCombined import DriveStraightCombined
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightTime import DriveStraightTime
-from commands.DrivePathFinder import DrivePathFinder
+from commands.DrivePath import DrivePath
 from commands.TurnAngle import TurnAngle
 
 from commands.setFixedDT import setFixedDT
@@ -23,13 +23,13 @@ from commands.setPositionWrist import setPositionWrist
 
 #PATHFINDER AUTOS
 
-class LeftSwitchMiddlePF(CommandGroup):
-    def __init__(self):
-        super().__init__('LeftSwitchMiddlePF')
+class LeftSwitchMiddlePath(CommandGroup):
+    def __init__(self, follower):
+        super().__init__("LeftSwitchMiddlePath")
         self.addSequential(setFixedWrist(0.8, timeout= 1))
         self.addSequential(SwitchPosition(timeout=1))
         self.addParallel(SwitchPosition(timeout=5))
-        self.addSequential(DrivePathFinder(name="LeftSwitch", timeout=5))
+        self.addSequential(DrivePath(name="LeftSwitch", follower=follower, timeout=5))
         self.addSequential(SwitchShoot(timeout=1))
         '''
         self.addSequential(DriveStraightCombined(distance=-30/12, angle=0, timeout=2))
@@ -45,36 +45,41 @@ class LeftSwitchMiddlePF(CommandGroup):
         self.addSequential(SwitchShoot(timeout=1))
         '''
 
-class RightSwitchMiddlePF(CommandGroup):
-    def __init__(self):
-        super().__init__('RightSwitchMiddlePF')
-        self.addSequential(DrivePathFinder(name="DriveStraight", timeout=15))
+class RightSwitchMiddlePath(CommandGroup):
+    def __init__(self, follower="PathFinder"):
+        super().__init__("RightSwitchMiddlePath")
+        self.addSequential(DrivePath(name="DriveStraight", follower=follower, timeout=15))
 
-class LeftScalePF(CommandGroup):
-    def __init__(self):
-        super().__init__('LeftScalePF')
-        self.addSequential(DrivePathFinder(name="LeftScale", timeout=15))
+class LeftScalePath(CommandGroup):
+    def __init__(self, follower="PathFinder"):
+        super().__init__("LeftScalePath")
+        self.addSequential(DrivePath(name="LeftScale", follower=follower, timeout=15))
 
-class RightScalePF(CommandGroup):
-    def __init__(self):
-        super().__init__('RightScalePF')
-        self.addSequential(DrivePathFinder(name="RightScale", timeout=15))
+class RightScalePath(CommandGroup):
+    def __init__(self, follower="PathFinder"):
+        super().__init__("RightScalePath")
+        self.addSequential(DrivePath(name="RightScale", follower=follower, timeout=15))
 
-class LeftOppositeScalePF(CommandGroup):
-    def __init__(self):
-        super().__init__('LeftOppositeScalePF')
-        self.addSequential(DrivePathFinder(name="LeftOppositeScale", timeout=15))
+class LeftOppositeScalePath(CommandGroup):
+    def __init__(self, follower="PathFinder"):
+        super().__init__("LeftOppositeScalePath")
+        self.addSequential(DrivePath(name="LeftOppositeScale", follower=follower, timeout=15))
 
-class RightOppositeScalePF(CommandGroup):
-    def __init__(self):
-        super().__init__('RightOppositeScalePF')
-        self.addSequential(DrivePathFinder(name="RightOppositeScale", timeout=15))
+class RightOppositeScalePath(CommandGroup):
+    def __init__(self, follower="PathFinder"):
+        super().__init__("RightOppositeScalePath")
+        self.addSequential(DrivePath(name="RightOppositeScale", follower=follower, timeout=15))
 
-#STANDARD AUTOS
+class TestPath(CommandGroup):
+    def __init__(self, follower="PathFinder"):
+        super().__init__("TestPath")
+        self.addSequential(DrivePath(name="Test", follower=follower, timeout=15))
+
+'''STANDARD AUTOS'''
 
 class LeftSwitchSide(CommandGroup):
     def __init__(self):
-        super().__init__('LeftSwitchSide')
+        super().__init__("LeftSwitchSide")
         self.addSequential(setFixedWrist(0.8, timeout= 1))
         self.addParallel(SwitchPosition())
         self.addSequential(DriveStraightCombined(distance=154/12.0, angle=0, timeout=5))
@@ -85,7 +90,7 @@ class LeftSwitchSide(CommandGroup):
 
 class RightSwitchSide(CommandGroup):
     def __init__(self):
-        super().__init__('RightSwitchSide')
+        super().__init__("RightSwitchSide")
         self.addSequential(setFixedWrist(0.8, timeout= 1))
         self.addParallel(SwitchPosition())
         self.addSequential(DriveStraightCombined(distance=154/12.0, angle=0, timeout=5))
@@ -96,13 +101,13 @@ class RightSwitchSide(CommandGroup):
 
 class DriveStraight(CommandGroup):
     def __init__(self):
-        super().__init__('DriveStraight')
+        super().__init__("DriveStraight")
         self.addSequential(DriveStraightCombined(distance=154/12.0, angle=0, timeout=5))
         self.addParallel(ProtectPosition(timeout = 5))
 
 class LeftSwitchMiddle2Cube(CommandGroup):
     def __init__(self):
-        super().__init__('LeftSwitchMiddle2Cube')
+        super().__init__("LeftSwitchMiddle2Cube")
         self.addSequential(setFixedWrist(0.8, timeout= 1))
         self.addSequential(SwitchPosition(timeout=1))
         self.addSequential(DriveStraightCombined(distance=9.5/12.0, angle=0, timeout=1))
@@ -126,7 +131,7 @@ class LeftSwitchMiddle2Cube(CommandGroup):
 
 class LeftSwitchMiddle(CommandGroup):
     def __init__(self):
-        super().__init__('LeftSwitchMiddle')
+        super().__init__("LeftSwitchMiddle")
         self.addSequential(setFixedWrist(0.8, timeout= 1))
         self.addSequential(SwitchPosition(timeout=1))
         self.addSequential(DriveStraightCombined(distance=9.5/12.0, angle=0, timeout=1))
@@ -139,7 +144,7 @@ class LeftSwitchMiddle(CommandGroup):
 
 class RightSwitchMiddle(CommandGroup):
     def __init__(self):
-        super().__init__('RightSwitchMiddle')
+        super().__init__("RightSwitchMiddle")
         self.addSequential(setFixedWrist(0.8, timeout= 1))
         self.addSequential(SwitchPosition(timeout=2))
         self.addSequential(DriveStraightCombined(distance=112/12.0, angle=0, timeout=4))
@@ -148,7 +153,7 @@ class RightSwitchMiddle(CommandGroup):
 
 class RightSwitchMiddle2Cube(CommandGroup):
     def __init__(self):
-        super().__init__('RightSwitchMiddle2Cube')
+        super().__init__("RightSwitchMiddle2Cube")
         self.addSequential(setFixedWrist(0.8, timeout= 1))
         self.addSequential(SwitchPosition(timeout=1))
         self.addSequential(DriveStraightCombined(distance=112/12.0, angle=0, timeout=4))
@@ -169,12 +174,14 @@ class RightSwitchMiddle2Cube(CommandGroup):
         self.addSequential(SwitchShoot(timeout=1))
 
 def UpdateDashboard():
-    SmartDashboard.putData("LeftSwitchMiddlePF", LeftSwitchMiddlePF())
-    SmartDashboard.putData("RightSwitchMiddlePF", RightSwitchMiddlePF())
-    SmartDashboard.putData("LeftScalePF", LeftScalePF())
-    SmartDashboard.putData("RightScalePF", RightScalePF())
-    SmartDashboard.putData("LeftOppositeScalePF", LeftOppositeScalePF())
-    SmartDashboard.putData("RightOppositeScalePF", RightOppositeScalePF())
+    follower = "PathFinder"
+    SmartDashboard.putData("LeftSwitchMiddlePath", LeftSwitchMiddlePath(follower))
+    SmartDashboard.putData("RightSwitchMiddlePath", RightSwitchMiddlePath(follower))
+    SmartDashboard.putData("LeftScalePath", LeftScalePath(follower))
+    SmartDashboard.putData("RightScalePath", RightScalePath(follower))
+    SmartDashboard.putData("LeftOppositeScalePath", LeftOppositeScalePath(follower))
+    SmartDashboard.putData("RightOppositeScalePath", RightOppositeScalePath(follower))
+    SmartDashboard.putData("TestPath", TestPath(follower))
 
     SmartDashboard.putData("LeftSwitchSide", LeftSwitchSide())
     SmartDashboard.putData("RightSwitchSide", RightSwitchSide())

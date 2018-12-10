@@ -6,22 +6,21 @@ import os.path
 import pathfinder as pf
 
 from CRLibrary.physics import DifferentialDrive as ddrive
+from CRLibrary.path import odometry as od
 from CRLibrary.util import units
-import odometry as od
+from CRLibrary.util import util
 
 timer = wpilib.Timer()
 
 MAXV = 10
-MAXA = 10
-MAXJ = 10
+MAXA = 15
+MAXJ = 20
 
 width = 33/12
-gains = [1,0,1,1/MAXV,0]
 
-left = None
-right = None
-time = 0
-maxTime = 0
+def getLimits():
+    global MAXV, MAXA, MAXJ
+    return [MAXV, MAXA, MAXJ]
 
 def makeTraj(name):
     if(name=="DriveStraight"):
@@ -29,34 +28,44 @@ def makeTraj(name):
             pf.Waypoint(0,0,0),
             pf.Waypoint(12,0,0)
         ]
-    if(name=="LeftSwitch"):
+    elif(name=="LeftSwitch"):
         points = [
             pf.Waypoint(0,0,0),
+            pf.Waypoint(7,9,0),
             pf.Waypoint(10,9,0)
         ]
-    if(name=="RightScale"):
+    elif(name=="RightScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,2,math.radians(30))
         ]
-    if(name=="LeftScale"):
+    elif(name=="LeftScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(24,-2,math.radians(-30))
         ]
-    if(name=="RightOppositeScale"):
+    elif(name=="RightOppositeScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,3,math.radians(55)),
             pf.Waypoint(19,16,math.radians(90)),
             pf.Waypoint(23,19,math.radians(-30))
         ]
-    if(name=="LeftOppositeScale"):
+    elif(name=="LeftOppositeScale"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(19,-3,math.radians(-55)),
             pf.Waypoint(19,-16,math.radians(-90)),
             pf.Waypoint(23,-19,math.radians(30))
+        ]
+    elif(name=="Test"):
+        points = [
+            pf.Waypoint(0,0,0),
+            pf.Waypoint(10,0,0),
+            pf.Waypoint(20,10,math.radians(-90)),
+            pf.Waypoint(10,20,math.radians(180)),
+            pf.Waypoint(0,10,math.radians(90)),
+            pf.Waypoint(10,0,0)
         ]
     return points
 
@@ -73,7 +82,7 @@ def getTraj(name):
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
             dt=0.02, max_velocity=MAXV, max_acceleration=MAXA, max_jerk=MAXJ)
 
-        modifier = pf.modifiers.TankModifier(trajectory).modify(width/2.4)
+        modifier = pf.modifiers.TankModifier(trajectory).modify(14/12)
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
 
@@ -95,67 +104,3 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(left, color='#0000ff', offset=(-width/2,0))
             renderer.draw_pathfinder_trajectory(modifier.source, color='#00ff00', show_dt=1.0, dt_offset=0.0)
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
-
-def initPath(drivetrain, name):
-    global left, right, time, maxTime
-
-    [left,right,modifier] = getTraj(name)
-
-    leftFollower = pf.followers.EncoderFollower(left)
-    leftFollower.configureEncoder(drivetrain.getRaw()[0], 255, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
-    leftFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
-
-    rightFollower = pf.followers.EncoderFollower(right)
-    rightFollower.configureEncoder(-drivetrain.getRaw()[1], 127, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
-    rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
-
-    showPath(left,right,modifier)
-
-    time = 0
-    maxTime = len(left)
-
-    return [leftFollower,rightFollower]
-
-def followPath(DT):
-    global left, right, time, maxTime
-
-    if(time>=maxTime): return [0,0]
-
-    leftSeg = left[time]
-    rightSeg = right[time]
-    time += 1
-
-    xd = units.feetToMeters((leftSeg.x+rightSeg.x)/2)
-    yd = -units.feetToMeters((leftSeg.y+rightSeg.y)/2) #unsure if needs to be negated
-    thetad = -(leftSeg.heading+rightSeg.heading)/2 #unsure if needs to be negated
-
-    leftVel = units.feetToMeters(leftSeg.velocity)
-    rightVel = units.feetToMeters(rightSeg.velocity)
-
-    leftAccel = units.feetToMeters(leftSeg.acceleration)
-    rightAccel = units.feetToMeters(rightSeg.acceleration)
-
-    vd = (rightVel + leftVel)/2
-    wd = (rightVel - leftVel)/(2*DT.model.effWheelbaseRadius()) #unsure if needs to be negated
-    [x,y,theta] = od.getSI()
-
-    b = 0 #needs to be tuned
-    v = vd * math.cos(thetad-theta) + k(vd,wd) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
-    w = wd + b * vd * sinc(thetad-theta) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd) * (thetad-theta) #unsure if needs to be negated
-
-    print([v, vd, w, wd])
-
-    chassisVel = ddrive.ChassisState(v,w)
-    chassisAccel = ddrive.ChassisState(0, 0)
-
-    voltage = DT.model.solveInverseDynamics_CS(chassisVel, chassisAccel).getVoltage()
-    [leftOut, rightOut] = [voltage[0]/12, voltage[1]/12]
-
-    return [leftOut, rightOut] #with b=0, zeta=0, should function like untuned pathfinder, ie inaccurate
-
-def k(vd, wd):
-    zeta = 0 #needs to be tuned
-    return 2 * zeta * math.sqrt(wd**2+vd**2)
-
-def sinc(theta):
-    return math.sin(theta)/theta

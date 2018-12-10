@@ -23,7 +23,7 @@ from commands.setSpeedWrist import setSpeedWrist
 from commands.DriveStraightTime import DriveStraightTime
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightCombined import DriveStraightCombined
-from commands.DrivePathFinder import DrivePathFinder
+from commands.DrivePath import DrivePath
 from commands.TurnAngle import TurnAngle
 
 from commands.Zero import Zero
@@ -32,12 +32,13 @@ from commands import Sequences
 
 from commands import autonomous
 
-from commands.autonomous import LeftSwitchMiddlePF
-from commands.autonomous import RightSwitchMiddlePF
-from commands.autonomous import LeftScalePF
-from commands.autonomous import RightScalePF
-from commands.autonomous import LeftOppositeScalePF
-from commands.autonomous import RightOppositeScalePF
+from commands.autonomous import LeftSwitchMiddlePath
+from commands.autonomous import RightSwitchMiddlePath
+from commands.autonomous import LeftScalePath
+from commands.autonomous import RightScalePath
+from commands.autonomous import LeftOppositeScalePath
+from commands.autonomous import RightOppositeScalePath
+from commands.autonomous import TestPath
 
 from commands.autonomous import LeftSwitchSide
 from commands.autonomous import RightSwitchSide
@@ -49,16 +50,20 @@ from commands.autonomous import RightSwitchMiddle2Cube
 
 from subsystems import Wrist, Intake, Lift, Drive
 
+from CRLibrary.path import odometry as od
+
 import pathfinder as pf
-import path.path as path
-import odometry as od
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
+<<<<<<< HEAD
 
 from commands.Limelight import Limelight
 from commands.turnVision import TurnVision
 #from navx import AHRS as navx
+=======
+from navx import AHRS as navx
+>>>>>>> Ramsetes
 
 class MyRobot(CommandBasedRobot):
 
@@ -83,18 +88,22 @@ class MyRobot(CommandBasedRobot):
         Since OI instantiates commands and commands need access to subsystems,
         OI must be initialized after subsystems.
         '''
+
         self.joystick0 = oi.getJoystick(0)
         self.joystick1 = oi.getJoystick(1)
         self.xbox = oi.getJoystick(2)
 
         self.updateDashboardInit()
 
-        self.LeftSwitchMiddlePF = LeftSwitchMiddlePF()
-        self.RightSwitchMiddlePF = RightSwitchMiddlePF()
-        self.LeftScalePF = LeftScalePF()
-        self.RightScalePF = RightScalePF()
-        self.LeftOppositeScalePF = LeftOppositeScalePF()
-        self.RightOppositeScalePF = RightOppositeScalePF()
+        follower = "Ramsetes"
+
+        self.LeftSwitchMiddlePath = LeftSwitchMiddlePath(follower)
+        self.RightSwitchMiddlePath = RightSwitchMiddlePath(follower)
+        self.LeftScalePath = LeftScalePath(follower)
+        self.RightScalePath = RightScalePath(follower)
+        self.LeftOppositeScalePath = LeftOppositeScalePath(follower)
+        self.RightOppositeScalePath = RightOppositeScalePath(follower)
+        self.TestPath = TestPath(follower)
 
         self.DriveStraight = DriveStraight()
         self.LeftSwitchSide = LeftSwitchSide()
@@ -111,6 +120,7 @@ class MyRobot(CommandBasedRobot):
         self.curr = 0
         self.print = 50
 
+<<<<<<< HEAD
         SmartDashboard.putNumber("PF_P",path.gains[0])
         SmartDashboard.putNumber("PF_D",path.gains[2])
         SmartDashboard.putNumber("PF_I",path.gains[1])
@@ -119,6 +129,8 @@ class MyRobot(CommandBasedRobot):
 
         SmartDashboard.putData("Limelight Turn", TurnVision())
 
+=======
+>>>>>>> Ramsetes
     def robotPeriodic(self):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
@@ -126,6 +138,7 @@ class MyRobot(CommandBasedRobot):
             #od.display() #displays odometry results
             self.curr = 0
 
+<<<<<<< HEAD
         SmartDashboard.putNumber("Velocity", self.drive.getVelocity()[1])
 
         path.gains[0] = SmartDashboard.getNumber("PF_P",0)
@@ -135,6 +148,8 @@ class MyRobot(CommandBasedRobot):
         path.gains[4] = SmartDashboard.getNumber("PF_A",0)
 
 
+=======
+>>>>>>> Ramsetes
     def autonomousInit(self):
         self.getLimelightData.start()
 
@@ -147,27 +162,28 @@ class MyRobot(CommandBasedRobot):
 
         gameData = "LLL" #wpilib.DriverStation.getInstance().getGameSpecificMessage()
         position = "M" #SmartDashboard.getString("position", "M")
+
         self.autoMode = self.autoLogic(gameData, position)
-        print(self.autoMode)
-        #if self.autoMode == "DriveStraight": self.DriveStraight.start()
-        if self.autoMode == "DriveStraight": self.RightSwitchMiddlePF.start()
+        if self.autoMode == "DriveStraight": self.DriveStraight.start()
+        if self.autoMode == "DriveStraight": self.RightSwitchMiddlePath.start()
         elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
-        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePF.start() #self.LeftSwitchMiddle2Cube.start()
+        elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePath.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
-        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePF.start() #self.RightSwitchMiddle2Cube.start()
-        else: self.autoMode = "Nothing"
+        elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePath.start()
+        elif self.autoMode == "TestPath": self.TestPath.start()
 
     def autoLogic(self, gameData, auto):
-        return "LeftSwitchMiddle"
+        return "TestPath"
+
         '''
         if(auto=="L"):
-            if(gameData[0]=='L'): return "LeftSwitchSide"
+            if(gameData[0]=="L"): return "LeftSwitchSide"
             else: return "DriveStraight"
         elif(auto=="M"):
-            if(gameData[0]=='L'): return "LeftSwitchMiddle"
+            if(gameData[0]=="L"): return "LeftSwitchMiddle"
             else: return "RightSwitchMiddle"
         elif(auto=="R"):
-            if(gameData[0]=='L'): return "DriveStraight"
+            if(gameData[0]=="L"): return "DriveStraight"
             else: return "RightSwitchSide"
         return "Nothing"
         '''
@@ -194,8 +210,8 @@ class MyRobot(CommandBasedRobot):
 
         SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
         SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
-        SmartDashboard.putData("DriveStraightCombined",DriveStraightCombined())
-        SmartDashboard.putData("DrivePathFinder",DrivePathFinder())
+        SmartDashboard.putData("DriveStraightCombined", DriveStraightCombined())
+        SmartDashboard.putData("DrivePath", DrivePath())
         SmartDashboard.putData("TurnAngle", TurnAngle())
 
         SmartDashboard.putData("Zero", Zero())
@@ -216,5 +232,5 @@ class MyRobot(CommandBasedRobot):
         self.wrist.UpdateDashboard()
         self.intake.UpdateDashboard()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     wpilib.run(MyRobot)
