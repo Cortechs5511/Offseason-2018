@@ -4,8 +4,8 @@ import wpilib
 from wpilib.command import Command
 from wpilib.command import TimedCommand
 
-from path import PathFinder
-from path import Ramsetes
+from CRLibrary.path import PathFinder
+from CRLibrary.path import Ramsetes
 
 class DrivePath(TimedCommand):
 
@@ -18,8 +18,7 @@ class DrivePath(TimedCommand):
         self.name = name
         self.follower = follower
 
-        self.Ramsetes = self.DT.Ramsetes
-        self.PathFinder = self.DT.PathFinder
+        self.Path = self.DT.Path
 
     def initialize(self):
         self.DT.setPath(name=self.name, follower=self.follower)
@@ -28,14 +27,11 @@ class DrivePath(TimedCommand):
         self.DT.tankDrive()
 
     def isFinished(self):
-        if(self.follower=="PathFinder"): return (self.PathFinder.isFinished()  or self.isTimedOut())
-        elif(self.follower=="Ramsetes"): return (self.Ramsetes.isFinished()  or self.isTimedOut())
-        else: return True
+        return self.Path.isFinished() or self.isTimedOut()
 
     def interrupted(self):
         self.end()
 
     def end(self):
         self.DT.tankDrive(0,0)
-        if(self.follower=="PathFinder"): self.PathFinder.disablePID()
-        elif(self.follower=="Ramsetes"): self.Ramsetes.disablePID()
+        self.Path.disablePID()

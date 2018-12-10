@@ -52,11 +52,9 @@ from commands.autonomous import RightSwitchMiddle2Cube
 
 from subsystems import Wrist, Intake, Lift, Drive
 
-import path.odometry as od
-import pathfinder as pf
+from CRLibrary.path import odometry as od
 
-from path import PathFinder
-from path import Ramsetes
+import pathfinder as pf
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor

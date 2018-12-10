@@ -6,10 +6,9 @@ import os.path
 import pathfinder as pf
 
 from CRLibrary.physics import DifferentialDrive as ddrive
+from CRLibrary.path import odometry as od
 from CRLibrary.util import units
 from CRLibrary.util import util
-
-import path.odometry as od
 
 timer = wpilib.Timer()
 

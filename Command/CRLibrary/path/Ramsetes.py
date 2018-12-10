@@ -9,16 +9,17 @@ from CRLibrary.physics import DifferentialDrive as ddrive
 from CRLibrary.util import units
 from CRLibrary.util import util
 
+
 from path import paths
-from path import odometry as od
 
 class Ramsetes():
 
-    def __init__(self, drivetrain, model):
+    def __init__(self, drivetrain, model, odometer):
 
         '''Variables'''
         self.DT = drivetrain
         self.model = model
+        self.od = odometer
 
         self.time = 0
         self.maxTime = 0
@@ -41,7 +42,7 @@ class Ramsetes():
 
         '''PID Controllers'''
         self.MaxV = paths.getLimits()[0]
-        self.leftController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=od.getLeftVelocity, output=self.setLeft)
+        self.leftController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=self.od.getLeftVelocity, output=self.setLeft)
         self.leftController.setInputRange(-self.MaxV-3, self.MaxV+3) #feet/second
         self.leftController.setOutputRange(-1, 1) #percent
         self.leftController.setAbsoluteTolerance(TolVel)
@@ -49,14 +50,14 @@ class Ramsetes():
         self.leftController.disable()
 
         #TolVel, gains same as for left controller so unchanged
-        self.rightController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=od.getRightVelocity, output=self.setRight)
+        self.rightController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=self.od.getRightVelocity, output=self.setRight)
         self.rightController.setInputRange(-self.MaxV-3, self.MaxV+3) #feet/second
         self.rightController.setOutputRange(-1, 1) #percent
         self.rightController.setAbsoluteTolerance(TolVel)
         self.rightController.setContinuous(False)
         self.rightController.disable()
 
-        self.angleController = wpilib.PIDController(kA[0], kA[1], kA[2], kA[3], source=od.getAngle, output=self.setAngle)
+        self.angleController = wpilib.PIDController(kA[0], kA[1], kA[2], kA[3], source=self.od.getAngle, output=self.setAngle)
         self.angleController.setInputRange(-180,  180) #degrees
         self.angleController.setOutputRange(-0.9, 0.9)
         self.angleController.setAbsoluteTolerance(TolAngle)
@@ -122,7 +123,7 @@ class Ramsetes():
         ad = (rightAcceld + leftAcceld)/2
         alphad = (rightAcceld - leftAcceld)/(2*self.model.effWheelbaseRadius())
 
-        [x, y, theta, rightVel, leftVel] = od.getSI()
+        [x, y, theta, rightVel, leftVel] = self.od.getSI()
         [y, theta] = [-y, -theta]
 
         #The main calculations based on Ramsetes algorithm

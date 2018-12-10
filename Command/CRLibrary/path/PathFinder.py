@@ -6,15 +6,15 @@ import os.path
 import pathfinder as pf
 
 from path import paths
-from path import odometry as od
 
 class PathFinder():
 
-    def __init__(self, DT, getDistances):
+    def __init__(self, DT, getDistances, odometer):
 
         '''Variables'''
         self.DT = DT
         self.getDistances = getDistances
+        self.od = odometer
         self.leftFollower = None
         self.rightFollower = None
         self.PID = 0
@@ -25,7 +25,7 @@ class PathFinder():
         TolAngle = 3 #degrees
 
         '''PID Controllers'''
-        self.angleController = wpilib.PIDController(kA[0], kA[1], kA[2], kA[3], source=od.getAngle, output=self.setAngle)
+        self.angleController = wpilib.PIDController(kA[0], kA[1], kA[2], kA[3], source=self.od.getAngle, output=self.setAngle)
         self.angleController.setInputRange(-180,  180) #degrees
         self.angleController.setOutputRange(-0.9, 0.9)
         self.angleController.setAbsoluteTolerance(TolAngle)
