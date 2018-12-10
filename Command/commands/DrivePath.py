@@ -34,3 +34,5 @@ class DrivePath(TimedCommand):
 
     def end(self):
         self.DT.tankDrive(0,0)
+        if(self.follower=="PathFinder"): PathFinder.disablePID()
+        elif(self.follower=="Ramsetes"): Ramsetes.disablePID()

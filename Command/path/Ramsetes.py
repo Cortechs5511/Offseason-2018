@@ -31,8 +31,35 @@ DT = None
 
 finished = False
 
+'''Gains'''
+kV = [0.4, 0.0, 0.1, 0.0]
+kA = [0.03, 0.0, 0.0, 0.0]
+kB = 1.5
+kZeta = 0.4
+
+TolVel = 0.2
+TolAngle = 3
+
+def enablePID():
+    global leftController, rightController, angleController
+
+    leftController.enable()
+    rightController.enable()
+    angleController.enable()
+
+    leftController.setSetpoint(0)
+    rightController.setSetpoint(0)
+    angleController.setSetpoint(0)
+
+def disablePID():
+    global leftController, rightController, angleController
+
+    leftController.disable()
+    rightController.disable()
+    angleController.disable()
+
 def initPath(drivetrain, name):
-    global DT, left, right, time, maxTime, leftController, rightController, finished
+    global DT, left, right, time, maxTime
 
     DT = drivetrain
     finished = False
@@ -43,17 +70,12 @@ def initPath(drivetrain, name):
     time = 0
     maxTime = len(left)
 
-    leftController.enable()
-    rightController.enable()
-    angleController.enable()
-
-    leftController.setSetpoint(0)
-    rightController.setSetpoint(0)
-    angleController.setSetpoint(0)
+    enablePID()
 
 def followPath(DT):
     global left, right, time, maxTime, prevV, prevW, leftVTemp, rightVTemp
     global leftVFinal, rightVFinal, leftController, rightController, finished
+    global kB, kZeta
 
     if(time>=maxTime):
         leftController.disable()
@@ -84,10 +106,8 @@ def followPath(DT):
     [x, y, theta, rightVel, leftVel] = od.getSI()
     [y, theta] = [-y, -theta]
 
-    b = 1.5 #needs to be tuned
-    zeta = 0.4 #needs to be tuned
-    v = vd * math.cos(thetad-theta) + k(vd,wd,b,zeta) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
-    w = wd + b * vd * sinc(util.angleDiffRad(thetad,theta)) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd,b,zeta) * util.angleDiffRad(thetad,theta)
+    v = vd * math.cos(thetad-theta) + k(vd,wd,kB,kZeta) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
+    w = wd + kB * vd * sinc(util.angleDiffRad(thetad,theta)) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd,kB,kZeta) * util.angleDiffRad(thetad,theta)
 
     leftOut = v - DT.model.effWheelbaseRadius()*w #for velocity PID process variable
     rightOut = v + DT.model.effWheelbaseRadius()*w
@@ -128,17 +148,13 @@ def setLeftVelocity(output):
     global leftVTemp, leftVFinal
     leftVFinal = output + leftVTemp
 
-TolVel = 0.2 #feet/second
-[kP,kI,kD,kF] = [0.00, 0.00, 0.00, 0.00]
 MaxV = paths.getLimits()[0]
-if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.40, 0.00, 0.10, 0.00]
-leftController = wpilib.PIDController(kP, kI, kD, kF, source=getLeftVelocity, output=setLeftVelocity)
+leftController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=getLeftVelocity, output=setLeftVelocity)
 leftController.setInputRange(-MaxV-3, MaxV+3) #feet/second
 leftController.setOutputRange(-1, 1) #percent
 leftController.setAbsoluteTolerance(TolVel)
 leftController.setContinuous(False)
 leftController.disable()
-
 
 def getRightVelocity():
     return od.get()[4] #feet/second
@@ -148,7 +164,7 @@ def setRightVelocity(output):
     rightVFinal = output + rightVTemp
 
 #TolVel, gains same as for left controller so unchanged
-rightController = wpilib.PIDController(kP, kI, kD, kF, source=getRightVelocity, output=setRightVelocity)
+rightController = wpilib.PIDController(kV[0], kV[1], kV[2], kV[3], source=getRightVelocity, output=setRightVelocity)
 rightController.setInputRange(-MaxV-3, MaxV+3) #feet/second
 rightController.setOutputRange(-1, 1) #percent
 rightController.setAbsoluteTolerance(TolVel)
@@ -163,10 +179,7 @@ def setAngle(output):
     global navx
     navx = output
 
-TolAngle = 3 #degrees
-[kP,kI,kD,kF] = [0.024, 0.00, 0.20, 0.00]
-if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.025,0.00,0.00,0.00]
-angleController = wpilib.PIDController(kP, kI, kD, kF, source=getAngle, output=setAngle)
+angleController = wpilib.PIDController(kA[0], kA[1], kA[2], kA[3], source=getAngle, output=setAngle)
 angleController.setInputRange(-180,  180) #degrees
 angleController.setOutputRange(-0.9, 0.9)
 angleController.setAbsoluteTolerance(TolAngle)

@@ -13,10 +13,17 @@ DT = None
 globalLeft = None
 globalRight = None
 
-def initPath(drivetrain, name):
-    global DT, globalLeft, globalRight, angleController
-
+def enablePID():
+    global angleController
     angleController.enable()
+    angleController.setSetpoint(0)
+
+def disablePID():
+    global angleController
+    angleController.disable()
+
+def initPath(drivetrain, name):
+    global DT, globalLeft, globalRight
 
     [left,right,modifier] = paths.getTraj(name)
     paths.showPath(left,right,modifier)
@@ -33,12 +40,13 @@ def initPath(drivetrain, name):
     globalLeft = leftFollower
     globalRight = rightFollower
 
+    enablePID()
+
 def followPath(DT):
     global globalLeft, globalRight, angleController, navx
 
     angle = pf.r2d(globalLeft.getHeading())
-    if(angle>180): angle=360-angle
-    else: angle=-angle
+    angle = 360-angle if angle>180 else -angle
     angleController.setSetpoint(angle)
 
     if(not globalLeft.isFinished()):

@@ -90,7 +90,7 @@ class MyRobot(CommandBasedRobot):
 
         self.updateDashboardInit()
 
-        follower = "PathFinder"
+        follower = "Ramsetes"
 
         self.LeftSwitchMiddlePath = LeftSwitchMiddlePath(follower)
         self.RightSwitchMiddlePath = RightSwitchMiddlePath(follower)
