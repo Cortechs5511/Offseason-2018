@@ -7,6 +7,8 @@ import pathfinder as pf
 
 from CRLibrary.physics import DifferentialDrive as ddrive
 from CRLibrary.util import units
+from CRLibrary.util import util
+
 import odometry as od
 
 timer = wpilib.Timer()
@@ -14,10 +16,6 @@ timer = wpilib.Timer()
 MAXV = 10
 MAXA = 15
 MAXJ = 20
-
-width = 33/12
-
-gains = [1,0,1,1/MAXV,0]
 
 left = None
 right = None
@@ -39,17 +37,12 @@ TolVel = 0.2 #feet/second
 
 DT = None
 
+finished = False
+
 [kP,kI,kD,kF] = [0.00, 0.00, 0.00, 0.00]
 if wpilib.RobotBase.isSimulation(): [kP,kI,kD,kF] = [0.40, 0.00, 0.10, 0.00]
 
-def getLeftVelocity():
-    return od.get()[3] #feet/second
-
-def getRightVelocity():
-    return od.get()[4] #feet/second
-
 def makeTraj(name):
-    print("Here")
     if(name=="DriveStraight"):
         points = [
             pf.Waypoint(0,0,0),
@@ -85,7 +78,7 @@ def makeTraj(name):
             pf.Waypoint(19,-16,math.radians(-90)),
             pf.Waypoint(23,-19,math.radians(30))
         ]
-    elif(name=="CrazyTest"):
+    elif(name=="Test"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(10,0,0),
@@ -133,20 +126,12 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
 
 def initPath(drivetrain, name):
-    global DT, left, right, time, maxTime, leftController, rightController
+    global DT, left, right, time, maxTime, leftController, rightController, finished
 
     DT = drivetrain
+    finished = False
 
     [left,right,modifier] = getTraj(name)
-
-    leftFollower = pf.followers.EncoderFollower(left)
-    leftFollower.configureEncoder(drivetrain.getRaw()[0], 255, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
-    leftFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
-
-    rightFollower = pf.followers.EncoderFollower(right)
-    rightFollower.configureEncoder(-drivetrain.getRaw()[1], 127, 4/12) #Pulse Initial, pulsePerRev, WheelDiam
-    rightFollower.configurePIDVA(gains[0],gains[1],gains[2],gains[3],gains[4])
-
     showPath(left,right,modifier)
 
     time = 0
@@ -160,14 +145,13 @@ def initPath(drivetrain, name):
     rightController.setSetpoint(0)
     angleController.setSetpoint(0)
 
-    return [leftFollower,rightFollower]
-
 def followPath(DT):
-    global left, right, time, maxTime, prevV, prevW, leftVTemp, rightVTemp, leftVFinal, rightVFinal, leftController, rightController
+    global left, right, time, maxTime, prevV, prevW, leftVTemp, rightVTemp, leftVFinal, rightVFinal, leftController, rightController, finished
 
     if(time>=maxTime):
         leftController.disable()
         rightController.disable()
+        finished = True
         return [0,0]
 
     leftSeg = left[time]
@@ -196,7 +180,7 @@ def followPath(DT):
     b = 1.5 #needs to be tuned
     zeta = 0.4 #needs to be tuned
     v = vd * math.cos(thetad-theta) + k(vd,wd,b,zeta) * ((xd-x) * math.cos(theta) + (yd-y) * math.sin(theta))
-    w = wd + b * vd * sinc(angleDiffRad(thetad,theta)) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd,b,zeta) * angleDiffRad(thetad,theta) #unsure if needs to be negated
+    w = wd + b * vd * sinc(util.angleDiffRad(thetad,theta)) * ((yd-y) * math.cos(theta) - (xd-x) * math.sin(theta)) + k(vd,wd,b,zeta) * util.angleDiffRad(thetad,theta) #unsure if needs to be negated
 
     leftOut = v - DT.model.effWheelbaseRadius()*w
     rightOut = v + DT.model.effWheelbaseRadius()*w
@@ -218,27 +202,22 @@ def followPath(DT):
 
     leftController.setSetpoint(units.metersToFeet(leftOut))
     rightController.setSetpoint(units.metersToFeet(rightOut))
-    angleController.setSetpoint(boundDeg(units.radiansToDegrees(-thetad)))
-    #return [leftVFinal+navx, rightVFinal-navx] #with b=0, zeta=0, should function like untuned pathfinder, ie inaccurate
-    return [leftVFinal, rightVFinal]
+    angleController.setSetpoint(util.boundDeg(units.radiansToDegrees(-thetad)))
+    return [leftVFinal+navx, rightVFinal-navx]
 
 def k(vd, wd, b, zeta):
     return 2 * zeta * math.sqrt(wd**2+b*vd**2)
 
 def sinc(theta):
     if(theta==0): return 1
-    return math.sin(theta)/boundRad(theta)
+    return math.sin(theta)/theta
+
+
+def getLeftVelocity(): return od.get()[3] #feet/second
 
 def setLeftVelocity(output):
     global leftVTemp, leftVFinal
-    ff = leftVTemp
-    leftVFinal = output + ff
-
-def setRightVelocity(output):
-    global rightVTemp, rightVFinal
-    ff = rightVTemp
-    rightVFinal = output + ff
-
+    leftVFinal = output + leftVTemp
 
 leftController = wpilib.PIDController(kP, kI, kD, kF, source=getLeftVelocity, output=setLeftVelocity)
 leftController.setInputRange(-MAXV-3, MAXV+3) #feet/second
@@ -246,6 +225,14 @@ leftController.setOutputRange(-1, 1) #percent
 leftController.setAbsoluteTolerance(TolVel)
 leftController.setContinuous(False)
 leftController.disable()
+
+
+def getRightVelocity():
+    return od.get()[4] #feet/second
+
+def setRightVelocity(output):
+    global rightVTemp, rightVFinal
+    rightVFinal = output + rightVTemp
 
 rightController = wpilib.PIDController(kP, kI, kD, kF, source=getRightVelocity, output=setRightVelocity)
 rightController.setInputRange(-MAXV-3, MAXV+3) #feet/second
@@ -256,7 +243,7 @@ rightController.disable()
 
 def getAngle():
     global DT
-    return boundDeg(DT.getAngle())
+    return util.boundDeg(DT.getAngle())
 
 def setAngle(output):
     global navx
@@ -272,28 +259,6 @@ angleController.setAbsoluteTolerance(TolAngle)
 angleController.setContinuous(True)
 angleController.disable()
 
-def angleDiffDeg(a, b):
-    diff = boundDeg(a)-boundDeg(b)
-    diffMinus = diff - 360
-    diffPlus = diff + 360
-    if(abs(diffMinus)<abs(diff)): return diffMinus
-    if(abs(diffPlus)<abs(diff)): return diffPlus
-    return diff
-
-def angleDiffRad(a,b):
-    diff = boundRad(a)-boundRad(b)
-    diffMinus = diff - 2*math.pi
-    diffPlus = diff + 2*math.pi
-    if(abs(diffMinus)<abs(diff)): return diffMinus
-    if(abs(diffPlus)<abs(diff)): return diffPlus
-    return diff
-
-def boundDeg(angle):
-    if(angle<-180): return boundDeg(angle+360)
-    if(angle>180): return boundDeg(angle-360)
-    return angle
-
-def boundRad(angle):
-    if(angle<-math.pi): return boundRad(angle+2*math.pi)
-    if(angle>math.pi): return boundRad(angle-2*math.pi)
-    return angle
+def isFinished():
+    global finished
+    return finished

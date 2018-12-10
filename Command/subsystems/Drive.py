@@ -16,8 +16,9 @@ from commands.setFixedDT import setFixedDT
 
 import odometry as od
 import pathfinder as pf
-from path import path
-from path import path2
+
+from path import PathFinder
+from path import Ramsetes
 
 from sim import simComms
 
@@ -30,7 +31,6 @@ class Drive(Subsystem):
     mode = ""
     distPID = 0
     anglePID = 0
-    spline = None
 
     prevDist = [0,0]
 
@@ -118,7 +118,7 @@ class Drive(Subsystem):
         transmission = DCMotor.DCMotorTransmission(8.02, 2.22, 1.10)
         self.model = dDrive.DifferentialDrive(64, 50, 0, units.inchesToMeters(2.0), units.inchesToMeters(14), transmission, transmission)
         self.maxVel = self.maxSpeed*self.model.getMaxAbsVelocity(0, 0, 12)
-        print("Max Velocity: "+ str(self.maxVel))
+        #print("Max Velocity: "+ str(self.maxVel))
 
     def __getDistance__(self):
         return self.getAvgDistance()
@@ -149,8 +149,11 @@ class Drive(Subsystem):
             self.distController.enable()
             self.angleController.enable()
         elif(mode=="PathFinder"):
-            #self.spline = path.initPath(self, name)
-            self.spline = path2.initPath(self, name)
+            PathFinder.initPath(self, name)
+            self.distController.disable()
+            self.angleController.enable()
+        elif(mode=="Ramsetes"):
+            Ramsetes.initPath(self, name)
             self.distController.disable()
             self.angleController.disable()
         elif(mode=="DiffDrive"):
@@ -172,6 +175,9 @@ class Drive(Subsystem):
 
     def setPathFinder(self,name):
         self.setMode("PathFinder", name=name)
+
+    def setRamsetes(self, name):
+        self.setMode("Ramsetes", name=name)
 
     def setDiffDrive(self):
         self.setMode("DiffDrive")
@@ -195,15 +201,10 @@ class Drive(Subsystem):
             [left,right] = [self.distPID+self.anglePID,self.distPID-self.anglePID]
 
         elif(self.mode=="PathFinder"):
-            angle = pf.r2d(self.spline[0].getHeading())
-            if(angle>180): angle=360-angle
-            else: angle=-angle
+            [left,right] = PathFinder.followPath(self)
 
-            self.angleController.setSetpoint(angle)
-            #print([angle,self.getAngle()])
-            #[left,right] = path.followPath(self,self.spline[0],self.spline[1])
-            [left, right] = path2.followPath(self)
-            #[left,right] = [left+self.anglePID,right-self.anglePID]
+        elif(self.mode=="Ramsetes"):
+            [left, right] = Ramsetes.followPath(self)
 
         elif(self.mode=="DiffDrive"):
             wheelVelocity = dDrive.WheelState(left*self.maxVel/self.model.wheelRadius(), right*self.maxVel/self.model.wheelRadius())
@@ -220,10 +221,6 @@ class Drive(Subsystem):
         self.__tankDrive__(left,right)
 
     def __tankDrive__(self,left,right):
-        RightGain = 0.9
-        if wpilib.RobotBase.isSimulation(): RightGain = 1
-        right = right * RightGain
-
         self.left.set(left)
         self.right.set(right)
 

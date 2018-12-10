@@ -14,6 +14,10 @@ MAXJ = 20
 width = 33/12
 gains = [1,0,1,1/MAXV,0]
 
+DT = None
+globalLeft = None
+globalRight = None
+
 def makeTraj(name):
     if(name=="DriveStraight"):
         points = [
@@ -49,7 +53,7 @@ def makeTraj(name):
             pf.Waypoint(19,-16,math.radians(-90)),
             pf.Waypoint(23,-19,math.radians(30))
         ]
-    elif(name=="CrazyTest"):
+    elif(name=="Test"):
         points = [
             pf.Waypoint(0,0,0),
             pf.Waypoint(10,0,0),
@@ -97,6 +101,8 @@ def showPath(left,right,modifier):
             renderer.draw_pathfinder_trajectory(right, color='#0000ff', offset=(width/2,0))
 
 def initPath(drivetrain, name):
+    global DT, globalLeft, globalRight
+
     [left,right,modifier] = getTraj(name)
 
     leftFollower = pf.followers.EncoderFollower(left)
@@ -112,10 +118,23 @@ def initPath(drivetrain, name):
     timer.reset()
     timer.start()
 
-    return [leftFollower,rightFollower]
+    DT = drivetrain
+    globalLeft = leftFollower
+    globalRight = rightFollower
 
-def followPath(drivetrain, leftFollower, rightFollower):
-    if(not leftFollower.isFinished()):
-        #print(drivetrain.getDistance())
-        return [leftFollower.calculate(drivetrain.getRaw()[0]), rightFollower.calculate(-drivetrain.getRaw()[1])]
+def followPath(DT):
+    global globalLeft, globalRight
+
+    angle = pf.r2d(globalLeft.getHeading())
+    if(angle>180): angle=360-angle
+    else: angle=-angle
+    DT.angleController.setSetpoint(angle)
+    update = DT.anglePID
+
+    if(not globalLeft.isFinished()):
+        return [globalLeft.calculate(DT.getRaw()[0])+update, globalRight.calculate(-DT.getRaw()[1])-update]
     else: return [0,0]
+
+def isFinished():
+    global globalLeft
+    return globalLeft.isFinished()

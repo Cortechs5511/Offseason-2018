@@ -7,6 +7,7 @@ from commands.DriveStraightCombined import DriveStraightCombined
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightTime import DriveStraightTime
 from commands.DrivePathFinder import DrivePathFinder
+from commands.DriveRamsetes import DriveRamsetes
 from commands.TurnAngle import TurnAngle
 
 from commands.setFixedDT import setFixedDT
@@ -70,10 +71,15 @@ class RightOppositeScalePF(CommandGroup):
         super().__init__("RightOppositeScalePF")
         self.addSequential(DrivePathFinder(name="RightOppositeScale", timeout=15))
 
-class CrazyTestPF(CommandGroup):
+class TestPF(CommandGroup):
     def __init__(self):
-        super().__init__("CrazyTestPF")
-        self.addSequential(DrivePathFinder(name="CrazyTest", timeout=15))
+        super().__init__("TestPF")
+        self.addSequential(DrivePathFinder(name="Test", timeout=15))
+
+class TestRamsetes(CommandGroup):
+    def __init__(self):
+        super().__init__("TestRamsetes")
+        self.addSequential(DriveRamsetes(name="Test", timeout=15))
 
 #STANDARD AUTOS
 

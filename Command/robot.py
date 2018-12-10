@@ -40,7 +40,9 @@ from commands.autonomous import LeftScalePF
 from commands.autonomous import RightScalePF
 from commands.autonomous import LeftOppositeScalePF
 from commands.autonomous import RightOppositeScalePF
-from commands.autonomous import CrazyTestPF
+
+from commands.autonomous import TestPF
+from commands.autonomous import TestRamsetes
 
 from commands.autonomous import LeftSwitchSide
 from commands.autonomous import RightSwitchSide
@@ -52,13 +54,15 @@ from commands.autonomous import RightSwitchMiddle2Cube
 
 from subsystems import Wrist, Intake, Lift, Drive
 
-import pathfinder as pf
-import path.path as path
 import odometry as od
+import pathfinder as pf
+
+from path import PathFinder
+from path import Ramsetes
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
-#from navx import AHRS as navx
+from navx import AHRS as navx
 
 class MyRobot(CommandBasedRobot):
 
@@ -81,6 +85,7 @@ class MyRobot(CommandBasedRobot):
         Since OI instantiates commands and commands need access to subsystems,
         OI must be initialized after subsystems.
         '''
+
         self.joystick0 = oi.getJoystick(0)
         self.joystick1 = oi.getJoystick(1)
         self.xbox = oi.getJoystick(2)
@@ -94,7 +99,8 @@ class MyRobot(CommandBasedRobot):
         self.LeftOppositeScalePF = LeftOppositeScalePF()
         self.RightOppositeScalePF = RightOppositeScalePF()
 
-        self.CrazyTestPF = CrazyTestPF()
+        self.TestPF = TestPF()
+        self.TestRamsetes = TestRamsetes()
 
         self.DriveStraight = DriveStraight()
         self.LeftSwitchSide = LeftSwitchSide()
@@ -112,26 +118,12 @@ class MyRobot(CommandBasedRobot):
         self.curr = 0
         self.print = 50
 
-        SmartDashboard.putNumber("PF_P",path.gains[0])
-        SmartDashboard.putNumber("PF_D",path.gains[2])
-        SmartDashboard.putNumber("PF_I",path.gains[1])
-        SmartDashboard.putNumber("PF_V",path.gains[3])
-        SmartDashboard.putNumber("PF_A",path.gains[4])
-
     def robotPeriodic(self):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
             self.updateDashboardPeriodic()
             #od.display() #displays odometry results
             self.curr = 0
-
-        SmartDashboard.putNumber("Velocity", self.drive.getVelocity()[1])
-
-        path.gains[0] = SmartDashboard.getNumber("PF_P",0)
-        path.gains[1] = SmartDashboard.getNumber("PF_I",0)
-        path.gains[2] = SmartDashboard.getNumber("PF_D",0)
-        path.gains[3] = SmartDashboard.getNumber("PF_V",0)
-        path.gains[4] = SmartDashboard.getNumber("PF_A",0)
 
     def autonomousInit(self):
         self.getLimelightData.start()
@@ -145,19 +137,20 @@ class MyRobot(CommandBasedRobot):
 
         gameData = "LLL" #wpilib.DriverStation.getInstance().getGameSpecificMessage()
         position = "M" #SmartDashboard.getString("position", "M")
+
         self.autoMode = self.autoLogic(gameData, position)
-        print(self.autoMode)
-        #if self.autoMode == "DriveStraight": self.DriveStraight.start()
+        if self.autoMode == "DriveStraight": self.DriveStraight.start()
         if self.autoMode == "DriveStraight": self.RightSwitchMiddlePF.start()
         elif self.autoMode == "LeftSwitchSide": self.LeftSwitchSide.start()
         elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePF.start() #self.LeftSwitchMiddle2Cube.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
         elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePF.start() #self.RightSwitchMiddle2Cube.start()
-        elif self.autoMode == "CrazyTest": self.CrazyTestPF.start()
-        else: self.autoMode = "Nothing"
+        elif self.autoMode == "TestPF": self.TestPF.start()
+        elif self.autoMode == "TestRamsetes": self.TestRamsetes.start()
 
     def autoLogic(self, gameData, auto):
-        return "CrazyTest"
+        return "TestPF"
+
         '''
         if(auto=="L"):
             if(gameData[0]=="L"): return "LeftSwitchSide"
