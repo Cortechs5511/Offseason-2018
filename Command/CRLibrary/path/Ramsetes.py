@@ -31,13 +31,13 @@ class Ramsetes():
 
         '''Gains'''
         kV = [0.40, 0.0, 0.1, 0.0]
-        kA = [0.03, 0.0, 0.0, 0.0]
+        kA = [0.005, 0.0, 0.0, 0.0]
 
-        self.kB = 1.5
-        self.kZeta = 0.4
+        self.kB = 2.00
+        self.kZeta = 0.70
 
         TolVel = 0.2
-        TolAngle = 3
+        TolAngle = 1
 
         '''PID Controllers'''
         self.MaxV = PathGen.getLimits()[0]

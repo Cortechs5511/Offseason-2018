@@ -21,8 +21,8 @@ class PathFinder():
         self.PID = 0
 
         '''Gains'''
-        kA = [0.020,0.00,0.00,0.00]
-        self.gains = [1,0,1,1/PathGen.getLimits()[0],0]
+        kA = [0.030, 0.00, 0.00, 0.00]
+        self.gains = [0.5, 0, 0.1, 1/PathGen.getLimits()[0], 0]
         TolAngle = 3 #degrees
 
         '''PID Controllers'''
