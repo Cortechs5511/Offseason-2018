@@ -5,14 +5,15 @@ import pickle
 import os.path
 import pathfinder as pf
 
-from path import paths
+from CRLibrary.path import PathGen
 
 class PathFinder():
 
-    def __init__(self, DT, getDistances, odometer):
+    def __init__(self, DT, model, odometer, getDistances):
 
         '''Variables'''
         self.DT = DT
+        self.model = model
         self.getDistances = getDistances
         self.od = odometer
         self.leftFollower = None
@@ -21,7 +22,7 @@ class PathFinder():
 
         '''Gains'''
         kA = [0.020,0.00,0.00,0.00]
-        self.gains = [1,0,1,1/paths.getLimits()[0],0]
+        self.gains = [1,0,1,1/PathGen.getLimits()[0],0]
         TolAngle = 3 #degrees
 
         '''PID Controllers'''
@@ -41,8 +42,8 @@ class PathFinder():
     def disablePID(self): self.angleController.disable()
 
     def initPath(self, name):
-        [left,right,modifier] = paths.getTraj(name)
-        paths.showPath(left,right,modifier)
+        [left,right,modifier] = PathGen.getTraj(name, self.model)
+        PathGen.showPath(left,right,modifier)
 
         self.leftFollower = pf.followers.EncoderFollower(left)
         self.leftFollower.configureEncoder(int(self.getDistances()[0]*1000), 1000, 1/math.pi) #Pulse Initial, pulsePerRev, WheelDiam

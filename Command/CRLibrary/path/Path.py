@@ -5,8 +5,6 @@ import pickle
 import os.path
 import pathfinder as pf
 
-from path import paths
-
 from CRLibrary.path import odometry as od
 from CRLibrary.path import PathFinder
 from CRLibrary.path import Ramsetes
@@ -15,7 +13,7 @@ class Path():
 
     def __init__(self, DT, model, odometer, getDistances, follower="PathFinder"):
 
-        self.PathFinder = PathFinder.PathFinder(DT, getDistances, odometer)
+        self.PathFinder = PathFinder.PathFinder(DT, model, odometer, getDistances)
         self.Ramsetes = Ramsetes.Ramsetes(DT, model, odometer)
         self.setFollower(follower)
 
