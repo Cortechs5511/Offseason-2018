@@ -30,6 +30,18 @@ class Limelight(Subsystem):
     def get(self):
         return [self.tv, self.tx, self.ty, self.ta, self.ts, self.tl]
 
+    def getTv(self): return self.tv
+    def getTx(self): return self.tx
+    def getTy(self): return self.ty
+    def getTa(self): return self.ta
+    def getTs(self): return self.ts
+    def getTl(self): return self.tl
+
+    def getDistance(self):
+        abox = 143
+        d = math.sqrt((abox)/(4*math.tan(0.471)*math.tan(0.3576)*self.ta))
+        return d
+
     def initDefaultCommand(self):
         self.setDefaultCommand(getLimelightData())
 

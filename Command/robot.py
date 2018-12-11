@@ -26,11 +26,10 @@ from commands.DriveStraightCombined import DriveStraightCombined
 from commands.DrivePath import DrivePath
 from commands.TurnAngle import TurnAngle
 
-from commands.TurnVision import TurnVision
 from commands.getLimelightData import getLimelightData
+from commands.driveVision import driveVision
 
 from commands.Zero import Zero
-from commands.driveVision import driveVision
 
 from commands import Sequences
 
@@ -60,7 +59,7 @@ import pathfinder as pf
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
-from commands.Limelight import Limelight
+
 from navx import AHRS as navx
 
 class MyRobot(CommandBasedRobot):
@@ -188,7 +187,6 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("TurnAngle", TurnAngle())
         SmartDashboard.putData("driveVision", driveVision())
 
-        SmartDashboard.putData("TurnVision", TurnVision())
 
         SmartDashboard.putData("Zero", Zero())
 
