@@ -23,7 +23,7 @@ from commands.setSpeedWrist import setSpeedWrist
 from commands.DriveStraightTime import DriveStraightTime
 from commands.DriveStraightDistance import DriveStraightDistance
 from commands.DriveStraightCombined import DriveStraightCombined
-from commands.DrivePathFinder import DrivePathFinder
+from commands.DrivePath import DrivePath
 from commands.TurnAngle import TurnAngle
 
 from commands.getLimelightData import getLimelightData
@@ -37,8 +37,8 @@ from commands import autonomous
 from subsystems import Wrist, Intake, Lift, Drive
 
 import pathfinder as pf
-import path.path as path
-import odometry as od
+from CRLibrary.path.Path import Path as path
+from CRLibrary.path.odometry import Odometer as od
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
@@ -46,7 +46,6 @@ from ctre import WPI_VictorSPX as Victor
 from networktables import NetworkTables
 
 class Limelight:
-
     def __init__(self):
         self.table = NetworkTables.getTable("limelight")
         self.table.putNumber('ledMode',1)
@@ -56,13 +55,42 @@ class Limelight:
         self.ty = self.table.getNumber('ty',None)
         self.ta = self.table.getNumber('ta',None)
         self.ts = self.table.getNumber('ts',None)
+        self.tx = self.table.getNumber('ts',None)
+        return [self.tx,self.ty,self.ta,self.ts]
 
-    def Gettx(self):
+    def getTx(self):
         self.table.putNumber('ledMode',1)
         if self.InformationAvailable() == False:
             return 0
         else:
             return self.table.getNumber('tx',None)
+    def getTy(self):
+        if self.InformationAvailable() == False:
+            return 0
+        else:
+            return self.table.getNumber('ty',None)
+    def getTa(self):
+        if self.InformationAvailable() == False:
+            return 0
+        else:
+            return self.table.getNumber('ta',None)
+    def getTs(self):
+        if self.InformationAvailable() == False:
+            return 0
+        else:
+            return self.table.getNumber('ts',None)
+
+    def getDistance(self):
+        abox = 143
+        ta = self.getTa()
+        d = math.sqrt((abox)/(4*math.tan(0.471)*math.tan(0.3576)*ta))
+        return d
+
+    def UpdateDashboard(self):
+        self.ty = self.table.getNumber('ty',None)
+        self.ta = self.table.getNumber('ta',None)
+        self.ts = self.table.getNumber('ts',None)
+        self.tx = self.table.getNumber('ts',None)
 
     def InformationAvailable(self):
         return self.table.getNumber('tv',None) == 1

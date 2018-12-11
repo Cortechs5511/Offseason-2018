@@ -27,6 +27,7 @@ from commands.DrivePath import DrivePath
 from commands.TurnAngle import TurnAngle
 
 from commands.Zero import Zero
+from commands.driveVision import driveVision
 
 from commands import Sequences
 
@@ -56,9 +57,7 @@ import pathfinder as pf
 
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
-
 from commands.Limelight import Limelight
-from commands.turnVision import TurnVision
 from navx import AHRS as navx
 
 class MyRobot(CommandBasedRobot):
@@ -124,7 +123,6 @@ class MyRobot(CommandBasedRobot):
             self.curr = 0
 
     def autonomousInit(self):
-        self.getLimelightData.start()
 
         self.wrist.zero()
         self.lift.zero()
@@ -186,6 +184,7 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putData("DriveStraightCombined", DriveStraightCombined())
         SmartDashboard.putData("DrivePath", DrivePath())
         SmartDashboard.putData("TurnAngle", TurnAngle())
+        SmartDashboard.putData("driveVision", driveVision())
 
         SmartDashboard.putData("Zero", Zero())
 
@@ -204,6 +203,7 @@ class MyRobot(CommandBasedRobot):
         self.lift.UpdateDashboard()
         self.wrist.UpdateDashboard()
         self.intake.UpdateDashboard()
+        self.limelight.UpdateDashboard()
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
