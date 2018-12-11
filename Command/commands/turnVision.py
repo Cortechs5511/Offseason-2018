@@ -2,15 +2,15 @@ import math
 import wpilib
 
 from wpilib import SmartDashboard
-from wpilib.command import Command
 from wpilib.command import TimedCommand
 
 class TurnVision(TimedCommand):
-
-    def __init__(self, timeout = 300, PController = .03):
+    def __init__(self, timeout = 300, PController = 0.03):
         super().__init__('TurnVisionPID', timeoutInSeconds = timeout)
+
         self.requires(self.getRobot().drive)
         self.DT = self.getRobot().drive
+
         self.Limelight = self.getRobot().limelight
         self.PController = PController
 
