@@ -25,7 +25,6 @@ from CRLibrary.util import units as units
 class Drive(Subsystem):
 
     mode = ""
-    follower = ""
 
     distPID = 0
     anglePID = 0
@@ -35,6 +34,13 @@ class Drive(Subsystem):
     maxSpeed = 1
 
     model = None
+
+    navxVal = 0
+    leftVal = 0
+    rightVal = 0
+
+    leftConv = 4/12 * math.pi / 255
+    rightConv = -4/12 * math.pi / 127
 
     def __init__(self, Robot):
         super().__init__('Drive')
@@ -84,11 +90,11 @@ class Drive(Subsystem):
         self.navx = navx.create_spi()
 
         self.leftEncoder = wpilib.Encoder(0,1)
-        self.leftEncoder.setDistancePerPulse(4/12 * math.pi / 255)
+        self.leftEncoder.setDistancePerPulse(self.leftConv)
         self.leftEncoder.setSamplesToAverage(10)
 
         self.rightEncoder = wpilib.Encoder(2,3)
-        self.rightEncoder.setDistancePerPulse(-4/12 * math.pi / 127)
+        self.rightEncoder.setDistancePerPulse(self.rightConv)
         self.rightEncoder.setSamplesToAverage(10)
 
         self.TolDist = 0.2 #feet
@@ -187,6 +193,7 @@ class Drive(Subsystem):
         return -1
 
     def tankDrive(self,left=0,right=0):
+        self.updateSensors()
         if(self.mode=="Distance"):
             [left,right] = [self.distPID,self.distPID]
         elif(self.mode=="Angle"):
@@ -224,14 +231,21 @@ class Drive(Subsystem):
     def getOutputCurrent(self):
         return (self.right.getOutputCurrent()+self.left.getOutputCurrent())*3
 
+    def updateSensors(self):
+        self.leftVal = self.leftEncoder.get()
+        self.rightVal = self.rightEncoder.get()
+        self.navxVal = self.navx.getYaw()
+
+    def getAngle(self):
+        return self.navxVal
+
     def getRaw(self):
-        return [self.leftEncoder.get(),self.rightEncoder.get()]
+        return [self.leftVal, self.rightVal]
 
     def getDistance(self):
-        return [self.leftEncoder.getDistance(),self.rightEncoder.getDistance()]
+        return [self.leftVal*self.leftConv, self.rightVal*self.rightConv]
 
     def getAvgDistance(self):
-        #return self.getDistance()[1] #One encoder broken
         return (self.getDistance()[0]+self.getDistance()[1])/2
 
     def getVelocity(self):
@@ -239,17 +253,10 @@ class Drive(Subsystem):
         self.prevDist = self.getDistance()
         return velocity
 
-    '''
-    def getVelocity(self):
-        return [self.leftEncoder.getRate(), self.rightEncoder.getRate()] #Test if this works at meeting, does not work in sim
-    '''
-
     def getAvgVelocity(self):
-        #return self.rightEncoder.getRate() #feet per second, one encoder broken
         return (self.getVelocity()[0]+self.getVelocity()[1])/2
 
     def getAvgAbsVelocity(self):
-        #return abs(self.rightEncoder.getRate()) #feet per second, one encoder broken
         return (abs(self.getVelocity()[0])+abs(self.getVelocity()[1]))/2
 
     def zeroEncoders(self):
@@ -263,9 +270,6 @@ class Drive(Subsystem):
     def zero(self):
         self.zeroEncoders()
         self.zeroNavx()
-
-    def getAngle(self):
-        return self.navx.getYaw()
 
     def initDefaultCommand(self):
         self.setDefaultCommand(diffDrive(timeout = 300))

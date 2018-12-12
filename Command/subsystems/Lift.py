@@ -17,6 +17,10 @@ class Lift(Subsystem):
 
     posConv = 1/183 #convert from encoder count to inches
 
+    maxSpeed = 0.7
+
+    height = 0
+
     def __init__(self, Robot):
         super().__init__('Lift')
 
@@ -63,8 +67,7 @@ class Lift(Subsystem):
         self.__setSpeed__(output)
 
     def pidGet(self):
-       pos =  self.getHeight()
-       return pos
+       return  self.getHeight()
 
     def setPIDSourceType(self):
         return 0
@@ -73,14 +76,10 @@ class Lift(Subsystem):
         return 0
 
     def getHeight(self):
-        pos = self.LiftEncoder.get()*self.posConv
-        return pos
+        return self.height
 
     def getGravity(self):
         return 0.14
-
-    def getTemp(self):
-        return self.lift.getTemperature()
 
     def getOutputCurrent(self):
         return self.lift.getOutputCurrent()*2
@@ -90,10 +89,11 @@ class Lift(Subsystem):
         self.__setSpeed__(speed)
 
     def __setSpeed__(self, speed):
-        maxSpeed = 0.7
-        #if (speed > 0 and self.Robot.wrist.getAngle() < 0): self.lift.set(self.getGravity())
-        #else: self.lift.set(maxSpeed*speed + self.getGravity())
-        self.lift.set(maxSpeed*speed+self.getGravity())
+        self.updateSensors()
+        self.lift.set(self.maxSpeed*speed+self.getGravity())
+
+    def updateSensors(self):
+        self.height = self.LiftEncoder.get()*self.posConv
 
     def setHeight(self, height):
         self.liftController.enable()

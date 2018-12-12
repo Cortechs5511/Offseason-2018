@@ -18,6 +18,8 @@ class Wrist(Subsystem):
     posConv = 1/2222
     powerpercentage = 0.7
 
+    angle = 0
+
     def __init__(self,Robot):
         super().__init__('Wrist')
         timeout = 0
@@ -64,10 +66,7 @@ class Wrist(Subsystem):
         self.__setSpeed__(output)
 
     def getAngle(self):
-        return math.radians(self.wrist.getSelectedSensorPosition(0)*self.posConv)
-
-    def getRawPosition(self):
-        return self.wrist.getSelectedSensorPosition(0)
+        return self.angle
 
     def getGravity(self):
         gravity = -0.4
@@ -85,6 +84,7 @@ class Wrist(Subsystem):
 
     def __setSpeed__(self, speed):
         '''Moves wrist up if speed is negative'''
+        self.updateSensors()
         power = (self.powerpercentage * (speed)) + (self.getGravity()) *  (math.sin(self.getAngle()) * (1-self.powerpercentage))
         self.wrist.set(power)
 
@@ -93,7 +93,11 @@ class Wrist(Subsystem):
         self.__setSpeedNoG__(speed)
 
     def __setSpeedNoG__(self, speed):
+        self.updateSensors()
         self.wrist.set(speed)
+
+    def updateSensors(self):
+        self.angle = math.radians(self.wrist.getSelectedSensorPosition(0)*self.posConv)
 
     def setAngle(self, angle):
         self.wristController.setSetpoint(angle)

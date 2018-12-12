@@ -80,6 +80,7 @@ class MyRobot(CommandBasedRobot):
         self.limelight = Limelight.Limelight(self)
 
         self.timer = wpilib.Timer()
+        self.timer.start()
 
         '''
         Since OI instantiates commands and commands need access to subsystems,
@@ -92,7 +93,7 @@ class MyRobot(CommandBasedRobot):
 
         self.updateDashboardInit()
 
-        follower = "PathFinder"
+        follower = "Ramsetes"
 
         self.LeftSwitchMiddlePath = LeftSwitchMiddlePath(follower)
         self.RightSwitchMiddlePath = RightSwitchMiddlePath(follower)
@@ -115,14 +116,14 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putString("position", "L")
 
         self.curr = 0
-        self.print = 50
+        self.print = 1
 
     def robotPeriodic(self):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
             self.updateDashboardPeriodic()
             #od.display() #displays odometry results
-            self.curr = 0
+            #print(self.curr/self.timer.get())
 
     def autonomousInit(self):
         self.wrist.zero()
@@ -131,6 +132,7 @@ class MyRobot(CommandBasedRobot):
 
         self.timer.reset()
         self.timer.start()
+        self.curr = 0
 
         gameData = "LLL" #wpilib.DriverStation.getInstance().getGameSpecificMessage()
         position = "M" #SmartDashboard.getString("position", "M")
