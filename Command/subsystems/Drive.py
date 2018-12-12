@@ -76,7 +76,7 @@ class Drive(Subsystem):
             motor.configVoltageCompSaturation(12,timeout) #Sets saturation value
             motor.enableVoltageCompensation(True) #Compensates for lower voltages
 
-            motor.configOpenLoopRamp(0.2,timeout) #number of seconds from 0 to 1
+            motor.configOpenLoopRamp(0.0,timeout) #number of seconds from 0 to 1
 
         self.left = TalonLeft
         self.right = TalonRight
@@ -234,15 +234,15 @@ class Drive(Subsystem):
         #return self.getDistance()[1] #One encoder broken
         return (self.getDistance()[0]+self.getDistance()[1])/2
 
+    '''
     def getVelocity(self):
         velocity = [50*(self.getDistance()[0]-self.prevDist[0]),50*(self.getDistance()[1]-self.prevDist[1])]
         self.prevDist = self.getDistance()
         return velocity
-
     '''
+
     def getVelocity(self):
         return [self.leftEncoder.getRate(), self.rightEncoder.getRate()] #Test if this works at meeting, does not work in sim
-    '''
 
     def getAvgVelocity(self):
         #return self.rightEncoder.getRate() #feet per second, one encoder broken
@@ -282,5 +282,11 @@ class Drive(Subsystem):
 
         SmartDashboard.putNumber("DT_PowerLeft", self.left.get())
         SmartDashboard.putNumber("DT_PowerRight", self.right.get())
+
+        SmartDashboard.putNumber("DT_VelocityLeft", self.getVelocity()[0])
+        SmartDashboard.putNumber("DT_VelocityRight", self.getVelocity()[1])
+
+        SmartDashboard.putNumber("DT_CounLeft", self.getRaw()[0])
+        SmartDashboard.putNumber("DT_CountRight", self.getRaw()[1])
 
         SmartDashboard.putNumber("DriveAmps",self.getOutputCurrent())

@@ -115,14 +115,17 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putString("position", "L")
 
         self.curr = 0
-        self.print = 50
+        self.print = 1
 
     def robotPeriodic(self):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
             self.updateDashboardPeriodic()
             #od.display() #displays odometry results
-            self.curr = 0
+            #self.curr = 0
+            SmartDashboard.putNumber("Iterations:", self.curr)
+            SmartDashboard.putNumber("Time", self.timer.get())
+            SmartDashboard.putNumber("Rate", self.curr/(0.01+self.timer.get()))
 
     def autonomousInit(self):
         self.wrist.zero()
@@ -145,7 +148,7 @@ class MyRobot(CommandBasedRobot):
         elif self.autoMode == "TestPath": self.TestPath.start()
 
     def autoLogic(self, gameData, auto):
-        return "TestPath"
+        return "RightSwitchMiddle"
 
         '''
         if(auto=="L"):
@@ -202,10 +205,11 @@ class MyRobot(CommandBasedRobot):
 
         '''Additional UpdateDashboard Functions'''
         self.drive.UpdateDashboard()
-        self.lift.UpdateDashboard()
-        self.wrist.UpdateDashboard()
-        self.intake.UpdateDashboard()
-        self.limelight.UpdateDashboard()
+        if False:
+            self.lift.UpdateDashboard()
+            self.wrist.UpdateDashboard()
+            self.intake.UpdateDashboard()
+            self.limelight.UpdateDashboard()
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
