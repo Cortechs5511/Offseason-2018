@@ -253,6 +253,11 @@ class Drive(Subsystem):
         self.prevDist = self.getDistance()
         return velocity
 
+    '''
+    def getVelocity(self):
+        return [self.leftEncoder.getRate(), self.rightEncoder.getRate()] #Test if this works at meeting, does not work in sim
+    '''
+
     def getAvgVelocity(self):
         return (self.getVelocity()[0]+self.getVelocity()[1])/2
 
@@ -286,5 +291,11 @@ class Drive(Subsystem):
 
         SmartDashboard.putNumber("DT_PowerLeft", self.left.get())
         SmartDashboard.putNumber("DT_PowerRight", self.right.get())
+
+        SmartDashboard.putNumber("DT_VelocityLeft", self.getVelocity()[0])
+        SmartDashboard.putNumber("DT_VelocityRight", self.getVelocity()[1])
+
+        SmartDashboard.putNumber("DT_CounLeft", self.getRaw()[0])
+        SmartDashboard.putNumber("DT_CountRight", self.getRaw()[1])
 
         SmartDashboard.putNumber("DriveAmps",self.getOutputCurrent())
