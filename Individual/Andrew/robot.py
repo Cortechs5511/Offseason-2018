@@ -51,7 +51,9 @@ class MyRobot(wpilib.TimedRobot):
         self.left_drive = wpilib.Joystick(1)
         self.right_drive = wpilib.Joystick(0)
 
-
+        #sets up encoders
+        self.left_encoder = wpilib.Encoder(0,1)
+        self.right_encoder = wpilib.Encoder(2,3)
 
     def teleopInit(self):
         self.count = 0
@@ -62,14 +64,14 @@ class MyRobot(wpilib.TimedRobot):
         #puts the count variable on the SmartDashboard
         sd.putNumber("count", self.count)
 
-        #sets the intake of the wrist to a speed
-        '''west = self.Axis.getRawAxis(5)
-        self.Intake1.set(west)
-
-        #sets the angle of the wrist to a joystick
-        up = self.Rotate.getRawAxis(1)
-        self.Wrist.set(up)'''
-
+        #gets distance for ticks and converts
+    def getDistance(self):
+        left_ticks = (self.left_encoder.getDistance())/255
+        right_ticks = (self.right_encoder.getDistance())/-127
+        ticks = (left_ticks +right_ticks)/2
+        distance = ticks * 4 *3.14
+        return distance
+        '''
         # setup axis for left and right drives
         #this means that it takes the axis 1 (y-axis) from joysticks 0 and 1, which are set for left and right
         left = self.left_drive.getRawAxis(1)
@@ -77,13 +79,14 @@ class MyRobot(wpilib.TimedRobot):
 
         right = self.right_drive.getRawAxis(1)
         self.RightDrive1.set(right)
-
+        '''
     def autonomousInit(self):
         #creates a time to run
         self.count = 0
         self.autonTimer = wpilib.Timer()
         self.autonTimer.start()
 
+        '''
     def autonomousPeriodic(self):
         self.count += 1
         #add count to SD
@@ -108,6 +111,23 @@ class MyRobot(wpilib.TimedRobot):
             self.Input()
         else:
             self.disabledPeriodic()
+            '''
+
+    def autonomousPeriodic(self):
+        self.count += 1
+        #add count to SD
+        sd.putNumber("count", self.count)
+        # self.Wrist.set(-0.2)
+        timeElapsed = self.autonTimer.get()
+        sd.putNumber("Timer",timeElapsed)
+        maxPoint = 240
+        maxSpeed = 0.6
+        constant = (maxSpeed/maxPoint)
+        remaining_distance = maxPoint - self.getDistance()
+        if self.getDistance <=240:
+            self.drive(remaining_distance*constant+0.25,remaining_distance*constant+0.25)
+        else:
+            self.drive(0,0)
 
     def Output(self):
         self.Intake1.set(-0.2)
