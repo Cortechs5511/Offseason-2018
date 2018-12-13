@@ -8,6 +8,8 @@ from commands.getLimelightData import getLimelightData
 
 class Limelight(Subsystem):
 
+    abox = 143
+
     def __init__(self, Robot):
         self.table = NetworkTables.getTable("limelight")
         self.table.putNumber('ledMode',1)
@@ -38,8 +40,7 @@ class Limelight(Subsystem):
     def getTl(self): return self.tl
 
     def getDistance(self):
-        abox = 143
-        d = math.sqrt((abox)/(4*math.tan(0.471)*math.tan(0.3576)*self.ta))
+        d = math.sqrt((self.abox)/(4*math.tan(0.471)*math.tan(0.3576)*self.ta))
         return d
 
     def initDefaultCommand(self):

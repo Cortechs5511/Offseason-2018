@@ -64,6 +64,8 @@ from navx import AHRS as navx
 
 class MyRobot(CommandBasedRobot):
 
+    dashboard = False
+
     def robotInit(self):
 
         '''
@@ -91,7 +93,7 @@ class MyRobot(CommandBasedRobot):
         self.joystick1 = oi.getJoystick(1)
         self.xbox = oi.getJoystick(2)
 
-        self.updateDashboardInit()
+        if(self.dashboard): self.updateDashboardInit()
 
         follower = "Ramsetes"
 
@@ -121,7 +123,7 @@ class MyRobot(CommandBasedRobot):
     def robotPeriodic(self):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
-            self.updateDashboardPeriodic()
+            if(self.dashboard): self.updateDashboardPeriodic()
             #od.display() #displays odometry results
             #SmartDashboard.putNumber("Iterations:", self.curr)
             #SmartDashboard.putNumber("Time", self.timer.get())
@@ -206,11 +208,10 @@ class MyRobot(CommandBasedRobot):
 
         '''Additional UpdateDashboard Functions'''
         self.drive.UpdateDashboard()
-        if False:
-            self.lift.UpdateDashboard()
-            self.wrist.UpdateDashboard()
-            self.intake.UpdateDashboard()
-            self.limelight.UpdateDashboard()
+        self.lift.UpdateDashboard()
+        self.wrist.UpdateDashboard()
+        self.intake.UpdateDashboard()
+        self.limelight.UpdateDashboard()
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
