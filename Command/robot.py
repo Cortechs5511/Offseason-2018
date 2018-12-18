@@ -72,6 +72,8 @@ class MyRobot(CommandBasedRobot):
         This is a good place to set up your subsystems and anything else that
         you will need to access later.
         '''
+        
+        self.setPeriod(.025) #40 runs per second instead of 50
 
         Command.getRobot = lambda x=0: self
 
@@ -95,7 +97,7 @@ class MyRobot(CommandBasedRobot):
 
         if(self.dashboard): self.updateDashboardInit()
 
-        follower = "Ramsetes"
+        follower = "PathFinder"
 
         self.LeftSwitchMiddlePath = LeftSwitchMiddlePath(follower)
         self.RightSwitchMiddlePath = RightSwitchMiddlePath(follower)
@@ -118,16 +120,16 @@ class MyRobot(CommandBasedRobot):
         SmartDashboard.putString("position", "L")
 
         self.curr = 0
-        self.print = 1
+        self.print = 10
 
     def robotPeriodic(self):
         self.curr = self.curr + 1
         if(self.curr%self.print==0):
             if(self.dashboard): self.updateDashboardPeriodic()
             #od.display() #displays odometry results
-            #SmartDashboard.putNumber("Iterations:", self.curr)
-            #SmartDashboard.putNumber("Time", self.timer.get())
-            #SmartDashboard.putNumber("Rate", self.curr/(0.01+self.timer.get()))
+            SmartDashboard.putNumber("Iterations:", self.curr)
+            SmartDashboard.putNumber("Time", self.timer.get())
+            SmartDashboard.putNumber("Rate", self.curr/(0.01+self.timer.get()))
 
     def autonomousInit(self):
         self.wrist.zero()
