@@ -63,14 +63,6 @@ class MyRobot(wpilib.TimedRobot):
         self.count += 1
         #puts the count variable on the SmartDashboard
         sd.putNumber("count", self.count)
-
-        #gets distance for ticks and converts
-    def getDistance(self):
-        left_ticks = (self.left_encoder.getDistance())/255
-        right_ticks = (self.right_encoder.getDistance())/-127
-        ticks = (left_ticks +right_ticks)/2
-        distance = ticks * 4 *3.14
-        return distance
         '''
         # setup axis for left and right drives
         #this means that it takes the axis 1 (y-axis) from joysticks 0 and 1, which are set for left and right
@@ -80,6 +72,15 @@ class MyRobot(wpilib.TimedRobot):
         right = self.right_drive.getRawAxis(1)
         self.RightDrive1.set(right)
         '''
+
+        #gets distance for ticks and converts
+    def getDistance(self):
+        left_ticks = (self.left_encoder.getDistance())/255
+        right_ticks = (self.right_encoder.getDistance())/-127
+        ticks = (left_ticks +right_ticks)/2
+        distance = ticks * 4 *3.14
+        return distance
+
     def autonomousInit(self):
         #creates a time to run
         self.count = 0
@@ -120,9 +121,13 @@ class MyRobot(wpilib.TimedRobot):
         # self.Wrist.set(-0.2)
         timeElapsed = self.autonTimer.get()
         sd.putNumber("Timer",timeElapsed)
+        #maximum distance
         maxPoint = 240
+        #maximum speed
         maxSpeed = 0.6
+        #This constant will give us a linear decline
         constant = (maxSpeed/maxPoint)
+        #variable gives us remaining distance
         remaining_distance = maxPoint - self.getDistance()
         if self.getDistance <=240:
             self.drive(remaining_distance*constant+0.25,remaining_distance*constant+0.25)
