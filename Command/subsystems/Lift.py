@@ -103,7 +103,8 @@ class Lift(Subsystem):
         self.lift.setQuadraturePosition(0,0)
 
     def initDefaultCommand(self):
-        self.setDefaultCommand(setSpeedLift(300))
+        #self.setDefaultCommand(setSpeedLift(300))
+        pass
 
     def UpdateDashboard(self):
         SmartDashboard.putData("Lift_PID", self.liftController)

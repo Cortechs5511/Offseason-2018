@@ -3,6 +3,8 @@ import wpilib
 
 from wpilib.command import Command
 from wpilib.command import TimedCommand
+from wpilib import SmartDashboard
+
 
 class setFixedWrist(TimedCommand):
 
@@ -13,7 +15,8 @@ class setFixedWrist(TimedCommand):
         self.speed = speed
 
     def execute(self):
-        self.Wrist.setSpeed(self.speed)
+        #self.Wrist.setSpeed(self.speed)
+        pass
 
     def interrupted(self):
         self.end()
