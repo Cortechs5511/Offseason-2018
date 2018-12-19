@@ -33,19 +33,16 @@ class MyRobot(wpilib.TimedRobot):
         sd.putNumber("Encoderdistance",self.encoderdistance)
 
 
-        left = self.leftJoystick.getRawAxis(1)*0.9
-        if abs(left) < .1:
-            drive(0,0)
-        if abs(left) > 1:
-            drive(.9,.9)
-
-        if abs(right) < .1:
-                drive(0,0)
-
-        if abs(right) > 1:
-                drive(.9,.9)
-        right = self.rightJoystick.getRawAxis(1)*0.9
+        left = self.leftJoystick.getRawAxis(1)
+        right = self.rightJoystick.getRawAxis(1)
+        if abs(left) < 0.1:
+            left = 0
+        if abs(right) < 0.1:
+            right = 0
+        left = left*0.9
+        right = right*0.9
         self.drive(left, right)
+
 
     def Leftdrivecontrol(self, leftPower):
 
