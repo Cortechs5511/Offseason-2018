@@ -81,6 +81,7 @@ class MyRobot(wpilib.TimedRobot):
         sd.putNumber("count", self.count)
         timeElapsed = self.autonTimer.get()
         sd.putNumber("Timer",timeElapsed)
+        #runs forward function for 20 feet
         forwad(self,240,0.6)
 
 #support functions
@@ -91,7 +92,6 @@ class MyRobot(wpilib.TimedRobot):
         ticks = (left_ticks +right_ticks)/2
         distance = ticks * 4 *3.14
         return distance
-
 #action functions
     #def turn (self,angle):
 

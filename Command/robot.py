@@ -60,7 +60,22 @@ import pathfinder as pf
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-from navx import AHRS as navx
+#from navx import AHRS as navx
+
+class DebugRate(Command):
+    def initialize(self):
+        self.curr = 0
+        self.print = 10
+
+    def execute(self):
+        self.curr += 1
+        if(self.curr%self.print==0):
+            time = self.timeSinceInitialized()
+            #od.display() #displays odometry results
+            SmartDashboard.putNumber("Iterations:", self.curr)
+            SmartDashboard.putNumber("Time", time)
+            if time > 0:
+                SmartDashboard.putNumber("Rate", self.curr/time)
 
 class MyRobot(CommandBasedRobot):
 
@@ -72,8 +87,9 @@ class MyRobot(CommandBasedRobot):
         This is a good place to set up your subsystems and anything else that
         you will need to access later.
         '''
-        
-        self.setPeriod(.025) #40 runs per second instead of 50
+
+        #self.setPeriod(0.025) #40 runs per second instead of 50
+        self.setPeriod(0.0333) #30 runs per second
 
         Command.getRobot = lambda x=0: self
 
@@ -116,6 +132,7 @@ class MyRobot(CommandBasedRobot):
         self.RightSwitchMiddle2Cube = RightSwitchMiddle2Cube()
 
         oi.commands()
+        SmartDashboard.putData("CPU Load", DebugRate())
 
         SmartDashboard.putString("position", "L")
 
@@ -123,13 +140,8 @@ class MyRobot(CommandBasedRobot):
         self.print = 10
 
     def robotPeriodic(self):
-        self.curr = self.curr + 1
-        if(self.curr%self.print==0):
-            if(self.dashboard): self.updateDashboardPeriodic()
-            #od.display() #displays odometry results
-            SmartDashboard.putNumber("Iterations:", self.curr)
-            SmartDashboard.putNumber("Time", self.timer.get())
-            SmartDashboard.putNumber("Rate", self.curr/(0.01+self.timer.get()))
+        #if(self.dashboard): self.updateDashboardPeriodic()
+        pass
 
     def autonomousInit(self):
         self.wrist.zero()

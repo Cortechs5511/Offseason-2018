@@ -9,17 +9,14 @@ import math
 class MyRobot(wpilib.TimedRobot):
     #declares the motors in existence
     def robotInit(self):
-        self.Leftdrive1 = ctre.WPI_VictorSP(0)
-        self.Leftdrive2 = ctre.WPI_VictorSP(1)
-        self.Rightdrive1 = ctre.WPI_VictorSP(2)
-        self.Rightdrive2 = ctre.WPI_VictorSP(3)
+        self.Leftdrive1 = wpilib.VictorSP(0)
+        self.Leftdrive2 = wpilib.VictorSP(1)
+        self.Rightdrive1 = wpilib.VictorSP(2)
+        self.Rightdrive2 = wpilib.VictorSP(3)
 
         self.leftJoystick = wpilib.Joystick(0)
         self.rightJoystick = wpilib.Joystick(1)
         self.left_encoder = wpilib.Encoder(0,1)
-
-    def teleopInit(self):
-            self.count = 0
 
 
     def teleopPeriodic(self):
@@ -58,12 +55,5 @@ class MyRobot(wpilib.TimedRobot):
         self.Leftdrivecontrol(leftPower)
         self.Rightdrivecontrol(rightPower)
 
-    def autonomousInit(self):
-        #creates a time to run
-        self.count = 0
-        self.autonTimer = wpilib.Timer()
-        self.autonTimer.start()
-    #def autonomousPeriodic(self):
-    #def disabledPeriodic(self):
 if  __name__ == '__main__':
     wpilib.run(MyRobot)

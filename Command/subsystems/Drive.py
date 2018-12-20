@@ -235,6 +235,7 @@ class Drive(Subsystem):
         self.leftVal = self.leftEncoder.get()
         self.rightVal = self.rightEncoder.get()
         self.navxVal = self.navx.getYaw()
+        #self.navxVal = 0
 
     def getAngle(self):
         return self.navxVal
@@ -271,6 +272,7 @@ class Drive(Subsystem):
 
     def zeroNavx(self):
         self.navx.zeroYaw()
+        #pass
 
     def zero(self):
         self.zeroEncoders()
@@ -279,6 +281,7 @@ class Drive(Subsystem):
     def initDefaultCommand(self):
         self.setDefaultCommand(diffDrive(timeout = 300))
         #self.setDefaultCommand(setSpeedDT(timeout = 300))
+        #pass
 
     def UpdateDashboard(self):
         SmartDashboard.putData("DT_DistPID", self.distController)
