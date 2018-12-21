@@ -20,16 +20,26 @@ class MyRobot(wpilib.TimedRobot):
 
 
     def teleopPeriodic(self):
-        #self.rawdistance = self.left_encoder.get()
-        #self.count+= 1
-        #sd.putNumber("Count",self.count)
-        #ticks = sd.getNumber("Ticks", 255)
-        #radius = 4
-        #distance = (2*math.pi*radius*self.rawdistance)
-        #self.encoderdistance = distance/ticks
-        #sd.putNumber("Encoderdistance",self.encoderdistance)
+        self.rawdistance = left_encoder.getdistance()
+        self.count+= 1
+        sd.putNumber("Count",self.count)
+        ticks = sd.getNumber("Ticks", 255)
+        radius = 4
+        distance = (2*math.pi*radius*self.rawdistance)
+        self.encoderdistance = distance/ticks
+        sd.putNumber("Encoderdistance",self.encoderdistance)
 
-        self.drive(-self.leftJoystick.getRawAxis(1),self.rightJoystick.getRawAxis(1))
+
+        left = self.leftJoystick.getRawAxis(1)
+        right = self.rightJoystick.getRawAxis(1)
+        if abs(left) < 0.1:
+            left = 0
+        if abs(right) < 0.1:
+            right = 0
+        left = left*0.9
+        right = right*0.9
+        self.drive(left, right)
+
 
     def Leftdrivecontrol(self, leftPower):
 
