@@ -14,7 +14,7 @@ def makeTraj(name):
     if(name=="DriveStraight"):
         points = [
             pf.Waypoint(0,0,0),
-            pf.Waypoint(4,0,0)
+            pf.Waypoint(20,0,0)
         ]
     elif(name=="LeftSwitch"):
         points = [

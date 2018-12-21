@@ -23,8 +23,9 @@ class PathFinder():
         self.PID = 0
 
         '''Gains'''
-        kA = [0.000, 0.00, 0.00, 0.00]
-        self.gains = [0.0, 0, 0.0, 0.74/12, 0]
+        kA = [0.000, 0.00, 0.00, 0.00] #angle
+        #gains[4] = Voltage per Velocity (feet per second)
+        self.gains = [0.005, 0, 0.35, 0.74/12, 0] #distance
         TolAngle = 3 #degrees
 
         '''PID Controllers'''

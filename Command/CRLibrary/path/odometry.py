@@ -9,8 +9,8 @@ class Odometer():
 
     def update(self, leftV, rightV, angleIn):
         speed = (leftV+rightV)/2
-        self.x += speed * 0.02 * math.cos(math.pi/180*angleIn)
-        self.y += speed * 0.02 * math.sin(math.pi/180*angleIn)
+        self.x += speed * 0.0333 * math.cos(math.pi/180*angleIn)
+        self.y += speed * 0.0333 * math.sin(math.pi/180*angleIn)
         self.angle = angleIn
         self.rightVel = rightV
         self.leftVel = leftV

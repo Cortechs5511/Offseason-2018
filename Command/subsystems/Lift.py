@@ -107,7 +107,8 @@ class Lift(Subsystem):
         pass
 
     def UpdateDashboard(self):
-        SmartDashboard.putData("Lift_PID", self.liftController)
-        SmartDashboard.putNumber("Lift_Height", self.getHeight())
-        SmartDashboard.putNumber("Lift_Power", self.lift.get())
-        SmartDashboard.putNumber("Lift_Amps", self.getOutputCurrent())
+        #SmartDashboard.putData("Lift_PID", self.liftController)
+        #SmartDashboard.putNumber("Lift_Height", self.getHeight())
+        #SmartDashboard.putNumber("Lift_Power", self.lift.get())
+        #SmartDashboard.putNumber("Lift_Amps", self.getOutputCurrent())
+        pass

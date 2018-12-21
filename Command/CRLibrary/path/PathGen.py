@@ -32,7 +32,7 @@ def getTraj(name, model):
     if wpilib.RobotBase.isSimulation():
         points = PathList.makeTraj(name)
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH,
-        dt=0.025, max_velocity=MAXV, max_acceleration=MAXA, max_jerk=MAXJ)
+        dt=.0333, max_velocity=MAXV, max_acceleration=MAXA, max_jerk=MAXJ)
 
         modifier = pf.modifiers.TankModifier(trajectory).modify(units.metersToFeet(model.effWheelbaseRadius()))
         left = modifier.getLeftTrajectory()

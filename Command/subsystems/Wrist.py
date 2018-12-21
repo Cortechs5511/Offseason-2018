@@ -119,7 +119,8 @@ class Wrist(Subsystem):
         pass
 
     def UpdateDashboard(self):
-        SmartDashboard.putData("Wrist_PID", self.wristController)
-        SmartDashboard.putNumber("Wrist_Angle", math.degrees(self.getAngle()))
-        SmartDashboard.putNumber("Wrist_Power", self.wrist.get())
-        SmartDashboard.putNumber("Wrist_Amps", self.getOutputCurrent())
+        #SmartDashboard.putData("Wrist_PID", self.wristController)
+        #SmartDashboard.putNumber("Wrist_Angle", math.degrees(self.getAngle()))
+        #SmartDashboard.putNumber("Wrist_Power", self.wrist.get())
+        #SmartDashboard.putNumber("Wrist_Amps", self.getOutputCurrent())
+        pass
