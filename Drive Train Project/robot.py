@@ -18,16 +18,26 @@ class MyRobot(wpilib.TimedRobot):
         self.rightJoystick = wpilib.Joystick(1)
         self.left_encoder = wpilib.Encoder(0,1)
 
+    def teleopInit(self):
+        self.count = 0
+
+    def autonomousInit(self):
+    #creates a time to run
+        self.count = 0
+        self.autonTimer = wpilib.Timer()
+        self.autonTimer.start()
 
     def teleopPeriodic(self):
-        self.rawdistance = left_encoder.getdistance()
+        ticks = (self.left_encoder.getDistance())*255
+        sd.putNumber("Ticks",ticks)
         self.count+= 1
         sd.putNumber("Count",self.count)
-        ticks = sd.getNumber("Ticks", 255)
-        radius = 4
-        distance = (2*math.pi*radius*self.rawdistance)
-        self.encoderdistance = distance/ticks
-        sd.putNumber("Encoderdistance",self.encoderdistance)
+        distance = math.pi*4*ticks
+        if ticks == 0:
+            return 0
+        else:
+            encoderdistance = distance/ticks
+        sd.putNumber("Encoder distance",encoderdistance)
 
 
         left = self.leftJoystick.getRawAxis(1)
