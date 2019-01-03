@@ -47,9 +47,10 @@ class Limelight(Subsystem):
         self.setDefaultCommand(getLimelightData())
 
     def UpdateDashboard(self):
-        SmartDashboard.putNumber("Limelight_tv", self.tv)
-        SmartDashboard.putNumber("Limelight_tv", self.tx)
-        SmartDashboard.putNumber("Limelight_tv", self.ty)
-        SmartDashboard.putNumber("Limelight_tv", self.ta)
-        SmartDashboard.putNumber("Limelight_tv", self.ts)
-        SmartDashboard.putNumber("Limelight_tv", self.tl)
+        #SmartDashboard.putNumber("Limelight_tv", self.tv)
+        #SmartDashboard.putNumber("Limelight_tv", self.tx)
+        #SmartDashboard.putNumber("Limelight_tv", self.ty)
+        #SmartDashboard.putNumber("Limelight_tv", self.ta)
+        #SmartDashboard.putNumber("Limelight_tv", self.ts)
+        #SmartDashboard.putNumber("Limelight_tv", self.tl)
+        pass

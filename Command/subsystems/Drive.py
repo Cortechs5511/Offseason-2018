@@ -121,8 +121,8 @@ class Drive(Subsystem):
 
         self.od = od.Odometer()
 
-        transmission = DCMotor.DCMotorTransmission(8.02, 2.22, 1.10)
-        self.model = dDrive.DifferentialDrive(64, 50, 0, units.inchesToMeters(2.0), units.inchesToMeters(14), transmission, transmission)
+        transmission = DCMotor.DCMotorTransmission(8.3, 2.22, 1.10) #8.02, 2.22, 1.10
+        self.model = dDrive.DifferentialDrive(64, 10, 0, units.inchesToMeters(2.0), units.inchesToMeters(14), transmission, transmission)
         self.maxVel = self.maxSpeed*self.model.getMaxAbsVelocity(0, 0, 12)
         #print("Max Velocity: "+ str(self.maxVel))
 
@@ -250,7 +250,7 @@ class Drive(Subsystem):
         return (self.getDistance()[0]+self.getDistance()[1])/2
 
     def getVelocity(self):
-        velocity = [50*(self.getDistance()[0]-self.prevDist[0]),50*(self.getDistance()[1]-self.prevDist[1])]
+        velocity = [30*(self.getDistance()[0]-self.prevDist[0]),30*(self.getDistance()[1]-self.prevDist[1])]
         self.prevDist = self.getDistance()
         return velocity
 
@@ -284,21 +284,21 @@ class Drive(Subsystem):
         #pass
 
     def UpdateDashboard(self):
-        SmartDashboard.putData("DT_DistPID", self.distController)
-        SmartDashboard.putData("DT_AnglePID", self.angleController)
+        #SmartDashboard.putData("DT_DistPID", self.distController)
+        #SmartDashboard.putData("DT_AnglePID", self.angleController)
 
         SmartDashboard.putNumber("DT_DistanceAvg", self.getAvgDistance())
-        SmartDashboard.putNumber("DT_DistanceLeft", self.getDistance()[0])
-        SmartDashboard.putNumber("DT_DistanceRight", self.getDistance()[1])
-        SmartDashboard.putNumber("DT_Angle", self.getAngle())
+        #SmartDashboard.putNumber("DT_DistanceLeft", self.getDistance()[0])
+        #SmartDashboard.putNumber("DT_DistanceRight", self.getDistance()[1])
+        #SmartDashboard.putNumber("DT_Angle", self.getAngle())
 
-        SmartDashboard.putNumber("DT_PowerLeft", self.left.get())
-        SmartDashboard.putNumber("DT_PowerRight", self.right.get())
+        #SmartDashboard.putNumber("DT_PowerLeft", self.left.get())
+        #SmartDashboard.putNumber("DT_PowerRight", self.right.get())
 
-        SmartDashboard.putNumber("DT_VelocityLeft", self.getVelocity()[0])
-        SmartDashboard.putNumber("DT_VelocityRight", self.getVelocity()[1])
+        #SmartDashboard.putNumber("DT_VelocityLeft", self.getVelocity()[0])
+        #SmartDashboard.putNumber("DT_VelocityRight", self.getVelocity()[1])
 
-        SmartDashboard.putNumber("DT_CounLeft", self.getRaw()[0])
-        SmartDashboard.putNumber("DT_CountRight", self.getRaw()[1])
+        #SmartDashboard.putNumber("DT_CounLeft", self.getRaw()[0])
+        #SmartDashboard.putNumber("DT_CountRight", self.getRaw()[1])
 
-        SmartDashboard.putNumber("DriveAmps",self.getOutputCurrent())
+        #SmartDashboard.putNumber("DriveAmps",self.getOutputCurrent())

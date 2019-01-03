@@ -79,7 +79,7 @@ class DebugRate(Command):
 
 class MyRobot(CommandBasedRobot):
 
-    dashboard = False
+    dashboard = True
 
     def robotInit(self):
 
@@ -113,7 +113,7 @@ class MyRobot(CommandBasedRobot):
 
         if(self.dashboard): self.updateDashboardInit()
 
-        follower = "PathFinder"
+        follower = "Ramsetes"
 
         self.LeftSwitchMiddlePath = LeftSwitchMiddlePath(follower)
         self.RightSwitchMiddlePath = RightSwitchMiddlePath(follower)
@@ -140,8 +140,10 @@ class MyRobot(CommandBasedRobot):
         self.print = 10
 
     def robotPeriodic(self):
-        #if(self.dashboard): self.updateDashboardPeriodic()
-        pass
+        if(self.dashboard):
+            self.updateDashboardPeriodic()
+        else:
+            pass
 
     def autonomousInit(self):
         self.wrist.zero()
@@ -181,51 +183,54 @@ class MyRobot(CommandBasedRobot):
         '''
 
     def updateDashboardInit(self):
-        '''Subsystems'''
-        SmartDashboard.putData("Drive", self.drive)
-        SmartDashboard.putData("Intake", self.intake)
-        SmartDashboard.putData("Lift", self.lift)
-        SmartDashboard.putData("Wrist", self.wrist)
+        #'''Subsystems'''
+        #SmartDashboard.putData("Drive", self.drive)
+        #SmartDashboard.putData("Intake", self.intake)
+        #SmartDashboard.putData("Lift", self.lift)
+        #SmartDashboard.putData("Wrist", self.wrist)
 
-        '''Commands'''
-        SmartDashboard.putData("setPositionWrist", setPositionWrist(0,True))
-        SmartDashboard.putData("setPositionLift", setPositionLift(0, True))
+        #'''Commands'''
+        #SmartDashboard.putData("setPositionWrist", setPositionWrist(0,True))
+        #SmartDashboard.putData("setPositionLift", setPositionLift(0, True))
 
-        SmartDashboard.putData("setFixedDT", setFixedDT())
-        SmartDashboard.putData("setFixedIntake", setFixedIntake())
-        SmartDashboard.putData("setFixedLift", setFixedLift())
-        SmartDashboard.putData("setFixedWrist", setFixedWrist())
+        #SmartDashboard.putData("setFixedDT", setFixedDT())
+        #SmartDashboard.putData("setFixedIntake", setFixedIntake())
+        #SmartDashboard.putData("setFixedLift", setFixedLift())
+        #SmartDashboard.putData("setFixedWrist", setFixedWrist())
 
-        SmartDashboard.putData("setSpeedDT", setSpeedDT())
-        SmartDashboard.putData("setSpeedLift", setSpeedLift())
-        SmartDashboard.putData("setSpeedWrist", setSpeedWrist())
+        #SmartDashboard.putData("setSpeedDT", setSpeedDT())
+        #SmartDashboard.putData("setSpeedLift", setSpeedLift())
+        #SmartDashboard.putData("setSpeedWrist", setSpeedWrist())
 
-        SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
-        SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
-        SmartDashboard.putData("DriveStraightCombined", DriveStraightCombined())
-        SmartDashboard.putData("DrivePath", DrivePath())
-        SmartDashboard.putData("TurnAngle", TurnAngle())
-        SmartDashboard.putData("driveVision", driveVision())
+        #SmartDashboard.putData("DriveStraightDistance", DriveStraightDistance())
+        #SmartDashboard.putData("DriveStraightTime", DriveStraightTime())
+        #SmartDashboard.putData("DriveStraightCombined", DriveStraightCombined())
+        #SmartDashboard.putData("DrivePath", DrivePath())
+        #SmartDashboard.putData("TurnAngle", TurnAngle())
+        #SmartDashboard.putData("driveVision", driveVision())
 
 
-        SmartDashboard.putData("Zero", Zero())
+        #SmartDashboard.putData("Zero", Zero())
 
-        '''Additional UpdateDashboard Functions'''
-        Sequences.UpdateDashboard()
-        autonomous.UpdateDashboard()
+        #'''Additional UpdateDashboard Functions'''
+        #Sequences.UpdateDashboard()
+        #autonomous.UpdateDashboard()
+        pass
 
     def updateDashboardPeriodic(self):
-        current = self.drive.getOutputCurrent()+self.intake.getOutputCurrent()+self.wrist.getOutputCurrent()+self.lift.getOutputCurrent()
-        SmartDashboard.putNumber("Total_Amps",current)
+        #current = self.drive.getOutputCurrent()+self.intake.getOutputCurrent()+self.wrist.getOutputCurrent()+self.lift.getOutputCurrent()
+        #SmartDashboard.putNumber("Total_Amps",current)
 
-        SmartDashboard.putBoolean("Mech_Safety", (self.lift.lift.get() > 0.2 and self.wrist.getAngle() < math.pi/12))
+        #SmartDashboard.putBoolean("Mech_Safety", (self.lift.lift.get() > 0.2 and self.wrist.getAngle() < math.pi/12))
 
         '''Additional UpdateDashboard Functions'''
-        self.drive.UpdateDashboard()
-        self.lift.UpdateDashboard()
-        self.wrist.UpdateDashboard()
-        self.intake.UpdateDashboard()
-        self.limelight.UpdateDashboard()
+        #self.drive.UpdateDashboard()
+        #self.lift.UpdateDashboard()
+        #self.wrist.UpdateDashboard()
+        #self.intake.UpdateDashboard()
+        #self.limelight.UpdateDashboard()
+
+        SmartDashboard.putNumber("DT_DistanceAvg", self.drive.getAvgDistance())
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
