@@ -30,6 +30,23 @@ class MyRobot(wpilib.TimedRobot):
         self.driveright3 = ctre.WPI_VictorSPX(22)
         self.driveright2.follow(self.driveright1)
         self.driveright3.follow(self.driveright1)
+        self.leftAutonEncoder = wpilib.Encoder(0,1)
+        self.rightAutonEncoder = wpilib.Encoder(2,3)
+        self.rightAutonEncoder.setDistancePerPulse(1)
+        self.leftAutonEncoder.setDistancePerPulse(1)
+
+        self.zero()
+
+
+
+    def robotPeriodic(self):
+        sd.putNumber("rightEncoder" , self.rightAutonEncoder.get() - self.rightEncoderCNT)
+        sd.putNumber("leftEncoder" , self.leftAutonEncoder.get()- self.leftEncoderCNT)
+
+    def zero(self):
+        self.leftEncoderCNT = self.leftAutonEncoder.get()
+        self.rightEncoderCNT = self.rightAutonEncoder.get()
+
 
         #teleop stuff
     def teleopDrive(self):
@@ -39,6 +56,7 @@ class MyRobot(wpilib.TimedRobot):
 
     def teleopInit(self):
         self.count = 0
+        self.zero()
 
     def teleopPeriodic(self):
         self.count += 1
@@ -69,16 +87,13 @@ class MyRobot(wpilib.TimedRobot):
         self.driveleft1.set(-left)
 
     def autonomousInit(self):
-        self.leftAutonEncoder = wpilib.Encoder(0,1)
         self.autonTimer = wpilib.Timer()
-
-
         self.autonTimer.start()
 
     def autonomousPeriodic(self):
         encoderTicks = self.leftAutonEncoder.get()
         Wheelturn = encoderTicks / 255
-        while Wheelturn < (10 / math.pi ) :
+        while Wheelturn < (60 / math.pi ) :
             self.drive(0.5,0.6)
 
 
