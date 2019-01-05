@@ -44,11 +44,14 @@ class MyRobot(wpilib.TimedRobot):
     #setup for wrist
         self.Wrist = ctre.WPI_TalonSRX(40)
     #creates two joysticks for drive control
-        self.left_drive = wpilib.Joystick(1)
-        self.right_drive = wpilib.Joystick(0)
+        self.left_joystick = wpilib.Joystick(1)
+        self.right_joystick = wpilib.Joystick(0)
     #sets up encoders
         self.left_encoder = wpilib.Encoder(0,1)
         self.right_encoder = wpilib.Encoder(2,3)
+    #switch between modes
+        self.tankMode = True
+        #self.modeButton = self.right_joystick.
     def teleopInit(self):
         self.count = 0
     def autonomousInit(self):
@@ -65,15 +68,13 @@ class MyRobot(wpilib.TimedRobot):
         self.ticks = self.getDistance()
         sd.putNumber("ticks",self.ticks)
     #limit breakers which set speeds based on axis units
-        left = self.left_drive.getRawAxis(1)
-        right = self.right_drive.getRawAxis(1)
-        if abs(left) < 0.1:
-            left = 0
-        if abs(right) < 0.1:
-            right = 0
-        left = left *0.9
-        right = right *0.9
-        self.drive(left, right)
+        left = self.left_joystick.getRawAxis(1)
+        right = self.right_joystick.getRawAxis(1)
+        rotation = self.right_joystick.getRawAxis(2)
+        if self.tankMode == True:
+            self.drive(left, right)
+        else:
+            self.arcadeDrive(left,rotation)
 
     def autonomousPeriodic(self):
         #Count and time on SD
@@ -82,7 +83,7 @@ class MyRobot(wpilib.TimedRobot):
         timeElapsed = self.autonTimer.get()
         sd.putNumber("Timer",timeElapsed)
         #runs forward function for 20 feet
-        forwad(self,240,0.6)
+        self.forward(240,0.6)
 
 #support functions
     #gets distance for ticks and converts
@@ -101,17 +102,48 @@ class MyRobot(wpilib.TimedRobot):
         #variable for remaining distance
         remaining_distance = maxPoint - self.getDistance()
         #once this distance travelled is larger than the maxPoint, we know we've reached our goal, stopping it
-        if self.getDistance <= maxPoint:
+        if self.getDistance() <= maxPoint:
             self.drive(remaining_distance*constant+0.25,remaining_distance*constant+0.25)
         else:
             self.drive(0,0)
+    #output power
     def Output(self,outputPower):
         self.Intake1.set(-outputPower)
+    #input power
     def Input(self,inputPower):
         self.Intake1.set(inputPower)
-    def drive(self, leftPower, rightPower):
-        self.LeftDrive1.set(leftPower)
-        self.RightDrive1.set(rightPower)
+    #tank drive
+    def drive(self, left, right):
+        #breakers
+        if abs(left) < 0.1:
+            left = 0
+        if abs(right) < 0.1:
+            right = 0
+        left = left *0.9
+        right = right *0.9
+        #sets powers
+        self.LeftDrive1.set(left)
+        self.RightDrive1.set(right)
+    #arcade drive
+    def arcadeDrive(self,left,rotation):
+        #breakers
+        if abs(left) <0.1:
+            left = 0
+        left = left *0.9
+        right = left
+        if rotation <-0.1:
+            #if the rotation is larger than 0.95, rotate in place
+            if rotation <-0.95:
+                left = 0
+            left = left *(1-abs(rotation*0.4))
+        elif rotation >0.1:
+            #if the rotation is larger than 0.95, rotate in place
+            if rotation >0.95:
+                right = 0
+            right = right *(1-abs(rotation*0.4))
+        #sets up powers
+        self.LeftDrive1.set(left)
+        self.RightDrive1.set(right)
     def disabledPeriodic(self):
         # a disabled period will reset the wrist and intake
         self.Wrist.set(0)
