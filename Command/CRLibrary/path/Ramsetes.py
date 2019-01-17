@@ -31,7 +31,9 @@ class Ramsetes():
 
         '''Gains'''
         kV = [0.01, 0.0, 0.0, 0.0] #velocity
-        kA = [0.000, 0.0, 0.0, 0.0] #angle
+        #kA = [0.000 , 0.0, 0.0, 0.0] #angle
+        kA = [0.04, 0.0, 0.004, 0.0]
+        #make D ten times SMALLER than P
 
         self.kB = 0.00 #curvature
         self.kZeta = 0.19 #dampening

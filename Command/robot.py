@@ -113,7 +113,7 @@ class MyRobot(CommandBasedRobot):
 
         if(self.dashboard): self.updateDashboardInit()
 
-        follower = "Ramsetes"
+        follower = "PathFinder"
 
         self.LeftSwitchMiddlePath = LeftSwitchMiddlePath(follower)
         self.RightSwitchMiddlePath = RightSwitchMiddlePath(follower)
@@ -164,10 +164,10 @@ class MyRobot(CommandBasedRobot):
         elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePath.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
         elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePath.start()
-        elif self.autoMode == "TestPath": self.TestPath.start()
+        elif self.autoMode == "Test": self.TestPath.start()
 
     def autoLogic(self, gameData, auto):
-        return "RightSwitchMiddle"
+        return "Test"
 
         '''
         if(auto=="L"):
