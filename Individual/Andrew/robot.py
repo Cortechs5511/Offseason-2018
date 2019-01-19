@@ -1,3 +1,4 @@
+#new outreach
 #imports important packages for running
 #this is andrew's code
 import wpilib
@@ -9,27 +10,22 @@ import ctre
 class MyRobot(wpilib.TimedRobot):
 #initialization
     def robotInit(self):
-    #Intake motors
+        #Intake motors
         self.Intake1 = ctre.WPI_TalonSRX(50)
         self.Intake1.setNeutralMode(2)
         self.Intake1.setInverted(True)
         self.Intake2 = ctre.WPI_TalonSRX(51)
         self.Intake2.setNeutralMode(2)
         self.Intake2.setInverted(True)
-        #intake motors to follow each other
         self.Intake1.follow(self.Intake2)
-    #lift motors
-        self.Lift1 = ctre.WPI_TalonSRX(50)
+
+        #lift motors
+        self.Lift1 = ctre.WPI_TalonSRX(30)
         self.Lift1.setNeutralMode(2)
-        self.Lift2 = ctre.WPI_TalonSRX(51)
+        self.Lift2 = ctre.WPI_TalonSRX(31)
         self.Lift2.setNeutralMode(2)
-        #intake motors to follow each other
         self.Lift1.follow(self.Lift2)
-    #set up controller for teleopPeriodic
-        self.Controller1 =wpilib.Joystick(2)
-    #leftdrive motors initialized
-    #Sets the invert true; meaning it will go straight
-    #Sets neutral mode to let robot coast
+
         self.LeftDrive1 = ctre.WPI_TalonSRX(10)
         self.LeftDrive1.setInverted(True)
         self.LeftDrive1.setNeutralMode(2)
@@ -58,6 +54,7 @@ class MyRobot(wpilib.TimedRobot):
     #creates two joysticks for drive control
         self.left_joystick = wpilib.Joystick(1)
         self.right_joystick = wpilib.Joystick(0)
+        self.Controller1 =wpilib.Joystick(2)
     #sets up encoders
         self.left_encoder = wpilib.Encoder(0,1)
         self.right_encoder = wpilib.Encoder(2,3)
@@ -85,7 +82,6 @@ class MyRobot(wpilib.TimedRobot):
         intakeButton = -(self.Controller1.getRawButton(8))
 
         outtakeButton = -(self.Controller1.getRawButton(7))
-        #intake function
 
         #arcade tank toggle
         if self.tankMode == True:
@@ -94,13 +90,13 @@ class MyRobot(wpilib.TimedRobot):
             self.arcadeDrive(left,rotation)
 
         if self.Controller1.getRawAxis(1) < 0:
-            self.Lift1.set(0.5)
+            self.Lift2.set(0.5)
         elif self.Controller1.getRawAxis(1) > 0:
-            self.Lift1.set(-0.5)
+            self.Lift2.set(-0.5)
         else:
-            self.Lift1.set(0)
+            self.Lift2.set(0)
 
-        #intake=
+        #intake
         if self.Controller1.getRawAxis(2) > 0:
             self.Intake2.set(0.5)
         elif self.Controller1.getRawAxis(3) > 0:
