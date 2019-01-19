@@ -31,6 +31,8 @@ from commands.driveVision import driveVision
 
 from commands.Zero import Zero
 
+import navx
+
 from commands import Sequences
 
 from commands import autonomous
@@ -60,8 +62,6 @@ import pathfinder as pf
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
 
-#from navx import AHRS as navx
-
 class DebugRate(Command):
     def initialize(self):
         self.curr = 0
@@ -88,8 +88,8 @@ class MyRobot(CommandBasedRobot):
         you will need to access later.
         '''
 
-        #self.setPeriod(0.025) #40 runs per second instead of 50
-        self.setPeriod(0.0333) #30 runs per second
+        #self.setPeriod(0.025) #40 runs per second instead of #50
+        #self.setPeriod(0.0333) #30 runs per second
 
         Command.getRobot = lambda x=0: self
 
@@ -113,7 +113,7 @@ class MyRobot(CommandBasedRobot):
 
         if(self.dashboard): self.updateDashboardInit()
 
-        follower = "Ramsetes"
+        follower = "PathFinder"
 
         self.LeftSwitchMiddlePath = LeftSwitchMiddlePath(follower)
         self.RightSwitchMiddlePath = RightSwitchMiddlePath(follower)
@@ -164,10 +164,10 @@ class MyRobot(CommandBasedRobot):
         elif self.autoMode == "LeftSwitchMiddle": self.LeftSwitchMiddlePath.start()
         elif self.autoMode == "RightSwitchSide": self.RightSwitchSide.start()
         elif self.autoMode == "RightSwitchMiddle": self.RightSwitchMiddlePath.start()
-        elif self.autoMode == "TestPath": self.TestPath.start()
+        elif self.autoMode == "Test": self.TestPath.start()
 
     def autoLogic(self, gameData, auto):
-        return "RightSwitchMiddle"
+        return "Test"
 
         '''
         if(auto=="L"):

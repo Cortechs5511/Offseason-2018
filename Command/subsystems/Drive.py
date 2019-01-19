@@ -1,10 +1,9 @@
 import math
+import navx
 
 import ctre
 from ctre import WPI_TalonSRX as Talon
 from ctre import WPI_VictorSPX as Victor
-
-from navx import AHRS as navx
 
 import wpilib
 from wpilib import SmartDashboard
@@ -87,7 +86,7 @@ class Drive(Subsystem):
         self.left = TalonLeft
         self.right = TalonRight
 
-        self.navx = navx.create_spi()
+        self.navx = navx.ahrs.AHRS(0)
 
         self.leftEncoder = wpilib.Encoder(0,1)
         self.leftEncoder.setDistancePerPulse(self.leftConv)
