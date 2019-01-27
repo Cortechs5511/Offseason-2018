@@ -135,8 +135,8 @@ class Ramsetes():
         leftOut = v - self.model.effWheelbaseRadius()*w #for velocity PID process variable
         rightOut = v + self.model.effWheelbaseRadius()*w
 
-        a = 50*(v-self.prev[0]) #50 iterations per second
-        alpha = 50*(w-self.prev[1])
+        a = 30*(v-self.prev[0]) #50 iterations per second
+        alpha = 30*(w-self.prev[1])
 
         self.prev = [v, w] #for next acceleration calculations
 
