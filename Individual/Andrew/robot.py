@@ -1,4 +1,6 @@
+#new outreach
 #imports important packages for running
+#this is andrew's code
 import wpilib
 import wpilib.drive
 from wpilib import SmartDashboard as sd
@@ -8,14 +10,22 @@ import ctre
 class MyRobot(wpilib.TimedRobot):
 #initialization
     def robotInit(self):
-    #Intake motors
+        #Intake motors
         self.Intake1 = ctre.WPI_TalonSRX(50)
+        self.Intake1.setNeutralMode(2)
+        self.Intake1.setInverted(True)
         self.Intake2 = ctre.WPI_TalonSRX(51)
-        #intake motors to follow each other
-        self.Intake2.follow(self.Intake1)
-    #leftdrive motors initialized
-    #Sets the invert true; meaning it will go straight
-    #Sets neutral mode to let robot coast
+        self.Intake2.setNeutralMode(2)
+        self.Intake2.setInverted(True)
+        self.Intake1.follow(self.Intake2)
+
+        #lift motors
+        self.Lift1 = ctre.WPI_TalonSRX(30)
+        self.Lift1.setNeutralMode(2)
+        self.Lift2 = ctre.WPI_TalonSRX(31)
+        self.Lift2.setNeutralMode(2)
+        self.Lift1.follow(self.Lift2)
+
         self.LeftDrive1 = ctre.WPI_TalonSRX(10)
         self.LeftDrive1.setInverted(True)
         self.LeftDrive1.setNeutralMode(2)
@@ -41,11 +51,10 @@ class MyRobot(wpilib.TimedRobot):
     #sets motors to follow each other
         self.RightDrive3.follow(self.RightDrive1)
         self.RightDrive2.follow(self.RightDrive1)
-    #setup for wrist
-        self.Wrist = ctre.WPI_TalonSRX(40)
     #creates two joysticks for drive control
         self.left_joystick = wpilib.Joystick(1)
         self.right_joystick = wpilib.Joystick(0)
+        self.Controller1 =wpilib.Joystick(2)
     #sets up encoders
         self.left_encoder = wpilib.Encoder(0,1)
         self.right_encoder = wpilib.Encoder(2,3)
@@ -68,13 +77,32 @@ class MyRobot(wpilib.TimedRobot):
         self.ticks = self.getDistance()
         sd.putNumber("ticks",self.ticks)
     #limit breakers which set speeds based on axis units
-        left = self.left_joystick.getRawAxis(1)
-        right = self.right_joystick.getRawAxis(1)
-        rotation = self.right_joystick.getRawAxis(2)
+        left = -(self.left_joystick.getRawAxis(1))
+        right = -(self.right_joystick.getRawAxis(1))
+        intakeButton = -(self.Controller1.getRawButton(8))
+
+        outtakeButton = -(self.Controller1.getRawButton(7))
+
+        #arcade tank toggle
         if self.tankMode == True:
             self.drive(left, right)
         else:
             self.arcadeDrive(left,rotation)
+
+        if self.Controller1.getRawAxis(1) < 0:
+            self.Lift2.set(0.5)
+        elif self.Controller1.getRawAxis(1) > 0:
+            self.Lift2.set(-0.5)
+        else:
+            self.Lift2.set(0)
+
+        #intake
+        if self.Controller1.getRawAxis(2) > 0:
+            self.Intake2.set(0.5)
+        elif self.Controller1.getRawAxis(3) > 0:
+            self.Intake2.set(-0.5)
+        else:
+            self.Intake2.set(0)
 
     def autonomousPeriodic(self):
         #Count and time on SD
@@ -83,7 +111,7 @@ class MyRobot(wpilib.TimedRobot):
         timeElapsed = self.autonTimer.get()
         sd.putNumber("Timer",timeElapsed)
         #runs forward function for 20 feet
-        self.forward(240,0.6)
+        #   self.forward(240,0.6)
 
 #support functions
     #gets distance for ticks and converts
@@ -94,7 +122,6 @@ class MyRobot(wpilib.TimedRobot):
         distance = ticks * 4 *3.14
         return distance
 #action functions
-    #def turn (self,angle):
 
     def forward(self,maxSpeed,maxPoint):
         #constant for a linear decline
@@ -106,12 +133,6 @@ class MyRobot(wpilib.TimedRobot):
             self.drive(remaining_distance*constant+0.25,remaining_distance*constant+0.25)
         else:
             self.drive(0,0)
-    #output power
-    def Output(self,outputPower):
-        self.Intake1.set(-outputPower)
-    #input power
-    def Input(self,inputPower):
-        self.Intake1.set(inputPower)
     #tank drive
     def drive(self, left, right):
         #breakers
@@ -146,8 +167,6 @@ class MyRobot(wpilib.TimedRobot):
         self.RightDrive1.set(right)
     def disabledPeriodic(self):
         # a disabled period will reset the wrist and intake
-        self.Wrist.set(0)
-        self.Intake1.set(0)
         self.drive(0,0)
 
 #run code
